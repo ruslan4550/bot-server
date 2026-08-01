@@ -11,7 +11,7 @@ http.createServer((req, res) => { res.writeHead(200); res.end("Bot işləyir.");
   console.log(`Health-check serveri ${PORT} portunda işə düşdü.`);
 });
 
-const BOT_TOKEN = "8940602664:AAGShGKt2zZPVGD_wtYQUKAA5RBvETpG8MA";
+const BOT_TOKEN = "8940602664:AAHbe3HRkoselmfmUgmzvwWuJFfPkrCnKUg";
 const API_ID = 36726228;
 const API_HASH = "59b3c57e519c9cf2463b8725bc7c4f36";
 const FIREBASE_URL = "https://newbot-db894-default-rtdb.europe-west1.firebasedatabase.app";
