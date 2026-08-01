@@ -5,7 +5,6 @@ const fetch = require('node-fetch');
 const http = require('http');
 
 // Render (Web Service) bir portun açıq olmasını gözləyir, yoxsa "Timed out" xətası verir.
-// Botun özü heç bir HTTP trafiki qəbul etmir, ona görə sadəcə boş bir server açırıq.
 const PORT = process.env.PORT || 3000;
 http.createServer((req, res) => { res.writeHead(200); res.end("Bot işləyir."); }).listen(PORT, () => {
   console.log(`Health-check serveri ${PORT} portunda işə düşdü.`);
@@ -44,9 +43,18 @@ const i18n = {
         add_more: "➕ Başqa qrup əlavə et", finish_btn: "✅ Bitir və Davam Et", send_group: "Əlavə etmək istədiyiniz qrupun *istifadəçi adını* və ya *linkini* göndərin:",
         ask_interval: "✅ Qruplar təsdiqləndi. İndi mesajın neçə dəqiqədən bir atılacağını rəqəmlə yazın (Məs: 2, 3, 5):",
         interval_err: "⚠️ Zəhmət olmasa 2 ilə 60 arası bir rəqəm yazın.",
-        bot_started: "✅ *Bot İşə Düşdü ({phone})!*\n\nBot hər {min} dəqiqədən bir Qeyd olunmuş mesajlarınızı (Saved Messages) hədəf qruplara atacaq.",
+        bot_started: "✅ *Bot İşə Düşdü ({phone})!*\n\nBot hər {min} dəqiqədən bir seçilən mənbədən mesajları hədəf qruplara atacaq.",
         ch1_btn: "📢 Məcburi Kanal 1", ch2_btn: "📢 Məcburi Kanal 2", all_stopped: "⏹ Bütün hesablar dayandırıldı.", stop_single: "⏹ +{phone} üçün göndərim dayandırıldı.",
-        resume_single: "▶️ +{phone} yenidən işə düşdü.", enter_again: "🔄 Telefon nömrənizi yenidən daxil edin (+ işarəsi ilə):"
+        resume_single: "▶️ +{phone} yenidən işə düşdü.", enter_again: "🔄 Telefon nömrənizi yenidən daxil edin (+ işarəsi ilə):",
+        // YENİ: Mesaj mənbəyi
+        source_prompt: "📥 Mesajlar haradan götürülsün?",
+        source_saved_btn: "💾 Yadda saxlanmış mesajlar",
+        source_custom_btn: "🔗 Xüsusi Kanal/Qrup/Bot",
+        enter_source: "📢 Mesajın götürüləcəyi kanal/qrup/botun istifadəçi adını (@) və ya linkini göndərin:",
+        invalid_source: "❌ Daxil etdiyiniz mənbəyə giriş mümkün olmadı. Zəhmət olmasa düzgün istifadəçi adı/link göndərin.",
+        source_set_saved: "✅ Mənbə: Yadda saxlanmış mesajlar.",
+        source_set_custom: "✅ Mənbə təyin olundu: {target}",
+        cancel_btn: "❌ Ləğv et"
     },
     tr: {
         sub_msg: "Aşağıdaki kanallara abone olun:", sub_btn: "✅ Abonelikleri Onayla", checking: "⏳ Abonelik kontrol ediliyor...",
@@ -70,9 +78,17 @@ const i18n = {
         add_more: "➕ Başka grup ekle", finish_btn: "✅ Bitir ve Devam Et", send_group: "Eklemek istediğiniz grubun *kullanıcı adını* veya *linkini* gönderin:",
         ask_interval: "✅ Gruplar onaylandı. Şimdi mesajın kaç dakikada bir atılacağını rakamla yazın (Örn: 2, 3, 5):",
         interval_err: "⚠️ Lütfen 2 ile 60 arası bir rakam yazın.",
-        bot_started: "✅ *Bot Çalışmaya Başladı ({phone})!*\n\nBot her {min} dakikada bir Kayıtlı Mesajlarınızı (Saved Messages) hedef gruplara atacak.",
+        bot_started: "✅ *Bot Çalışmaya Başladı ({phone})!*\n\nBot her {min} dakikada bir seçilen kaynaktan mesajları hedef gruplara atacak.",
         ch1_btn: "📢 Zorunlu Kanal 1", ch2_btn: "📢 Zorunlu Kanal 2", all_stopped: "⏹ Tüm hesaplar durduruldu.", stop_single: "⏹ +{phone} için gönderim durduruldu.",
-        resume_single: "▶️ +{phone} yeniden çalışmaya başladı.", enter_again: "🔄 Telefon numaranızı yeniden girin (+ işareti ile):"
+        resume_single: "▶️ +{phone} yeniden çalışmaya başladı.", enter_again: "🔄 Telefon numaranızı yeniden girin (+ işareti ile):",
+        source_prompt: "📥 Mesajlar nereden alınsın?",
+        source_saved_btn: "💾 Kaydedilmiş mesajlar",
+        source_custom_btn: "🔗 Özel Kanal/Grup/Bot",
+        enter_source: "📢 Mesajın alınacağı kanal/grup/bot kullanıcı adını (@) veya linkini gönderin:",
+        invalid_source: "❌ Girdiğiniz kaynağa erişilemedi. Lütfen doğru bir kullanıcı adı/link gönderin.",
+        source_set_saved: "✅ Kaynak: Kaydedilmiş mesajlar.",
+        source_set_custom: "✅ Kaynak belirlendi: {target}",
+        cancel_btn: "❌ İptal"
     },
     en: {
         sub_msg: "Please subscribe to the channels below:", sub_btn: "✅ Confirm Subscriptions", checking: "⏳ Checking subscription...",
@@ -96,9 +112,17 @@ const i18n = {
         add_more: "➕ Add another group", finish_btn: "✅ Finish and Continue", send_group: "Send the *username* or *link* of the group you want to add:",
         ask_interval: "✅ Groups confirmed. Now enter the number of minutes between each message (e.g: 2, 3, 5):",
         interval_err: "⚠️ Please enter a number between 2 and 60.",
-        bot_started: "✅ *Bot Started ({phone})!*\n\nThe bot will send your Saved Messages to the target groups every {min} minutes.",
+        bot_started: "✅ *Bot Started ({phone})!*\n\nThe bot will send your messages from the selected source to the target groups every {min} minutes.",
         ch1_btn: "📢 Required Channel 1", ch2_btn: "📢 Required Channel 2", all_stopped: "⏹ All accounts stopped.", stop_single: "⏹ Sending stopped for +{phone}.",
-        resume_single: "▶️ +{phone} started again.", enter_again: "🔄 Enter your phone number again (with '+'):"
+        resume_single: "▶️ +{phone} started again.", enter_again: "🔄 Enter your phone number again (with '+'):",
+        source_prompt: "📥 Where should messages be taken from?",
+        source_saved_btn: "💾 Saved Messages",
+        source_custom_btn: "🔗 Custom Channel/Group/Bot",
+        enter_source: "📢 Send the username (@) or link of the channel/group/bot to take messages from:",
+        invalid_source: "❌ Could not access the provided source. Please send a valid username/link.",
+        source_set_saved: "✅ Source: Saved Messages.",
+        source_set_custom: "✅ Source set to: {target}",
+        cancel_btn: "❌ Cancel"
     },
     ru: {
         sub_msg: "Подпишитесь на следующие каналы:", sub_btn: "✅ Подтвердить подписки", checking: "⏳ Проверка подписки...",
@@ -122,9 +146,17 @@ const i18n = {
         add_more: "➕ Добавить ещё группу", finish_btn: "✅ Завершить и продолжить", send_group: "Отправьте *имя пользователя* или *ссылку* группы, которую хотите добавить:",
         ask_interval: "✅ Группы подтверждены. Теперь укажите число, через сколько минут будет отправляться сообщение (напр: 2, 3, 5):",
         interval_err: "⚠️ Пожалуйста, введите число от 2 до 60.",
-        bot_started: "✅ *Бот запущен ({phone})!*\n\nБот будет отправлять ваши сохранённые сообщения (Saved Messages) в целевые группы каждые {min} минут.",
+        bot_started: "✅ *Бот запущен ({phone})!*\n\nБот будет отправлять сообщения из выбранного источника в целевые группы каждые {min} минут.",
         ch1_btn: "📢 Обязательный канал 1", ch2_btn: "📢 Обязательный канал 2", all_stopped: "⏹ Все аккаунты остановлены.", stop_single: "⏹ Отправка для +{phone} остановлена.",
-        resume_single: "▶️ +{phone} снова запущен.", enter_again: "🔄 Введите ваш номер телефона заново (с '+'):"
+        resume_single: "▶️ +{phone} снова запущен.", enter_again: "🔄 Введите ваш номер телефона заново (с '+'):",
+        source_prompt: "📥 Откуда брать сообщения?",
+        source_saved_btn: "💾 Избранное (Saved Messages)",
+        source_custom_btn: "🔗 Свой канал/группа/бот",
+        enter_source: "📢 Отправьте имя пользователя (@) или ссылку на канал/группу/бота, откуда будут взяты сообщения:",
+        invalid_source: "❌ Не удалось получить доступ к указанному источнику. Пожалуйста, укажите корректное имя/ссылку.",
+        source_set_saved: "✅ Источник: Избранное.",
+        source_set_custom: "✅ Источник установлен: {target}",
+        cancel_btn: "❌ Отмена"
     }
 };
 
@@ -167,10 +199,9 @@ setInterval(async () => {
             } catch(e) { console.error(e); }
         }
     }
-}, 15000); // Hər 15 saniyədən bir yoxlayacaq
+}, 15000);
 
 // İstifadəçinin Admin Paneldə təyin olunmuş kanallara həqiqətən abunə olub-olmadığını yoxlayır.
-// Kanal ID-si təyin olunmayıbsa (admin panel boş buraxılıbsa), o kanal üçün yoxlama edilmir.
 async function isSubscribed(userId, settings) {
   const channelIds = [settings.channel1_id, settings.channel2_id].filter(id => id && String(id).trim() !== "");
   if (channelIds.length === 0) return true;
@@ -181,7 +212,7 @@ async function isSubscribed(userId, settings) {
       if (!["member", "administrator", "creator"].includes(member.status)) return false;
     } catch (err) {
       console.error(`Abunəlik yoxlanışı xətası (${chId}):`, err.message);
-      return false; // Bot kanalda admin deyilsə və ya ID səhvdirsə, təhlükəsizlik naminə rədd edirik
+      return false;
     }
   }
   return true;
@@ -213,8 +244,6 @@ async function showMainMenu(chatId, lang) {
     const settings = await getDB('settings') || {};
     const inline_keyboard = [];
 
-    // Sadəcə istifadəçidə lisenziya kodu saxlanılıb-saxlanılmaması yox, o kodun
-    // bazada HƏLƏ DƏ aktiv olub-olmadığını yoxlayırıq (bloklanıb/silinibsə etibarsızdır).
     let hasValidLicense = false;
     if (user.activeLicense) {
         const lic = await getDB(`licenses/${user.activeLicense}`);
@@ -233,6 +262,21 @@ async function showMainMenu(chatId, lang) {
         bot.sendMessage(chatId, t('menu_lic', lang), { reply_markup: { inline_keyboard } });
     }
 }
+
+// Qlobal "Ləğv et" / "İmtina" düyməsi işləyicisi
+bot.on('callback_query', async (query) => {
+  const chatId = query.message.chat.id;
+  const data = query.data;
+  const userLang = (await getDB(`users/${chatId}/lang`)) || "az";
+
+  if (data === "cancel_operation") {
+    await bot.answerCallbackQuery(query.id);
+    delete userSessions[chatId];
+    await setDB(`users/${chatId}/state`, "IDLE");
+    return showMainMenu(chatId, userLang);
+  }
+  // Əgər digər callback-lər varsa, onları oxumağa davam edirik (aşağıda)
+});
 
 bot.onText(/\/start/, async (msg) => {
   const chatId = msg.chat.id;
@@ -267,10 +311,10 @@ bot.onText(/\/changenumber/, async (msg) => {
   bot.sendMessage(chatId, t('enter_again', userLang));
 });
 
-// XÜSUSİ SIFIRLAMA KOMANDASI: Nömrəni bazadan təmizləyir
+// XÜSUSİ SIFIRLAMA KOMANDASI
 bot.onText(/\/sifirla (.+)/, async (msg, match) => {
     const chatId = msg.chat.id;
-    let numToReset = match[1].replace(/\+/g, '').replace(/\s+/g, ''); // + və boşluqları silir
+    let numToReset = match[1].replace(/\+/g, '').replace(/\s+/g, '');
     
     await setDB(`users/${chatId}/accounts/${numToReset}`, null);
     await setDB(`users/${chatId}/state`, "IDLE");
@@ -327,7 +371,8 @@ bot.on('callback_query', async (query) => {
 
   if (data === "enter_license") {
     await setDB(`users/${chatId}/state`, "AWAITING_LICENSE");
-    bot.sendMessage(chatId, t('enter_lic', userLang));
+    const keyboard = { inline_keyboard: [[{ text: t('cancel_btn', userLang), callback_data: "cancel_operation" }]] };
+    bot.sendMessage(chatId, t('enter_lic', userLang), { reply_markup: keyboard });
   }
 
   if (data === "add_new_number") {
@@ -343,7 +388,8 @@ bot.on('callback_query', async (query) => {
       }
       
       await setDB(`users/${chatId}/state`, "AWAITING_PHONE");
-      bot.sendMessage(chatId, t('enter_phone', userLang));
+      const keyboard = { inline_keyboard: [[{ text: t('cancel_btn', userLang), callback_data: "cancel_operation" }]] };
+      bot.sendMessage(chatId, t('enter_phone', userLang), { reply_markup: keyboard });
   }
 
   if (data === "manage_numbers") {
@@ -356,7 +402,8 @@ bot.on('callback_query', async (query) => {
       for (const phone in user.accounts) {
           const acc = user.accounts[phone];
           const status = acc.status === "ACTIVE" ? t('active', userLang) : t('stopped', userLang);
-          msg += `📱 +${phone}\n⏳ İnterval: ${acc.intervalMinutes || 0} dəq\n📊 ${status}\n\n`;
+          const sourceType = acc.messageSource?.type === "custom" ? `📌 ${acc.messageSource.target || "?"}` : "💾 Kaydedilmiş";
+          msg += `📱 +${phone}\n⏳ İnterval: ${acc.intervalMinutes || 0} dəq\n📥 Mənbə: ${sourceType}\n📊 ${status}\n\n`;
           
           const actionText = acc.status === "ACTIVE" ? t('stop_btn', userLang) + phone : t('resume_btn', userLang) + phone;
           const actionData = acc.status === "ACTIVE" ? `stop_${phone}` : `resume_${phone}`;
@@ -383,12 +430,38 @@ bot.on('callback_query', async (query) => {
 
   if (data === "add_more_group") {
     await setDB(`users/${chatId}/state`, "AWAITING_GROUP");
-    bot.sendMessage(chatId, t('send_group', userLang), { parse_mode: "Markdown" });
+    const keyboard = { inline_keyboard: [[{ text: t('cancel_btn', userLang), callback_data: "cancel_operation" }]] };
+    bot.sendMessage(chatId, t('send_group', userLang), { parse_mode: "Markdown", reply_markup: keyboard });
   }
 
   if (data === "finish_groups") {
+    // Qrup əlavəsi bitdikdən sonra mesaj mənbəyi soruşulur
+    await setDB(`users/${chatId}/state`, "AWAITING_SOURCE");
+    const keyboard = {
+      inline_keyboard: [
+        [{ text: t('source_saved_btn', userLang), callback_data: "source_saved" }],
+        [{ text: t('source_custom_btn', userLang), callback_data: "source_custom" }],
+        [{ text: t('cancel_btn', userLang), callback_data: "cancel_operation" }]
+      ]
+    };
+    bot.sendMessage(chatId, t('source_prompt', userLang), { reply_markup: keyboard });
+  }
+
+  // Yeni callbacks
+  if (data === "source_saved") {
+    const currentPhone = await getDB(`users/${chatId}/currentPhoneSetup`);
+    const phoneKey = currentPhone.replace('+', '');
+    await setDB(`users/${chatId}/accounts/${phoneKey}/messageSource`, { type: "saved" });
     await setDB(`users/${chatId}/state`, "AWAITING_INTERVAL");
-    bot.sendMessage(chatId, t('ask_interval', userLang));
+    bot.sendMessage(chatId, t('source_set_saved', userLang));
+    const keyboard = { inline_keyboard: [[{ text: t('cancel_btn', userLang), callback_data: "cancel_operation" }]] };
+    bot.sendMessage(chatId, t('ask_interval', userLang), { reply_markup: keyboard });
+  }
+
+  if (data === "source_custom") {
+    await setDB(`users/${chatId}/state`, "AWAITING_CUSTOM_SOURCE");
+    const keyboard = { inline_keyboard: [[{ text: t('cancel_btn', userLang), callback_data: "cancel_operation" }]] };
+    bot.sendMessage(chatId, t('enter_source', userLang), { reply_markup: keyboard });
   }
 });
 
@@ -398,6 +471,13 @@ bot.on('message', async (msg) => {
   const text = msg.text.trim();
   const userLang = (await getDB(`users/${chatId}/lang`)) || "az";
   const state = await getDB(`users/${chatId}/state`);
+
+  // Qlobal ləğv etmə (cancel) düyməsi metni
+  if (text === t('cancel_btn', userLang)) {
+    delete userSessions[chatId];
+    await setDB(`users/${chatId}/state`, "IDLE");
+    return showMainMenu(chatId, userLang);
+  }
 
   if (state === "AWAITING_LICENSE") {
     if (!text.startsWith("ELITE-")) return bot.sendMessage(chatId, t('invalid_lic', userLang));
@@ -428,7 +508,8 @@ bot.on('message', async (msg) => {
       userSessions[chatId] = { client, phone: text, phoneCodeHash };
       await setDB(`users/${chatId}/currentPhoneSetup`, text);
       await setDB(`users/${chatId}/state`, "AWAITING_OTP");
-      bot.sendMessage(chatId, t('otp_info', userLang));
+      const keyboard = { inline_keyboard: [[{ text: t('cancel_btn', userLang), callback_data: "cancel_operation" }]] };
+      bot.sendMessage(chatId, t('otp_info', userLang), { reply_markup: keyboard });
     } catch (err) {
       bot.sendMessage(chatId, t('err', userLang) + err.message);
     }
@@ -449,7 +530,8 @@ bot.on('message', async (msg) => {
       await setDB(`users/${chatId}/accounts/${phoneKey}/targetGroups`, []);
       
       await setDB(`users/${chatId}/state`, "AWAITING_GROUP");
-      bot.sendMessage(chatId, t('login_success', userLang, { phone: sessionData.phone }), { parse_mode: "Markdown" });
+      const keyboard = { inline_keyboard: [[{ text: t('cancel_btn', userLang), callback_data: "cancel_operation" }]] };
+      bot.sendMessage(chatId, t('login_success', userLang, { phone: sessionData.phone }), { parse_mode: "Markdown", reply_markup: keyboard });
     } catch (err) {
       bot.sendMessage(chatId, t('otp_err', userLang) + err.message);
     }
@@ -467,10 +549,44 @@ bot.on('message', async (msg) => {
     const keyboard = {
       inline_keyboard: [
         [{ text: t('add_more', userLang), callback_data: "add_more_group" }],
-        [{ text: t('finish_btn', userLang), callback_data: "finish_groups" }]
+        [{ text: t('finish_btn', userLang), callback_data: "finish_groups" }],
+        [{ text: t('cancel_btn', userLang), callback_data: "cancel_operation" }]
       ]
     };
     bot.sendMessage(chatId, t('group_added', userLang, { count: existing.length }), { reply_markup: keyboard });
+    return;
+  }
+
+  if (state === "AWAITING_CUSTOM_SOURCE") {
+    // İstifadəçi xüsusi mənbə (kanal/qrup/bot) göndərir
+    const currentPhone = await getDB(`users/${chatId}/currentPhoneSetup`);
+    const phoneKey = currentPhone.replace('+', '');
+    const acc = await getDB(`users/${chatId}/accounts/${phoneKey}`);
+    if (!acc || !acc.telegramSession) {
+      return bot.sendMessage(chatId, t('sess_lost', userLang));
+    }
+
+    // Mənbəni yoxlamaq üçün müvəqqəti client yaradırıq
+    let tempClient;
+    try {
+      tempClient = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 3 });
+      await tempClient.connect();
+      const sourceEntity = await resolveTargetEntity(tempClient, text);
+      // Mənbəyə giriş yoxlanışı: sadəcə varlığını yoxlamaq üçün mesaj tarixçəsinə baxmaq
+      await tempClient.getMessages(sourceEntity, { limit: 1 }); // Xəta verməzsə uyğundur
+    } catch (err) {
+      if (tempClient) { try { await tempClient.disconnect(); } catch (e) {} }
+      return bot.sendMessage(chatId, t('invalid_source', userLang));
+    } finally {
+      if (tempClient) { try { await tempClient.disconnect(); } catch (e) {} }
+    }
+
+    // Mənbəni saxla və intervala keç
+    await setDB(`users/${chatId}/accounts/${phoneKey}/messageSource`, { type: "custom", target: text });
+    await setDB(`users/${chatId}/state`, "AWAITING_INTERVAL");
+    bot.sendMessage(chatId, t('source_set_custom', userLang, { target: text }));
+    const keyboard = { inline_keyboard: [[{ text: t('cancel_btn', userLang), callback_data: "cancel_operation" }]] };
+    bot.sendMessage(chatId, t('ask_interval', userLang), { reply_markup: keyboard });
     return;
   }
 
@@ -517,9 +633,19 @@ setInterval(async () => {
           client = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 3 });
           await client.connect();
 
-          const savedMsgs = await client.getMessages('me', { limit: 1 });
-          if (savedMsgs.length > 0) {
-            const messageToSend = savedMsgs[0].text || savedMsgs[0].message;
+          // Mesaj mənbəyini müəyyən et
+          const source = acc.messageSource || { type: "saved" }; // default saved
+          let sourceMessages;
+          if (source.type === "custom" && source.target) {
+            const sourceEntity = await resolveTargetEntity(client, source.target);
+            sourceMessages = await client.getMessages(sourceEntity, { limit: 1 });
+          } else {
+            // saved messages
+            sourceMessages = await client.getMessages('me', { limit: 1 });
+          }
+
+          if (sourceMessages && sourceMessages.length > 0) {
+            const messageToSend = sourceMessages[0].text || sourceMessages[0].message;
             if (messageToSend) {
               for (const g of groups) {
                 try {
