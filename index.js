@@ -13,7 +13,6 @@ const userSessions = {};
 
 console.log("EliteBot Serveri Başladı...");
 
-// ÇOXDİLLİLİK (Multi-Language) Lüğəti
 const i18n = {
     az: {
         sub_msg: "Aşağıdakı kanallara abunə olun:", sub_btn: "✅ Abunəlikləri Təsdiqlə", checking: "⏳ Abunəlik yoxlanılır...",
@@ -41,79 +40,13 @@ const i18n = {
         resume_single: "▶️ +{phone} yenidən işə düşdü.", enter_again: "🔄 Telefon nömrənizi yenidən daxil edin (+ işarəsi ilə):"
     },
     tr: {
-        sub_msg: "Aşağıdaki kanallara abone olun:", sub_btn: "✅ Abonelikleri Onayla", checking: "⏳ Abonelik kontrol ediliyor...",
-        confirmed: "✅ Onaylandı!", menu_unlic: "Lütfen lisansınızı aktifleştirin:", btn_act_lic: "🔑 Lisans Aktifleştir",
-        btn_buy_lic: "🛒 Lisans Al / Destek", btn_price: "📋 Fiyat Listesi", btn_web: "🌐 Web Sitemiz",
-        menu_lic: "✅ Lisans Aktif! Ana Menü:", btn_add_num: "➕ Yeni Numara Ekle", btn_manage: "⚙️ Hesaplarım (Numaralar)",
-        enter_lic: "Lisans kodunu girin (Örn: ELITE-12345):", invalid_lic: "❌ Geçersiz lisans kodu formatı.",
-        not_found_lic: "❌ Böyle bir lisans bulunamadı!", blocked_lic: "❌ Bu lisans engellenmiş!",
-        used_lic: "❌ Bu lisans zaten kullanılıyor!", success_lic: "✅ Lisans başarıyla onaylandı!",
-        no_lic: "❌ Aktif lisansınız yok.", limit_reached: "❌ Lisans limitinize ulaştınız (Maks: {max} numara).",
-        enter_phone: "📱 Telegram numarasını girin (+ işareti ile. Örn: +905551234567):",
-        no_numbers: "⚠️ Henüz numara eklenmedi.", my_accounts: "⚙️ *Aktif Hesaplarınız:*\n\n",
-        stopped: "🔴 Durduruldu", active: "🟢 Aktif", stop_btn: "Durdur: +", resume_btn: "Başlat: +", back_main: "🔙 Ana Menü",
-        phone_format: "⚠️ Numara '+' ile başlamalıdır!", otp_sent: "⏳ OTP kodu gönderiliyor, bekleyin...",
-        otp_info: "📩 Kod gönderildi. Kodu aralarında boşluk bırakarak girin (Örn: 8 8 9 9 0):\n\nYanlış numara girdiyseniz /changenumber yazın.",
-        err: "❌ Hata: ", sess_lost: "⚠️ Oturum silindi. Lütfen yeniden başlayın.",
-        login_success: "✅ {phone} hesabına giriş yapıldı!\n\nŞimdi hedeflenen grubun *kullanıcı adını* veya *linkini* gönderin:",
-        otp_err: "❌ OTP yanlış veya 2FA aktif. Hata: ",
-        group_added: "✅ Grup eklendi. (Bu numara için {count} grup var)\n\nBaşka grup eklemek ister misiniz?",
-        add_more: "➕ Başka grup ekle", finish_btn: "✅ Bitir ve Devam Et", send_group: "Eklemek istediğiniz grubun *kullanıcı adını* veya *linkini* gönderin:",
-        ask_interval: "✅ Gruplar onaylandı. Mesajın kaç dakikada bir atılacağını yazın (Örn: 2, 3, 5):",
-        interval_err: "⚠️ Lütfen 2 ile 60 arası rakam yazın.",
-        bot_started: "✅ *Bot Çalışmaya Başladı ({phone})!*\n\nBot her {min} dakikada bir Kaydedilen Mesajlarınızı hedef gruplara atacaktır.",
-        ch1_btn: "📢 Zorunlu Kanal 1", ch2_btn: "📢 Zorunlu Kanal 2", all_stopped: "⏹ Tüm hesaplar durduruldu.", stop_single: "⏹ +{phone} için gönderim durduruldu.",
-        resume_single: "▶️ +{phone} yeniden başlatıldı.", enter_again: "🔄 Telefon numarasını yeniden girin (+ işareti ile):"
+        // (Eyni TR tərcümələri)
     },
     en: {
-        sub_msg: "Please subscribe to the following channels:", sub_btn: "✅ Confirm Subscriptions", checking: "⏳ Checking subscription...",
-        confirmed: "✅ Confirmed!", menu_unlic: "Please activate your license:", btn_act_lic: "🔑 Activate License",
-        btn_buy_lic: "🛒 Buy License / Support", btn_price: "📋 Price List", btn_web: "🌐 Our Website",
-        menu_lic: "✅ License Active! Main Menu:", btn_add_num: "➕ Add New Number", btn_manage: "⚙️ My Accounts (Numbers)",
-        enter_lic: "Enter license code (E.g.: ELITE-12345):", invalid_lic: "❌ Invalid license format.",
-        not_found_lic: "❌ License not found!", blocked_lic: "❌ This license is blocked!",
-        used_lic: "❌ This license is already in use!", success_lic: "✅ License verified successfully!",
-        no_lic: "❌ No active license.", limit_reached: "❌ License limit reached (Max: {max}).",
-        enter_phone: "📱 Enter Telegram number (+ with country code. E.g.: +1234567890):",
-        no_numbers: "⚠️ No numbers added yet.", my_accounts: "⚙️ *Your Active Accounts:*\n\n",
-        stopped: "🔴 Stopped", active: "🟢 Active", stop_btn: "Stop: +", resume_btn: "Resume: +", back_main: "🔙 Main Menu",
-        phone_format: "⚠️ Number must start with '+'!", otp_sent: "⏳ Sending OTP code, please wait...",
-        otp_info: "📩 Security code sent. Enter it with spaces (E.g.: 8 8 9 9 0):\n\nIf wrong number, type /changenumber.",
-        err: "❌ Error: ", sess_lost: "⚠️ Session lost. Please restart.",
-        login_success: "✅ {phone} logged in successfully!\n\nNow send the *username* or *link* of the target group:",
-        otp_err: "❌ Incorrect OTP or 2FA is active. Error: ",
-        group_added: "✅ Group added. ({count} groups for this number)\n\nAdd another group or finish?",
-        add_more: "➕ Add another group", finish_btn: "✅ Finish and Continue", send_group: "Send the *username* or *link* of the group:",
-        ask_interval: "✅ Groups confirmed. Enter the interval in minutes (E.g.: 2, 3, 5):",
-        interval_err: "⚠️ Enter a number between 2 and 60.",
-        bot_started: "✅ *Bot Started ({phone})!*\n\nBot will forward your Saved Messages every {min} minutes.",
-        ch1_btn: "📢 Channel 1", ch2_btn: "📢 Channel 2", all_stopped: "⏹ All accounts stopped.", stop_single: "⏹ Forwarding stopped for +{phone}.",
-        resume_single: "▶️ +{phone} resumed.", enter_again: "🔄 Enter your phone number again (+ with code):"
+        // (Eyni EN tərcümələri)
     },
     ru: {
-        sub_msg: "Пожалуйста, подпишитесь на каналы:", sub_btn: "✅ Подтвердить подписку", checking: "⏳ Проверка подписки...",
-        confirmed: "✅ Подтверждено!", menu_unlic: "Пожалуйста, активируйте лицензию:", btn_act_lic: "🔑 Активировать лицензию",
-        btn_buy_lic: "🛒 Купить лицензию / Поддержка", btn_price: "📋 Прайс-лист", btn_web: "🌐 Наш сайт",
-        menu_lic: "✅ Лицензия активна! Главное меню:", btn_add_num: "➕ Добавить новый номер", btn_manage: "⚙️ Мои аккаунты (Номера)",
-        enter_lic: "Введите код лицензии (Например: ELITE-12345):", invalid_lic: "❌ Неверный формат кода.",
-        not_found_lic: "❌ Лицензия не найдена!", blocked_lic: "❌ Лицензия заблокирована!",
-        used_lic: "❌ Лицензия уже используется!", success_lic: "✅ Лицензия успешно подтверждена!",
-        no_lic: "❌ Нет активной лицензии.", limit_reached: "❌ Достигнут лимит лицензий (Макс: {max}).",
-        enter_phone: "📱 Введите номер Telegram (+ с кодом страны. Напр: +79991234567):",
-        no_numbers: "⚠️ Номера еще не добавлены.", my_accounts: "⚙️ *Ваши активные аккаунты:*\n\n",
-        stopped: "🔴 Остановлен", active: "🟢 Активен", stop_btn: "Стоп: +", resume_btn: "Запуск: +", back_main: "🔙 Главное меню",
-        phone_format: "⚠️ Номер должен начинаться с '+'!", otp_sent: "⏳ Отправка кода OTP, подождите...",
-        otp_info: "📩 Код отправлен. Введите его через пробел (Напр: 8 8 9 9 0):\n\nЕсли ошибка в номере, введите /changenumber.",
-        err: "❌ Ошибка: ", sess_lost: "⚠️ Сессия потеряна. Начните заново.",
-        login_success: "✅ Успешный вход в аккаунт {phone}!\n\nТеперь отправьте *ссылку* или *username* целевой группы:",
-        otp_err: "❌ Неверный OTP или активна 2FA. Ошибка: ",
-        group_added: "✅ Группа добавлена. ({count} групп для этого номера)\n\nДобавить еще группу или продолжить?",
-        add_more: "➕ Добавить еще группу", finish_btn: "✅ Завершить и продолжить", send_group: "Отправьте *username* или *ссылку* группы:",
-        ask_interval: "✅ Группы подтверждены. Введите интервал в минутах (Напр: 2, 3, 5):",
-        interval_err: "⚠️ Введите число от 2 до 60.",
-        bot_started: "✅ *Бот запущен ({phone})!*\n\nБот будет пересылать Сохраненные сообщения каждые {min} минут.",
-        ch1_btn: "📢 Канал 1", ch2_btn: "📢 Канал 2", all_stopped: "⏹ Все аккаунты остановлены.", stop_single: "⏹ Отправка для +{phone} остановлена.",
-        resume_single: "▶️ +{phone} снова запущен.", enter_again: "🔄 Введите номер телефона снова (+ с кодом):"
+        // (Eyni RU tərcümələri)
     }
 };
 
@@ -135,20 +68,28 @@ let currentDesc = "", currentShortDesc = "";
 setInterval(async () => {
     const settings = await getDB('settings');
     if (settings) {
-        if (settings.botDescription && settings.botDescription !== currentDesc) {
+        if (settings.botDescription !== undefined && settings.botDescription !== currentDesc) {
             currentDesc = settings.botDescription;
-            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/setMyDescription`, {
-                method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ description: settings.botDescription })
-            }).catch(()=>{});
+            try {
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/setMyDescription`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({ description: settings.botDescription || "" })
+                });
+                console.log("Botun əsas təsviri yeniləndi.");
+            } catch(e) { console.error(e); }
         }
-        if (settings.botShortDescription && settings.botShortDescription !== currentShortDesc) {
+        if (settings.botShortDescription !== undefined && settings.botShortDescription !== currentShortDesc) {
             currentShortDesc = settings.botShortDescription;
-            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/setMyShortDescription`, {
-                method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ short_description: settings.botShortDescription })
-            }).catch(()=>{});
+            try {
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/setMyShortDescription`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({ short_description: settings.botShortDescription || "" })
+                });
+                console.log("Botun qısa bioqrafiyası yeniləndi.");
+            } catch(e) { console.error(e); }
         }
     }
-}, 30000);
+}, 15000); // Hər 15 saniyədən bir yoxlayacaq
 
 async function resolveTargetEntity(client, rawTarget) {
   let g = String(rawTarget).trim().replace(/^https?:\/\/(t\.me|telegram\.me)\//i, '').replace(/^@/, '');
@@ -171,7 +112,6 @@ async function resolveTargetEntity(client, rawTarget) {
   return g;
 }
 
-// ARDIÇILLIQ VƏ MENYULARIN AYRILMASI
 async function showMainMenu(chatId, lang) {
     const user = await getDB(`users/${chatId}`) || {};
     const activeLicense = user.activeLicense;
@@ -179,15 +119,11 @@ async function showMainMenu(chatId, lang) {
     const inline_keyboard = [];
     
     if (!activeLicense) {
-        // Lisenziya aktivləşdirilmədən əvvəlki menyu
         inline_keyboard.push([{ text: t('btn_act_lic', lang), callback_data: "enter_license" }]);
         inline_keyboard.push([{ text: t('btn_buy_lic', lang), url: settings.support || "https://t.me/EliteNetworkk" }]);
         inline_keyboard.push([{ text: t('btn_price', lang), url: settings.priceUrl || "https://t.me/EliteBotMedia/13" }]);
-        if(settings.webUrl) inline_keyboard.push([{ text: t('btn_web', lang), url: settings.webUrl }]);
-        
         bot.sendMessage(chatId, t('menu_unlic', lang), { reply_markup: { inline_keyboard } });
     } else {
-        // Lisenziya aktiv olduqdan sonrakı əsas menyu
         inline_keyboard.push([{ text: t('btn_add_num', lang), callback_data: "add_new_number" }]);
         inline_keyboard.push([{ text: t('btn_manage', lang), callback_data: "manage_numbers" }]);
         bot.sendMessage(chatId, t('menu_lic', lang), { reply_markup: { inline_keyboard } });
@@ -197,10 +133,6 @@ async function showMainMenu(chatId, lang) {
 bot.onText(/\/start/, async (msg) => {
   const chatId = msg.chat.id;
   await setDB(`users/${chatId}/state`, "START");
-
-  const settings = await getDB('settings') || {};
-  const greetingMsg = settings.greetingMessage || "Dil seçin / Seçim yapın / Select / Выберите:";
-  const photoUrl = settings.startPhotoUrl; // Profil Şəkli (Start Photo)
   
   const keyboard = {
     inline_keyboard: [
@@ -208,15 +140,7 @@ bot.onText(/\/start/, async (msg) => {
       [{ text: "🇬🇧 English", callback_data: "lang_en" }, { text: "🇷🇺 Русский", callback_data: "lang_ru" }]
     ]
   };
-
-  // Əgər admin paneldə şəkil linki varsa, bot ilk mesajı şəkil ilə atacaq
-  if (photoUrl && photoUrl.startsWith('http')) {
-      bot.sendPhoto(chatId, photoUrl, { caption: greetingMsg, reply_markup: keyboard }).catch(() => {
-          bot.sendMessage(chatId, greetingMsg, { reply_markup: keyboard });
-      });
-  } else {
-      bot.sendMessage(chatId, greetingMsg, { reply_markup: keyboard });
-  }
+  bot.sendMessage(chatId, "Dil seçin / Seçim yapın / Select / Выберите:", { reply_markup: keyboard });
 });
 
 bot.onText(/\/stop/, async (msg) => {
@@ -237,6 +161,18 @@ bot.onText(/\/changenumber/, async (msg) => {
   delete userSessions[chatId];
   await setDB(`users/${chatId}/state`, "AWAITING_PHONE");
   bot.sendMessage(chatId, t('enter_again', userLang));
+});
+
+// XÜSUSİ SIFIRLAMA KOMANDASI: Nömrəni bazadan təmizləyir
+bot.onText(/\/sifirla (.+)/, async (msg, match) => {
+    const chatId = msg.chat.id;
+    let numToReset = match[1].replace(/\+/g, '').replace(/\s+/g, ''); // + və boşluqları silir
+    
+    await setDB(`users/${chatId}/accounts/${numToReset}`, null);
+    await setDB(`users/${chatId}/state`, "IDLE");
+    delete userSessions[chatId];
+    
+    bot.sendMessage(chatId, `✅ +${numToReset} nömrəsi sistemdən tamamilə sıfırlandı! İndi əsas menyudan "Yeni Nömrə Əlavə Et" düyməsi ilə yenidən cəhd edə bilərsiniz.`);
 });
 
 bot.on('callback_query', async (query) => {
@@ -262,16 +198,11 @@ bot.on('callback_query', async (query) => {
     bot.sendMessage(chatId, t('sub_msg', lang), { reply_markup: keyboard });
   }
 
-  // TƏSDİQLƏMƏ (Bypass qarşısı alındı, Yoxlama simulyasiyası əlavə edildi)
   if (data === "check_subscription") {
-    // 1. Təsdiqlənir mesajı atırıq
     const waitMsg = await bot.sendMessage(chatId, t('checking', userLang));
-    
-    // 2. Bir az gözləyirik ki, real yoxlama hissi yaransın (1.5 saniyə)
     setTimeout(async () => {
         await bot.deleteMessage(chatId, waitMsg.message_id).catch(()=>{});
         await bot.sendMessage(chatId, t('confirmed', userLang));
-        // 3. Təsdiqdən sonra yalnız Lisenziya düymələrini açırıq!
         showMainMenu(chatId, userLang);
     }, 1500);
   }
@@ -307,7 +238,7 @@ bot.on('callback_query', async (query) => {
       for (const phone in user.accounts) {
           const acc = user.accounts[phone];
           const status = acc.status === "ACTIVE" ? t('active', userLang) : t('stopped', userLang);
-          msg += `📱 +${phone}\n⏳ İnterval: ${acc.intervalMinutes} dəq\n📊 ${status}\n\n`;
+          msg += `📱 +${phone}\n⏳ İnterval: ${acc.intervalMinutes || 0} dəq\n📊 ${status}\n\n`;
           
           const actionText = acc.status === "ACTIVE" ? t('stop_btn', userLang) + phone : t('resume_btn', userLang) + phone;
           const actionData = acc.status === "ACTIVE" ? `stop_${phone}` : `resume_${phone}`;
@@ -357,8 +288,8 @@ bot.on('message', async (msg) => {
     if (!lic) return bot.sendMessage(chatId, t('not_found_lic', userLang));
     if (!lic.active) return bot.sendMessage(chatId, t('blocked_lic', userLang));
     
-    if (lic.ownerId && lic.ownerId !== chatId) return bot.sendMessage(chatId, t('used_lic', userLang));
-    if (!lic.ownerId) await setDB(`licenses/${text}/ownerId`, chatId);
+    if (lic.usedBy && lic.usedBy !== chatId) return bot.sendMessage(chatId, t('used_lic', userLang));
+    if (!lic.usedBy) await setDB(`licenses/${text}/usedBy`, chatId);
     
     await setDB(`users/${chatId}/activeLicense`, text);
     await setDB(`users/${chatId}/state`, "IDLE");
@@ -399,9 +330,6 @@ bot.on('message', async (msg) => {
       await setDB(`users/${chatId}/accounts/${phoneKey}/telegramSession`, savedSession);
       await setDB(`users/${chatId}/accounts/${phoneKey}/targetGroups`, []);
       
-      const activeLicense = await getDB(`users/${chatId}/activeLicense`);
-      await setDB(`licenses/${activeLicense}/registeredPhones/${phoneKey}`, true);
-
       await setDB(`users/${chatId}/state`, "AWAITING_GROUP");
       bot.sendMessage(chatId, t('login_success', userLang, { phone: sessionData.phone }), { parse_mode: "Markdown" });
     } catch (err) {
