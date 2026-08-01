@@ -24,7 +24,8 @@ console.log("EliteBot Serveri Başladı...");
 const i18n = {
     az: {
         sub_msg: "Aşağıdakı kanallara abunə olun:", sub_btn: "✅ Abunəlikləri Təsdiqlə", checking: "⏳ Abunəlik yoxlanılır...",
-        confirmed: "✅ Təsdiqləndi!", menu_unlic: "Zəhmət olmasa lisenziya aktivləşdirin:", btn_act_lic: "🔑 Lisenziya Aktivləşdir",
+        confirmed: "✅ Təsdiqləndi!", not_subscribed: "❌ Siz hələ bütün kanallara abunə olmamısınız! Zəhmət olmasa əvvəlcə kanallara qoşulun və yenidən yoxlayın.",
+        menu_unlic: "Zəhmət olmasa lisenziya aktivləşdirin:", btn_act_lic: "🔑 Lisenziya Aktivləşdir",
         btn_buy_lic: "🛒 Lisenziya Al / Dəstək", btn_price: "📋 Qiymət Cədvəli", btn_web: "🌐 Web Sitemiz",
         menu_lic: "✅ Lisenziya Aktivdir! Ana Menyu:", btn_add_num: "➕ Yeni Nömrə Əlavə Et", btn_manage: "⚙️ Hesablarım (Nömrələr)",
         enter_lic: "Lisenziya kodunu daxil edin (Məsələn: ELITE-12345):", invalid_lic: "❌ Keçərsiz lisenziya kodu formati.",
@@ -49,7 +50,8 @@ const i18n = {
     },
     tr: {
         sub_msg: "Aşağıdaki kanallara abone olun:", sub_btn: "✅ Abonelikleri Onayla", checking: "⏳ Abonelik kontrol ediliyor...",
-        confirmed: "✅ Onaylandı!", menu_unlic: "Lütfen lisansınızı aktifleştirin:", btn_act_lic: "🔑 Lisansı Aktifleştir",
+        confirmed: "✅ Onaylandı!", not_subscribed: "❌ Henüz tüm kanallara abone olmadınız! Lütfen önce kanallara katılın ve tekrar deneyin.",
+        menu_unlic: "Lütfen lisansınızı aktifleştirin:", btn_act_lic: "🔑 Lisansı Aktifleştir",
         btn_buy_lic: "🛒 Lisans Al / Destek", btn_price: "📋 Fiyat Listesi", btn_web: "🌐 Web Sitemiz",
         menu_lic: "✅ Lisans Aktif! Ana Menü:", btn_add_num: "➕ Yeni Numara Ekle", btn_manage: "⚙️ Hesaplarım (Numaralar)",
         enter_lic: "Lisans kodunu girin (Örn: ELITE-12345):", invalid_lic: "❌ Geçersiz lisans kodu formatı.",
@@ -74,7 +76,8 @@ const i18n = {
     },
     en: {
         sub_msg: "Please subscribe to the channels below:", sub_btn: "✅ Confirm Subscriptions", checking: "⏳ Checking subscription...",
-        confirmed: "✅ Confirmed!", menu_unlic: "Please activate your license:", btn_act_lic: "🔑 Activate License",
+        confirmed: "✅ Confirmed!", not_subscribed: "❌ You haven't subscribed to all the channels yet! Please join the channels first and check again.",
+        menu_unlic: "Please activate your license:", btn_act_lic: "🔑 Activate License",
         btn_buy_lic: "🛒 Buy License / Support", btn_price: "📋 Price List", btn_web: "🌐 Our Website",
         menu_lic: "✅ License Active! Main Menu:", btn_add_num: "➕ Add New Number", btn_manage: "⚙️ My Accounts (Numbers)",
         enter_lic: "Enter your license code (e.g: ELITE-12345):", invalid_lic: "❌ Invalid license code format.",
@@ -99,7 +102,8 @@ const i18n = {
     },
     ru: {
         sub_msg: "Подпишитесь на следующие каналы:", sub_btn: "✅ Подтвердить подписки", checking: "⏳ Проверка подписки...",
-        confirmed: "✅ Подтверждено!", menu_unlic: "Пожалуйста, активируйте лицензию:", btn_act_lic: "🔑 Активировать лицензию",
+        confirmed: "✅ Подтверждено!", not_subscribed: "❌ Вы ещё не подписались на все каналы! Пожалуйста, сначала подпишитесь на каналы и проверьте снова.",
+        menu_unlic: "Пожалуйста, активируйте лицензию:", btn_act_lic: "🔑 Активировать лицензию",
         btn_buy_lic: "🛒 Купить лицензию / Поддержка", btn_price: "📋 Прайс-лист", btn_web: "🌐 Наш сайт",
         menu_lic: "✅ Лицензия активна! Главное меню:", btn_add_num: "➕ Добавить новый номер", btn_manage: "⚙️ Мои аккаунты (Номера)",
         enter_lic: "Введите код лицензии (Напр: ELITE-12345):", invalid_lic: "❌ Неверный формат кода лицензии.",
@@ -164,6 +168,24 @@ setInterval(async () => {
         }
     }
 }, 15000); // Hər 15 saniyədən bir yoxlayacaq
+
+// İstifadəçinin Admin Paneldə təyin olunmuş kanallara həqiqətən abunə olub-olmadığını yoxlayır.
+// Kanal ID-si təyin olunmayıbsa (admin panel boş buraxılıbsa), o kanal üçün yoxlama edilmir.
+async function isSubscribed(userId, settings) {
+  const channelIds = [settings.channel1_id, settings.channel2_id].filter(id => id && String(id).trim() !== "");
+  if (channelIds.length === 0) return true;
+
+  for (const chId of channelIds) {
+    try {
+      const member = await bot.getChatMember(chId.trim(), userId);
+      if (!["member", "administrator", "creator"].includes(member.status)) return false;
+    } catch (err) {
+      console.error(`Abunəlik yoxlanışı xətası (${chId}):`, err.message);
+      return false; // Bot kanalda admin deyilsə və ya ID səhvdirsə, təhlükəsizlik naminə rədd edirik
+    }
+  }
+  return true;
+}
 
 async function resolveTargetEntity(client, rawTarget) {
   let g = String(rawTarget).trim().replace(/^https?:\/\/(t\.me|telegram\.me)\//i, '').replace(/^@/, '');
@@ -275,11 +297,25 @@ bot.on('callback_query', async (query) => {
 
   if (data === "check_subscription") {
     const waitMsg = await bot.sendMessage(chatId, t('checking', userLang));
-    setTimeout(async () => {
-        await bot.deleteMessage(chatId, waitMsg.message_id).catch(()=>{});
+    const settings = await getDB('settings') || {};
+    const subscribed = await isSubscribed(query.from.id, settings);
+    await bot.deleteMessage(chatId, waitMsg.message_id).catch(()=>{});
+
+    if (subscribed) {
         await bot.sendMessage(chatId, t('confirmed', userLang));
         showMainMenu(chatId, userLang);
-    }, 1500);
+    } else {
+        const ch1 = settings.channel1 || "https://t.me/+-60Ix6CPm0lmMDQ6";
+        const ch2 = settings.channel2 || "https://t.me/+SX-UgXay5hEzOGYy";
+        const keyboard = {
+          inline_keyboard: [
+            [{ text: t('ch1_btn', userLang), url: ch1 }],
+            [{ text: t('ch2_btn', userLang), url: ch2 }],
+            [{ text: t('sub_btn', userLang), callback_data: "check_subscription" }]
+          ]
+        };
+        bot.sendMessage(chatId, t('not_subscribed', userLang), { reply_markup: keyboard });
+    }
   }
 
   if (data === "enter_license") {
