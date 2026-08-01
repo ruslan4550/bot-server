@@ -40,13 +40,79 @@ const i18n = {
         resume_single: "▶️ +{phone} yenidən işə düşdü.", enter_again: "🔄 Telefon nömrənizi yenidən daxil edin (+ işarəsi ilə):"
     },
     tr: {
-        // (Eyni TR tərcümələri)
+        sub_msg: "Aşağıdaki kanallara abone olun:", sub_btn: "✅ Abonelikleri Onayla", checking: "⏳ Abonelik kontrol ediliyor...",
+        confirmed: "✅ Onaylandı!", menu_unlic: "Lütfen lisansınızı aktifleştirin:", btn_act_lic: "🔑 Lisansı Aktifleştir",
+        btn_buy_lic: "🛒 Lisans Al / Destek", btn_price: "📋 Fiyat Listesi", btn_web: "🌐 Web Sitemiz",
+        menu_lic: "✅ Lisans Aktif! Ana Menü:", btn_add_num: "➕ Yeni Numara Ekle", btn_manage: "⚙️ Hesaplarım (Numaralar)",
+        enter_lic: "Lisans kodunu girin (Örn: ELITE-12345):", invalid_lic: "❌ Geçersiz lisans kodu formatı.",
+        not_found_lic: "❌ Böyle bir lisans veritabanında mevcut değil!", blocked_lic: "❌ Bu lisans engellendi!",
+        used_lic: "❌ Bu lisans zaten başka bir kullanıcı tarafından kullanılıyor!", success_lic: "✅ Lisans başarıyla onaylandı!",
+        no_lic: "❌ Aktif lisansınız yok.", limit_reached: "❌ Lisans limitinize ulaştınız (Maksimum: {max} numara).",
+        enter_phone: "📱 Bota bağlamak istediğiniz Telegram numaranızı girin (+ işareti ile. Örn: +994501234567):",
+        no_numbers: "⚠️ Henüz hiç numara eklenmedi.", my_accounts: "⚙️ *Aktif Hesaplarınız:*\n\n",
+        stopped: "🔴 Durduruldu", active: "🟢 Aktif", stop_btn: "Durdur: +", resume_btn: "Başlat: +", back_main: "🔙 Ana Menü",
+        phone_format: "⚠️ Numara '+' ile başlamalıdır!", otp_sent: "⏳ OTP kodu gönderiliyor, bekleyin...",
+        otp_info: "📩 Güvenlik kodu gönderildi. Kodu aralarında boşluk bırakarak girin (Örn: 8 8 9 9 0):\n\nNumarayı yanlış girdiyseniz, /changenumber yazın.",
+        err: "❌ Hata: ", sess_lost: "⚠️ Oturum bellekten silindi. Lütfen işleme yeniden başlayın.",
+        login_success: "✅ {phone} hesabına başarıyla giriş yapıldı!\n\nŞimdi mesajın gönderileceği grubun *kullanıcı adını* (örn: @grupadi) veya *linkini* gönderin:",
+        otp_err: "❌ OTP yanlış veya hesapta 2 Adımlı Doğrulama (2FA) aktif. Hata: ",
+        group_added: "✅ Grup eklendi. (Şu anda bu numara için {count} grup var)\n\nBaşka grup eklemek ister misiniz, yoksa devam edelim mi?",
+        add_more: "➕ Başka grup ekle", finish_btn: "✅ Bitir ve Devam Et", send_group: "Eklemek istediğiniz grubun *kullanıcı adını* veya *linkini* gönderin:",
+        ask_interval: "✅ Gruplar onaylandı. Şimdi mesajın kaç dakikada bir atılacağını rakamla yazın (Örn: 2, 3, 5):",
+        interval_err: "⚠️ Lütfen 2 ile 60 arası bir rakam yazın.",
+        bot_started: "✅ *Bot Çalışmaya Başladı ({phone})!*\n\nBot her {min} dakikada bir Kayıtlı Mesajlarınızı (Saved Messages) hedef gruplara atacak.",
+        ch1_btn: "📢 Zorunlu Kanal 1", ch2_btn: "📢 Zorunlu Kanal 2", all_stopped: "⏹ Tüm hesaplar durduruldu.", stop_single: "⏹ +{phone} için gönderim durduruldu.",
+        resume_single: "▶️ +{phone} yeniden çalışmaya başladı.", enter_again: "🔄 Telefon numaranızı yeniden girin (+ işareti ile):"
     },
     en: {
-        // (Eyni EN tərcümələri)
+        sub_msg: "Please subscribe to the channels below:", sub_btn: "✅ Confirm Subscriptions", checking: "⏳ Checking subscription...",
+        confirmed: "✅ Confirmed!", menu_unlic: "Please activate your license:", btn_act_lic: "🔑 Activate License",
+        btn_buy_lic: "🛒 Buy License / Support", btn_price: "📋 Price List", btn_web: "🌐 Our Website",
+        menu_lic: "✅ License Active! Main Menu:", btn_add_num: "➕ Add New Number", btn_manage: "⚙️ My Accounts (Numbers)",
+        enter_lic: "Enter your license code (e.g: ELITE-12345):", invalid_lic: "❌ Invalid license code format.",
+        not_found_lic: "❌ No such license exists in the database!", blocked_lic: "❌ This license has been blocked!",
+        used_lic: "❌ This license is already being used by another user!", success_lic: "✅ License successfully confirmed!",
+        no_lic: "❌ You don't have an active license.", limit_reached: "❌ You have reached your license limit (Maximum: {max} numbers).",
+        enter_phone: "📱 Enter the Telegram number you want to connect to the bot (with '+', e.g: +994501234567):",
+        no_numbers: "⚠️ No numbers have been added yet.", my_accounts: "⚙️ *Your Active Accounts:*\n\n",
+        stopped: "🔴 Stopped", active: "🟢 Active", stop_btn: "Stop: +", resume_btn: "Start: +", back_main: "🔙 Main Menu",
+        phone_format: "⚠️ The number must start with '+'!", otp_sent: "⏳ Sending OTP code, please wait...",
+        otp_info: "📩 Security code sent. Enter the code with spaces between digits (e.g: 8 8 9 9 0):\n\nIf you entered the wrong number, type /changenumber.",
+        err: "❌ Error: ", sess_lost: "⚠️ Session was cleared from memory. Please start the process again.",
+        login_success: "✅ Successfully logged into {phone}!\n\nNow send the *username* (e.g: @groupname) or *link* of the group you want to send messages to:",
+        otp_err: "❌ OTP is incorrect or 2-Step Verification (2FA) is active on the account. Error: ",
+        group_added: "✅ Group added. (Currently {count} group(s) for this number)\n\nWould you like to add another group, or continue?",
+        add_more: "➕ Add another group", finish_btn: "✅ Finish and Continue", send_group: "Send the *username* or *link* of the group you want to add:",
+        ask_interval: "✅ Groups confirmed. Now enter the number of minutes between each message (e.g: 2, 3, 5):",
+        interval_err: "⚠️ Please enter a number between 2 and 60.",
+        bot_started: "✅ *Bot Started ({phone})!*\n\nThe bot will send your Saved Messages to the target groups every {min} minutes.",
+        ch1_btn: "📢 Required Channel 1", ch2_btn: "📢 Required Channel 2", all_stopped: "⏹ All accounts stopped.", stop_single: "⏹ Sending stopped for +{phone}.",
+        resume_single: "▶️ +{phone} started again.", enter_again: "🔄 Enter your phone number again (with '+'):"
     },
     ru: {
-        // (Eyni RU tərcümələri)
+        sub_msg: "Подпишитесь на следующие каналы:", sub_btn: "✅ Подтвердить подписки", checking: "⏳ Проверка подписки...",
+        confirmed: "✅ Подтверждено!", menu_unlic: "Пожалуйста, активируйте лицензию:", btn_act_lic: "🔑 Активировать лицензию",
+        btn_buy_lic: "🛒 Купить лицензию / Поддержка", btn_price: "📋 Прайс-лист", btn_web: "🌐 Наш сайт",
+        menu_lic: "✅ Лицензия активна! Главное меню:", btn_add_num: "➕ Добавить новый номер", btn_manage: "⚙️ Мои аккаунты (Номера)",
+        enter_lic: "Введите код лицензии (Напр: ELITE-12345):", invalid_lic: "❌ Неверный формат кода лицензии.",
+        not_found_lic: "❌ Такой лицензии нет в базе данных!", blocked_lic: "❌ Эта лицензия заблокирована!",
+        used_lic: "❌ Эта лицензия уже используется другим пользователем!", success_lic: "✅ Лицензия успешно подтверждена!",
+        no_lic: "❌ У вас нет активной лицензии.", limit_reached: "❌ Вы достигли лимита лицензии (Максимум: {max} номеров).",
+        enter_phone: "📱 Введите номер Telegram, который хотите подключить к боту (с '+', напр: +994501234567):",
+        no_numbers: "⚠️ Пока не добавлено ни одного номера.", my_accounts: "⚙️ *Ваши активные аккаунты:*\n\n",
+        stopped: "🔴 Остановлен", active: "🟢 Активен", stop_btn: "Остановить: +", resume_btn: "Запустить: +", back_main: "🔙 Главное меню",
+        phone_format: "⚠️ Номер должен начинаться с '+'!", otp_sent: "⏳ Отправка OTP-кода, подождите...",
+        otp_info: "📩 Код безопасности отправлен. Введите код с пробелами между цифрами (напр: 8 8 9 9 0):\n\nЕсли вы ввели неверный номер, напишите /changenumber.",
+        err: "❌ Ошибка: ", sess_lost: "⚠️ Сессия удалена из памяти. Пожалуйста, начните процесс заново.",
+        login_success: "✅ Вход в аккаунт {phone} выполнен успешно!\n\nТеперь отправьте *имя пользователя* (напр: @имягруппы) или *ссылку* группы, куда будут отправляться сообщения:",
+        otp_err: "❌ Неверный OTP или на аккаунте включена двухфакторная аутентификация (2FA). Ошибка: ",
+        group_added: "✅ Группа добавлена. (Сейчас для этого номера {count} групп(а))\n\nХотите добавить ещё одну группу или продолжить?",
+        add_more: "➕ Добавить ещё группу", finish_btn: "✅ Завершить и продолжить", send_group: "Отправьте *имя пользователя* или *ссылку* группы, которую хотите добавить:",
+        ask_interval: "✅ Группы подтверждены. Теперь укажите число, через сколько минут будет отправляться сообщение (напр: 2, 3, 5):",
+        interval_err: "⚠️ Пожалуйста, введите число от 2 до 60.",
+        bot_started: "✅ *Бот запущен ({phone})!*\n\nБот будет отправлять ваши сохранённые сообщения (Saved Messages) в целевые группы каждые {min} минут.",
+        ch1_btn: "📢 Обязательный канал 1", ch2_btn: "📢 Обязательный канал 2", all_stopped: "⏹ Все аккаунты остановлены.", stop_single: "⏹ Отправка для +{phone} остановлена.",
+        resume_single: "▶️ +{phone} снова запущен.", enter_again: "🔄 Введите ваш номер телефона заново (с '+'):"
     }
 };
 
@@ -122,6 +188,7 @@ async function showMainMenu(chatId, lang) {
         inline_keyboard.push([{ text: t('btn_act_lic', lang), callback_data: "enter_license" }]);
         inline_keyboard.push([{ text: t('btn_buy_lic', lang), url: settings.support || "https://t.me/EliteNetworkk" }]);
         inline_keyboard.push([{ text: t('btn_price', lang), url: settings.priceUrl || "https://t.me/EliteBotMedia/13" }]);
+        inline_keyboard.push([{ text: t('btn_web', lang), url: settings.website || "https://t.me/EliteBotMedia" }]);
         bot.sendMessage(chatId, t('menu_unlic', lang), { reply_markup: { inline_keyboard } });
     } else {
         inline_keyboard.push([{ text: t('btn_add_num', lang), callback_data: "add_new_number" }]);
