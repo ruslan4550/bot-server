@@ -210,11 +210,18 @@ async function resolveTargetEntity(client, rawTarget) {
 
 async function showMainMenu(chatId, lang) {
     const user = await getDB(`users/${chatId}`) || {};
-    const activeLicense = user.activeLicense;
     const settings = await getDB('settings') || {};
     const inline_keyboard = [];
-    
-    if (!activeLicense) {
+
+    // Sadəcə istifadəçidə lisenziya kodu saxlanılıb-saxlanılmaması yox, o kodun
+    // bazada HƏLƏ DƏ aktiv olub-olmadığını yoxlayırıq (bloklanıb/silinibsə etibarsızdır).
+    let hasValidLicense = false;
+    if (user.activeLicense) {
+        const lic = await getDB(`licenses/${user.activeLicense}`);
+        hasValidLicense = !!(lic && lic.active);
+    }
+
+    if (!hasValidLicense) {
         inline_keyboard.push([{ text: t('btn_act_lic', lang), callback_data: "enter_license" }]);
         inline_keyboard.push([{ text: t('btn_buy_lic', lang), url: settings.support || "https://t.me/EliteNetworkk" }]);
         inline_keyboard.push([{ text: t('btn_price', lang), url: settings.priceUrl || "https://t.me/EliteBotMedia/13" }]);
