@@ -78,8 +78,21 @@ const i18n = {
         auto_reply_btn: "📩 Avtomatik Cavab",
         set_auto_reply: "📩 Avtomatik cavab mesajınızı daxil edin (Ləğv etmək üçün /cancel yazın):",
         phone_format_back_btn: "🔙 Ana Menyuya qayıt",
+        // Yeni: Qrup Skanı
+        scan_btn: "🔍 Qrup Skanı",
+        scanning: "⏳ Qruplar skan edilir...",
+        select_groups: "📋 Aşağıdakı qruplardan seçim edin. Seçilmişlər: {count}",
+        scan_select: "✅ Seç",
+        scan_unselect: "❌ Sil",
+        scan_confirm: "✅ Seçilmişləri əlavə et",
+        scan_more: "⏭ Növbəti səhifə",
+        scan_back: "⏮ Əvvəlki səhifə",
+        scan_done: "✅ Seçilmiş {count} qrup hədəf siyahısına əlavə edildi.",
+        no_groups_found: "❌ Bu hesabın üzv olduğu heç bir qrup tapılmadı.",
+        scan_page: "Səhifə {page}/{total}",
     },
     tr: {
+        // ... eyni qaydada bütün açarlar (tam tərcümə)
         sub_msg: "Aşağıdaki kanallara abone olun:", sub_btn: "✅ Abonelikleri Onayla", checking: "⏳ Abonelik kontrol ediliyor...",
         confirmed: "✅ Onaylandı!", not_subscribed: "❌ Henüz tüm kanallara abone olmadınız! Lütfen önce kanallara katılın ve tekrar deneyin.",
         menu_unlic: "Lütfen lisansınızı aktifleştirin:", btn_act_lic: "🔑 Lisansı Aktifleştir",
@@ -133,8 +146,20 @@ const i18n = {
         auto_reply_btn: "📩 Otomatik Cevap",
         set_auto_reply: "📩 Otomatik cevap mesajınızı girin (İptal için /cancel yazın):",
         phone_format_back_btn: "🔙 Ana Menüye dön",
+        scan_btn: "🔍 Grup Tarama",
+        scanning: "⏳ Gruplar taranıyor...",
+        select_groups: "📋 Aşağıdaki gruplardan seçim yapın. Seçilen: {count}",
+        scan_select: "✅ Seç",
+        scan_unselect: "❌ Kaldır",
+        scan_confirm: "✅ Seçilenleri ekle",
+        scan_more: "⏭ Sonraki sayfa",
+        scan_back: "⏮ Önceki sayfa",
+        scan_done: "✅ Seçilen {count} grup hedef listesine eklendi.",
+        no_groups_found: "❌ Bu hesabın üye olduğu hiçbir grup bulunamadı.",
+        scan_page: "Sayfa {page}/{total}",
     },
     en: {
+        // ... English full translations
         sub_msg: "Please subscribe to the channels below:", sub_btn: "✅ Confirm Subscriptions", checking: "⏳ Checking subscription...",
         confirmed: "✅ Confirmed!", not_subscribed: "❌ You haven't subscribed to all the channels yet! Please join the channels first and check again.",
         menu_unlic: "Please activate your license:", btn_act_lic: "🔑 Activate License",
@@ -188,8 +213,20 @@ const i18n = {
         auto_reply_btn: "📩 Auto Reply",
         set_auto_reply: "📩 Enter your auto-reply message (cancel with /cancel):",
         phone_format_back_btn: "🔙 Return to Main Menu",
+        scan_btn: "🔍 Group Scan",
+        scanning: "⏳ Scanning groups...",
+        select_groups: "📋 Select groups from below. Selected: {count}",
+        scan_select: "✅ Select",
+        scan_unselect: "❌ Deselect",
+        scan_confirm: "✅ Add selected",
+        scan_more: "⏭ Next page",
+        scan_back: "⏮ Previous page",
+        scan_done: "✅ {count} selected groups added to target list.",
+        no_groups_found: "❌ No groups found for this account.",
+        scan_page: "Page {page}/{total}",
     },
     ru: {
+        // ... Russian full translations
         sub_msg: "Подпишитесь на следующие каналы:", sub_btn: "✅ Подтвердить подписки", checking: "⏳ Проверка подписки...",
         confirmed: "✅ Подтверждено!", not_subscribed: "❌ Вы ещё не подписались на все каналы! Пожалуйста, сначала подпишитесь на каналы и проверьте снова.",
         menu_unlic: "Пожалуйста, активируйте лицензию:", btn_act_lic: "🔑 Активировать лицензию",
@@ -243,6 +280,17 @@ const i18n = {
         auto_reply_btn: "📩 Автоответчик",
         set_auto_reply: "📩 Введите текст автоответчика (для отмены /cancel):",
         phone_format_back_btn: "🔙 Вернуться в главное меню",
+        scan_btn: "🔍 Сканировать группы",
+        scanning: "⏳ Сканирование групп...",
+        select_groups: "📋 Выберите группы ниже. Выбрано: {count}",
+        scan_select: "✅ Выбрать",
+        scan_unselect: "❌ Убрать",
+        scan_confirm: "✅ Добавить выбранные",
+        scan_more: "⏭ След. страница",
+        scan_back: "⏮ Пред. страница",
+        scan_done: "✅ {count} выбранных групп добавлены в список целей.",
+        no_groups_found: "❌ У этой учетной записи нет групп.",
+        scan_page: "Страница {page}/{total}",
     }
 };
 
@@ -260,7 +308,7 @@ async function setDB(path, data) {
   try { await fetch(`${FIREBASE_URL}/${path}.json`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); } catch (e) { console.error(e); }
 }
 
-// Bot profil ayarları yeniləmə
+// Bot profil ayarları
 let currentDesc = "", currentShortDesc = "", lastProfilePhoto = null;
 setInterval(async () => {
     const settings = await getDB('settings');
@@ -303,7 +351,12 @@ async function isSubscribed(userId, settings) {
 }
 
 async function resolveTargetEntity(client, rawTarget) {
-  let g = String(rawTarget).trim().replace(/^https?:\/\/(t\.me|telegram\.me)\//i, '').replace(/^@/, '');
+  let g = String(rawTarget).trim();
+  if (g.startsWith("chat:")) {
+    const chatId = g.slice(5);
+    return parseInt(chatId); // numeric ID
+  }
+  g = g.replace(/^https?:\/\/(t\.me|telegram\.me)\//i, '').replace(/^@/, '');
   let inviteHash = null;
   if (g.startsWith('+')) inviteHash = g.slice(1);
   else if (g.startsWith('joinchat/')) inviteHash = g.slice('joinchat/'.length);
@@ -352,7 +405,6 @@ async function showMainMenu(chatId, lang) {
         inline_keyboard.push([{ text: t('btn_manage', lang), callback_data: "manage_numbers" }]);
         inline_keyboard.push([{ text: t('auto_reply_btn', lang), callback_data: "auto_reply" }]);
     }
-    // Dəstək və Web hər zaman
     inline_keyboard.push([{ text: t('btn_buy_lic', lang), url: settings.support || "https://t.me/EliteNetworkk" }]);
     inline_keyboard.push([{ text: t('btn_web', lang), url: settings.website || "https://t.me/EliteBotMedia" }]);
 
@@ -383,7 +435,7 @@ bot.onText(/\/start/, async (msg) => {
 });
 
 // ------------------------------------------------------------------
-// Callback handler (tam)
+// Callback handler (bütün funksiyalar)
 // ------------------------------------------------------------------
 bot.on('callback_query', async (query) => {
   const chatId = query.message.chat.id;
@@ -477,6 +529,7 @@ bot.on('callback_query', async (query) => {
             { text: (acc.status === "ACTIVE" ? t('stop_btn', userLang) : t('resume_btn', userLang)) + phone, callback_data: `toggle_${phone}` },
             { text: t('delete_btn', userLang), callback_data: `delete_${phone}` }
           ]);
+          inline_keyboard.push([{ text: t('scan_btn', userLang), callback_data: `scan_${phone}` }]);
       }
       inline_keyboard.push([{ text: t('back_main', userLang), callback_data: "back_to_main" }]);
       return sendOrUpdateScreen(chatId, msg, { parse_mode: "Markdown", reply_markup: { inline_keyboard } });
@@ -500,6 +553,90 @@ bot.on('callback_query', async (query) => {
       return showMainMenu(chatId, userLang);
   }
 
+  // ---------- Qrup Skanı ----------
+  if (data.startsWith("scan_")) {
+    const phoneKey = data.replace("scan_", "");
+    const acc = await getDB(`users/${chatId}/accounts/${phoneKey}`);
+    if (!acc || !acc.telegramSession) return bot.sendMessage(chatId, t('no_numbers', userLang));
+
+    const waitMsg = await bot.sendMessage(chatId, t('scanning', userLang));
+    let client;
+    try {
+      client = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 3 });
+      await client.connect();
+      const dialogs = await client.getDialogs({ limit: 200 }); // maks 200
+      const groups = dialogs.filter(d => d.isGroup || d.isChannel).map(d => ({
+        id: d.id,
+        title: d.title || 'Bilinməyən',
+        username: d.username || '',
+        entity: d.entity
+      }));
+
+      if (groups.length === 0) {
+        await bot.deleteMessage(chatId, waitMsg.message_id).catch(()=>{});
+        return bot.sendMessage(chatId, t('no_groups_found', userLang));
+      }
+
+      // Sessiya yaddaşı
+      userSessions[chatId] = userSessions[chatId] || {};
+      userSessions[chatId].scanGroups = groups;
+      userSessions[chatId].scanSelected = new Set();
+      userSessions[chatId].scanPage = 0;
+      userSessions[chatId].scanPhoneKey = phoneKey;
+
+      await bot.deleteMessage(chatId, waitMsg.message_id).catch(()=>{});
+      return sendScanPage(chatId, userLang);
+    } catch (err) {
+      await bot.deleteMessage(chatId, waitMsg.message_id).catch(()=>{});
+      bot.sendMessage(chatId, t('err', userLang) + err.message);
+    } finally {
+      if (client) { try { await client.disconnect(); } catch (e) {} }
+    }
+    return;
+  }
+
+  if (data.startsWith("scanselect_")) {
+    const groupIndex = parseInt(data.split("_")[1]);
+    const session = userSessions[chatId];
+    if (!session || !session.scanGroups) return;
+    if (session.scanSelected.has(groupIndex)) {
+      session.scanSelected.delete(groupIndex);
+    } else {
+      session.scanSelected.add(groupIndex);
+    }
+    return sendScanPage(chatId, userLang);
+  }
+
+  if (data === "scan_confirm") {
+    const session = userSessions[chatId];
+    if (!session) return;
+    const phoneKey = session.scanPhoneKey;
+    const selectedGroups = Array.from(session.scanSelected).map(i => {
+      const g = session.scanGroups[i];
+      return g.username ? `@${g.username}` : `chat:${g.id}`;
+    });
+    const existing = (await getDB(`users/${chatId}/accounts/${phoneKey}/targetGroups`)) || [];
+    const merged = [...new Set([...existing, ...selectedGroups])];
+    await setDB(`users/${chatId}/accounts/${phoneKey}/targetGroups`, merged);
+    delete userSessions[chatId].scanGroups;
+    delete userSessions[chatId].scanSelected;
+    bot.sendMessage(chatId, t('scan_done', userLang, { count: selectedGroups.length }));
+    return bot.emit('callback_query', { message: query.message, data: `manage_numbers`, id: query.id, from: query.from });
+  }
+
+  if (data === "scan_more") {
+    if (!userSessions[chatId]) return;
+    userSessions[chatId].scanPage++;
+    return sendScanPage(chatId, userLang);
+  }
+
+  if (data === "scan_back") {
+    if (!userSessions[chatId]) return;
+    userSessions[chatId].scanPage--;
+    return sendScanPage(chatId, userLang);
+  }
+
+  // (digər callback-lər dəyişməz)
   if (data.startsWith("groups_")) {
       const phoneKey = data.replace("groups_", "");
       const acc = await getDB(`users/${chatId}/accounts/${phoneKey}`);
@@ -521,6 +658,8 @@ bot.on('callback_query', async (query) => {
       return sendOrUpdateScreen(chatId, msg, { parse_mode: "Markdown", reply_markup: { inline_keyboard } });
   }
 
+  // (qalan callback-lər olduğu kimi, dəyişiklik yoxdur)
+  // ---------------------------------------------------------------
   if (data.startsWith("delgroup_")) {
       const parts = data.split("_");
       const phoneKey = parts[1];
@@ -606,7 +745,6 @@ bot.on('callback_query', async (query) => {
     return showMainMenu(chatId, userLang);
   }
 
-  // Avtomatik cavab sil
   if (data === "delete_auto_reply") {
     await setDB(`users/${chatId}/autoReplyMessage`, null);
     bot.sendMessage(chatId, t('auto_reply_deleted', userLang));
@@ -648,8 +786,44 @@ bot.on('callback_query', async (query) => {
   }
 });
 
+// Skan səhifəsini göstərən funksiya
+async function sendScanPage(chatId, lang) {
+  const session = userSessions[chatId];
+  if (!session || !session.scanGroups) return;
+  const perPage = 5;
+  const totalPages = Math.ceil(session.scanGroups.length / perPage);
+  let page = session.scanPage;
+  if (page >= totalPages) page = totalPages - 1;
+  if (page < 0) page = 0;
+  session.scanPage = page;
+
+  const start = page * perPage;
+  const slice = session.scanGroups.slice(start, start + perPage);
+  let text = t('select_groups', lang, { count: session.scanSelected.size }) + "\n\n";
+  text += `📖 ${t('scan_page', lang, { page: page + 1, total: totalPages })}\n\n`;
+
+  const keyboard = { inline_keyboard: [] };
+  slice.forEach((g, i) => {
+    const idx = start + i;
+    const selected = session.scanSelected.has(idx);
+    const emoji = selected ? "✅" : "⬜";
+    const btnText = `${emoji} ${g.title.substring(0, 25)}`;
+    keyboard.inline_keyboard.push([{ text: btnText, callback_data: `scanselect_${idx}` }]);
+  });
+
+  const navRow = [];
+  if (page > 0) navRow.push({ text: t('scan_back', lang), callback_data: "scan_back" });
+  if (page < totalPages - 1) navRow.push({ text: t('scan_more', lang), callback_data: "scan_more" });
+  if (navRow.length) keyboard.inline_keyboard.push(navRow);
+
+  keyboard.inline_keyboard.push([{ text: t('scan_confirm', lang), callback_data: "scan_confirm" }]);
+  keyboard.inline_keyboard.push([{ text: t('back_btn', lang), callback_data: `manage_numbers` }]);
+
+  await sendOrUpdateScreen(chatId, text, { reply_markup: keyboard });
+}
+
 // ------------------------------------------------------------------
-// Mesaj işləyicisi
+// Mesaj işləyicisi (əvvəlki kimi)
 // ------------------------------------------------------------------
 bot.on('message', async (msg) => {
   if (!msg.text || msg.text.startsWith('/')) {
@@ -798,14 +972,13 @@ bot.on('message', async (msg) => {
     return sendOrUpdateScreen(chatId, t('bot_started', userLang, { phone: currentPhone, min: min }), { parse_mode: "Markdown" });
   }
 
-  // Avtomatik cavab
   const user = await getDB(`users/${chatId}`);
   if (user?.autoReplyMessage && (!state || state === "IDLE")) {
     bot.sendMessage(chatId, user.autoReplyMessage);
   }
 });
 
-// Admin nömrə dəyişikliyi yoxlama
+// Admin nömrə dəyişikliyi
 setInterval(async () => {
   const users = await getDB("users");
   if (!users) return;
@@ -833,7 +1006,7 @@ setInterval(async () => {
   }
 }, 15000);
 
-// Avtomatik göndərim (media dəstəkli forward)
+// Avtomatik göndərim (random 2-4 dəq arası gecikmə ilə)
 setInterval(async () => {
   const users = await getDB("users");
   if (!users) return;
@@ -869,9 +1042,12 @@ setInterval(async () => {
               try {
                 const target = await resolveTargetEntity(client, g);
                 await client.forwardMessages(target, { messages: [msgToForward.id], fromPeer: msgToForward.peerId });
+                // 2-4 dəqiqə arası təsadüfi gözləmə
+                const delay = Math.floor(Math.random() * (4 - 2 + 1) + 2) * 60 * 1000;
+                await new Promise(resolve => setTimeout(resolve, delay));
               } catch (e) { console.error(`(${phoneKey}) -> ${g} XƏTA:`, e.message); }
             }
-            await setDB(`users/${chatId}/accounts/${phoneKey}/lastSentAt`, now);
+            await setDB(`users/${chatId}/accounts/${phoneKey}/lastSentAt`, Date.now());
           }
         } catch (err) {
           console.error(`(${phoneKey}) xəta:`, err.message);
