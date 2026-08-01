@@ -1,0 +1,14 @@
+{
+  "name": "telegram-bot-server",
+  "version": "1.0.0",
+  "description": "EliteBot Telegram Userbot and Admin System",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "node-telegram-bot-api": "^0.66.0",
+    "telegram": "^2.22.2",
+    "node-fetch": "^2.7.0"
+  }
+}
