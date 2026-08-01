@@ -2,6 +2,14 @@ const TelegramBot = require('node-telegram-bot-api');
 const { TelegramClient, Api } = require('telegram');
 const { StringSession } = require('telegram/sessions');
 const fetch = require('node-fetch');
+const http = require('http');
+
+// Render (Web Service) bir portun açıq olmasını gözləyir, yoxsa "Timed out" xətası verir.
+// Botun özü heç bir HTTP trafiki qəbul etmir, ona görə sadəcə boş bir server açırıq.
+const PORT = process.env.PORT || 3000;
+http.createServer((req, res) => { res.writeHead(200); res.end("Bot işləyir."); }).listen(PORT, () => {
+  console.log(`Health-check serveri ${PORT} portunda işə düşdü.`);
+});
 
 const BOT_TOKEN = "8940602664:AAGShGKt2zZPVGD_wtYQUKAA5RBvETpG8MA";
 const API_ID = 36726228;
