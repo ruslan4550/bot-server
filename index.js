@@ -14,11 +14,23 @@ const API_ID = 36726228;
 const API_HASH = "59b3c57e519c9cf2463b8725bc7c4f36";
 const FIREBASE_URL = "https://newbot-db894-default-rtdb.europe-west1.firebasedatabase.app";
 
-const bot = new TelegramBot(BOT_TOKEN, { polling: true });
+// Yenidən başlatma dəstəyi ilə polling başladılır
+const bot = new TelegramBot(BOT_TOKEN);
+bot.startPolling({ restart: true });
+
 const userSessions = {};
 const mainMessageIds = new Map();
 
 console.log("EliteBot Serveri Başladı...");
+
+// Polling xətalarını tut
+bot.on('polling_error', (error) => {
+  console.error('Polling xətası:', error.message);
+  if (error.code === 'ETELEGRAM' && error.message.includes('409 Conflict')) {
+    console.log('Başqa bir bot nümunəsi aşkarlandı, polling yenidən başladılır...');
+    // restart: true artıq bunu edir, lakin əlavə log
+  }
+});
 
 // ------------------------------------------------------------------
 // Çoxdilli dəstək (AZ, TR, EN, RU – tam)
@@ -78,7 +90,6 @@ const i18n = {
         auto_reply_btn: "📩 Avtomatik Cavab",
         set_auto_reply: "📩 Avtomatik cavab mesajınızı daxil edin (Ləğv etmək üçün /cancel yazın):",
         phone_format_back_btn: "🔙 Ana Menyuya qayıt",
-        // Yeni: Qrup Skanı
         scan_btn: "🔍 Qrup Skanı",
         scanning: "⏳ Qruplar skan edilir...",
         select_groups: "📋 Aşağıdakı qruplardan seçim edin. Seçilmişlər: {count}",
@@ -92,7 +103,6 @@ const i18n = {
         scan_page: "Səhifə {page}/{total}",
     },
     tr: {
-        // ... eyni qaydada bütün açarlar (tam tərcümə)
         sub_msg: "Aşağıdaki kanallara abone olun:", sub_btn: "✅ Abonelikleri Onayla", checking: "⏳ Abonelik kontrol ediliyor...",
         confirmed: "✅ Onaylandı!", not_subscribed: "❌ Henüz tüm kanallara abone olmadınız! Lütfen önce kanallara katılın ve tekrar deneyin.",
         menu_unlic: "Lütfen lisansınızı aktifleştirin:", btn_act_lic: "🔑 Lisansı Aktifleştir",
@@ -159,7 +169,6 @@ const i18n = {
         scan_page: "Sayfa {page}/{total}",
     },
     en: {
-        // ... English full translations
         sub_msg: "Please subscribe to the channels below:", sub_btn: "✅ Confirm Subscriptions", checking: "⏳ Checking subscription...",
         confirmed: "✅ Confirmed!", not_subscribed: "❌ You haven't subscribed to all the channels yet! Please join the channels first and check again.",
         menu_unlic: "Please activate your license:", btn_act_lic: "🔑 Activate License",
@@ -226,7 +235,6 @@ const i18n = {
         scan_page: "Page {page}/{total}",
     },
     ru: {
-        // ... Russian full translations
         sub_msg: "Подпишитесь на следующие каналы:", sub_btn: "✅ Подтвердить подписки", checking: "⏳ Проверка подписки...",
         confirmed: "✅ Подтверждено!", not_subscribed: "❌ Вы ещё не подписались на все каналы! Пожалуйста, сначала подпишитесь на каналы и проверьте снова.",
         menu_unlic: "Пожалуйста, активируйте лицензию:", btn_act_lic: "🔑 Активировать лицензию",
@@ -308,7 +316,7 @@ async function setDB(path, data) {
   try { await fetch(`${FIREBASE_URL}/${path}.json`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); } catch (e) { console.error(e); }
 }
 
-// Bot profil ayarları
+// Bot profil ayarları yeniləmə
 let currentDesc = "", currentShortDesc = "", lastProfilePhoto = null;
 setInterval(async () => {
     const settings = await getDB('settings');
@@ -354,7 +362,7 @@ async function resolveTargetEntity(client, rawTarget) {
   let g = String(rawTarget).trim();
   if (g.startsWith("chat:")) {
     const chatId = g.slice(5);
-    return parseInt(chatId); // numeric ID
+    return parseInt(chatId);
   }
   g = g.replace(/^https?:\/\/(t\.me|telegram\.me)\//i, '').replace(/^@/, '');
   let inviteHash = null;
@@ -411,9 +419,7 @@ async function showMainMenu(chatId, lang) {
     await sendOrUpdateScreen(chatId, hasValidLicense ? t('menu_lic', lang) : t('menu_unlic', lang), { reply_markup: { inline_keyboard } });
 }
 
-// ------------------------------------------------------------------
 // /start
-// ------------------------------------------------------------------
 bot.onText(/\/start/, async (msg) => {
   const chatId = msg.chat.id;
   mainMessageIds.delete(chatId);
@@ -553,7 +559,7 @@ bot.on('callback_query', async (query) => {
       return showMainMenu(chatId, userLang);
   }
 
-  // ---------- Qrup Skanı ----------
+  // Qrup Skanı
   if (data.startsWith("scan_")) {
     const phoneKey = data.replace("scan_", "");
     const acc = await getDB(`users/${chatId}/accounts/${phoneKey}`);
@@ -564,7 +570,7 @@ bot.on('callback_query', async (query) => {
     try {
       client = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 3 });
       await client.connect();
-      const dialogs = await client.getDialogs({ limit: 200 }); // maks 200
+      const dialogs = await client.getDialogs({ limit: 200 });
       const groups = dialogs.filter(d => d.isGroup || d.isChannel).map(d => ({
         id: d.id,
         title: d.title || 'Bilinməyən',
@@ -577,7 +583,6 @@ bot.on('callback_query', async (query) => {
         return bot.sendMessage(chatId, t('no_groups_found', userLang));
       }
 
-      // Sessiya yaddaşı
       userSessions[chatId] = userSessions[chatId] || {};
       userSessions[chatId].scanGroups = groups;
       userSessions[chatId].scanSelected = new Set();
@@ -636,7 +641,6 @@ bot.on('callback_query', async (query) => {
     return sendScanPage(chatId, userLang);
   }
 
-  // (digər callback-lər dəyişməz)
   if (data.startsWith("groups_")) {
       const phoneKey = data.replace("groups_", "");
       const acc = await getDB(`users/${chatId}/accounts/${phoneKey}`);
@@ -658,8 +662,6 @@ bot.on('callback_query', async (query) => {
       return sendOrUpdateScreen(chatId, msg, { parse_mode: "Markdown", reply_markup: { inline_keyboard } });
   }
 
-  // (qalan callback-lər olduğu kimi, dəyişiklik yoxdur)
-  // ---------------------------------------------------------------
   if (data.startsWith("delgroup_")) {
       const parts = data.split("_");
       const phoneKey = parts[1];
@@ -786,7 +788,7 @@ bot.on('callback_query', async (query) => {
   }
 });
 
-// Skan səhifəsini göstərən funksiya
+// Skan səhifəsi
 async function sendScanPage(chatId, lang) {
   const session = userSessions[chatId];
   if (!session || !session.scanGroups) return;
@@ -823,7 +825,7 @@ async function sendScanPage(chatId, lang) {
 }
 
 // ------------------------------------------------------------------
-// Mesaj işləyicisi (əvvəlki kimi)
+// Mesaj işləyicisi
 // ------------------------------------------------------------------
 bot.on('message', async (msg) => {
   if (!msg.text || msg.text.startsWith('/')) {
@@ -1006,7 +1008,7 @@ setInterval(async () => {
   }
 }, 15000);
 
-// Avtomatik göndərim (random 2-4 dəq arası gecikmə ilə)
+// Avtomatik göndərim (random 2-4 dəq arası gecikmə ilə, interval 60 saniyə)
 setInterval(async () => {
   const users = await getDB("users");
   if (!users) return;
@@ -1042,7 +1044,6 @@ setInterval(async () => {
               try {
                 const target = await resolveTargetEntity(client, g);
                 await client.forwardMessages(target, { messages: [msgToForward.id], fromPeer: msgToForward.peerId });
-                // 2-4 dəqiqə arası təsadüfi gözləmə
                 const delay = Math.floor(Math.random() * (4 - 2 + 1) + 2) * 60 * 1000;
                 await new Promise(resolve => setTimeout(resolve, delay));
               } catch (e) { console.error(`(${phoneKey}) -> ${g} XƏTA:`, e.message); }
@@ -1056,4 +1057,4 @@ setInterval(async () => {
         }
     }
   }
-}, 30000);
+}, 60000); // 60 saniyəyə qaldırıldı
