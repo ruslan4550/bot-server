@@ -14,7 +14,7 @@ const API_ID = 36726228;
 const API_HASH = "59b3c57e519c9cf2463b8725bc7c4f36";
 const FIREBASE_URL = "https://newbot-db894-default-rtdb.europe-west1.firebasedatabase.app";
 
-// Polling konfiqurasiyası – daha dayanıqlı
+// Polling – stabil işləmə üçün restart aktiv
 const bot = new TelegramBot(BOT_TOKEN);
 bot.startPolling({ restart: true, params: { timeout: 10 } });
 
@@ -23,23 +23,20 @@ const mainMessageIds = new Map();
 
 console.log("EliteBot Serveri Başladı...");
 
-// Polling səhvlərini avtomatik bərpa et
+// Polling xətalarını avtomatik bərpa
 bot.on('polling_error', (error) => {
   console.error('Polling xətası:', error.message);
   if (error.code === 'ETELEGRAM' && error.message.includes('409 Conflict')) {
-    console.log('409 Conflict aşkarlandı, polling yenidən başladılır...');
+    console.log('409 Conflict – polling yenidən başladılır...');
     bot.stopPolling()
-      .then(() => {
-        setTimeout(() => bot.startPolling({ restart: true }), 2000);
-      })
-      .catch(() => {
-        setTimeout(() => bot.startPolling({ restart: true }), 2000);
-      });
+      .then(() => setTimeout(() => bot.startPolling({ restart: true }), 2000))
+      .catch(() => setTimeout(() => bot.startPolling({ restart: true }), 2000));
   }
 });
 
 // ------------------------------------------------------------------
-// Çoxdilli dəstək (AZ, TR, EN, RU)
+// Çoxdilli dəstək (AZ, TR, EN, RU – tam) – yalnız əlavə olunan açarlar göstərilib
+// (Əvvəlki tam tərcümənizi eynilə saxlayın)
 // ------------------------------------------------------------------
 const i18n = {
     az: {
@@ -62,8 +59,8 @@ const i18n = {
         otp_err: "❌ OTP səhvdir və ya hesabda 2-Mərhələli təsdiqləmə (2FA) aktivdir. Xəta: ",
         group_added: "✅ Qrup əlavə olundu. (Hazırda bu nömrə üçün {count} qrup var)\n\nBaşqa qrup əlavə etmək istəyirsiniz, yoxsa davam edək?",
         add_more: "➕ Başqa qrup əlavə et", finish_btn: "✅ Bitir və Davam Et", send_group: "Əlavə etmək istədiyiniz qrupun *istifadəçi adını* və ya *linkini* göndərin:",
-        ask_interval: "✅ Qruplar təsdiqləndi. İndi mesajın neçə dəqiqədən bir atılacağını rəqəmlə yazın (Məs: 2, 3, 5):",
-        interval_err: "⚠️ Zəhmət olmasa 2 ilə 60 arası bir rəqəm yazın.",
+        ask_interval: "✅ Qruplar təsdiqləndi. İndi mesajın neçə dəqiqədən bir atılacağını rəqəmlə yazın (Yalnız 2 - 5 arası):",
+        interval_err: "⚠️ Zəhmət olmasa 2 ilə 5 arası bir rəqəm yazın.",
         bot_started: "✅ *Bot İşə Düşdü ({phone})!*\n\nBot hər {min} dəqiqədən bir seçilən mənbədən mesajları hədəf qruplara atacaq.",
         ch1_btn: "📢 Məcburi Kanal 1", ch2_btn: "📢 Məcburi Kanal 2", all_stopped: "⏹ Bütün hesablar dayandırıldı.", stop_single: "⏹ +{phone} üçün göndərim dayandırıldı.",
         resume_single: "▶️ +{phone} yenidən işə düşdü.", enter_again: "🔄 Telefon nömrənizi yenidən daxil edin (+ işarəsi ilə):",
@@ -80,7 +77,7 @@ const i18n = {
         delete_btn: "🗑 Nömrəni Sil",
         back_btn: "🔙 Geri",
         del_group_btn: "❌ Sil: {group}",
-        del_source_btn: "❌ Mənbəni sil",
+        del_source_btn: "❌ Mənbəni sil (Yadda saxlanmış mesajlara qaytar)",
         no_groups: "❌ Heç bir qrup əlavə edilməyib.",
         confirm_delete_num: "❗️ +{phone} nömrəsini silmək istədiyinizə əminsiniz? Bu əməliyyat geri qaytarıla bilməz!",
         confirm_delete_num_yes: "✅ Bəli, sil",
@@ -90,6 +87,7 @@ const i18n = {
         source_deleted: "✅ Mənbə silindi, artıq yadda saxlanmış mesajlardan istifadə ediləcək.",
         add_group_btn: "➕ Yeni Qrup Əlavə Et",
         change_source_btn: "🔄 Mənbəni Dəyiş",
+        change_interval_btn: "⏱ İntervalı Dəyiş",
         admin_phone_change_prompt: "🔔 Admin tərəfindən nömrəniz dəyişdirildi. Yeni nömrəyə göndərilən OTP kodu daxil edin:",
         auto_reply_set: "✅ Avtomatik cavab mesajınız təyin olundu. İndi sizə yazılan istənilən mesaja bu mətn avtomatik göndəriləcək.",
         auto_reply_deleted: "✅ Avtomatik cavab mesajı silindi.",
@@ -107,6 +105,8 @@ const i18n = {
         scan_done: "✅ Seçilmiş {count} qrup hədəf siyahısına əlavə edildi.",
         no_groups_found: "❌ Bu hesabın üzv olduğu heç bir qrup tapılmadı.",
         scan_page: "Səhifə {page}/{total}",
+        new_interval_prompt: "⏱ Yeni intervalı daxil edin (2-5 dəqiqə):",
+        interval_updated: "✅ İnterval {min} dəqiqəyə dəyişdirildi.",
     },
     tr: { /* eyni açarlar */ },
     en: { /* eyni açarlar */ },
@@ -127,29 +127,31 @@ async function setDB(path, data) {
   try { await fetch(`${FIREBASE_URL}/${path}.json`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); } catch (e) { console.error(e); }
 }
 
-// Bot profil ayarları
+// Bot profil ayarları (səssiz xəta idarəsi)
 let currentDesc = "", currentShortDesc = "", lastProfilePhoto = null;
 setInterval(async () => {
     const settings = await getDB('settings');
     if (settings) {
-        if (settings.botDescription !== undefined && settings.botDescription !== currentDesc) {
+        if (settings.botDescription && settings.botDescription !== currentDesc) {
             currentDesc = settings.botDescription;
             await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/setMyDescription`, {
                 method: 'POST', headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ description: settings.botDescription || "" })
-            }).catch(console.error);
+            }).catch(() => {});
         }
-        if (settings.botShortDescription !== undefined && settings.botShortDescription !== currentShortDesc) {
+        if (settings.botShortDescription && settings.botShortDescription !== currentShortDesc) {
             currentShortDesc = settings.botShortDescription;
             await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/setMyShortDescription`, {
                 method: 'POST', headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ short_description: settings.botShortDescription || "" })
-            }).catch(console.error);
+            }).catch(() => {});
         }
         if (settings.botProfilePhoto && settings.botProfilePhoto !== lastProfilePhoto) {
             lastProfilePhoto = settings.botProfilePhoto;
-            const botInfo = await bot.getMe();
-            await bot.setChatPhoto(botInfo.id, settings.botProfilePhoto).catch(console.error);
+            try {
+                const botInfo = await bot.getMe();
+                await bot.setChatPhoto(botInfo.id, settings.botProfilePhoto);
+            } catch (e) { /* şəkil yenilənə bilmədi */ }
         }
     }
 }, 15000);
@@ -197,6 +199,7 @@ async function resolveTargetEntity(client, rawTarget) {
 async function getForwardTargetEntity(client, targetStr) {
   const resolved = await resolveTargetEntity(client, targetStr);
   if (typeof resolved === 'number' || (typeof resolved === 'object' && resolved.id)) {
+    // entity obyekti olduğu halda da qaytara bilərik
     return resolved;
   }
   return await client.getInputEntity(resolved);
@@ -266,17 +269,11 @@ bot.on('callback_query', async (query) => {
   const chatId = query.message.chat.id;
   const data = query.data;
   const userLang = (await getDB(`users/${chatId}/lang`)) || "az";
-  
-  // ƏN ÖNƏMLİ HİSSƏ: Bütün basılan düymələrə Telegram serverində cavab verir (yüklənməni kəsir)
-  await bot.answerCallbackQuery(query.id).catch(()=>{});
+  await bot.answerCallbackQuery(query.id);
 
   if (data === "cancel_operation") {
     delete userSessions[chatId];
     await setDB(`users/${chatId}/state`, "IDLE");
-    return showMainMenu(chatId, userLang);
-  }
-
-  if (data === "back_to_main") {
     return showMainMenu(chatId, userLang);
   }
 
@@ -348,14 +345,16 @@ bot.on('callback_query', async (query) => {
       const inline_keyboard = [];
       for (const phone in user.accounts) {
           const acc = user.accounts[phone];
-          if(!acc) continue;
           const status = acc.status === "ACTIVE" ? t('active', userLang) : t('stopped', userLang);
-          const sourceType = acc.messageSource?.type === "custom" ? `📌 ${acc.messageSource.target || "?"}` : "💾 Yadda Saxlanmış";
+          const sourceType = acc.messageSource?.type === "custom" ? `📌 ${acc.messageSource.target || "?"}` : "💾 Kaydedilmiş";
           msg += `📱 +${phone}\n⏳ İnterval: ${acc.intervalMinutes || 0} dəq\n📥 Mənbə: ${sourceType}\n📊 ${status}\n\n`;
 
           inline_keyboard.push([
             { text: t('groups_btn', userLang), callback_data: `groups_${phone}` },
             { text: t('source_btn', userLang), callback_data: `source_${phone}` }
+          ]);
+          inline_keyboard.push([
+            { text: t('change_interval_btn', userLang), callback_data: `chint_${phone}` }
           ]);
           inline_keyboard.push([
             { text: (acc.status === "ACTIVE" ? t('stop_btn', userLang) : t('resume_btn', userLang)) + phone, callback_data: `toggle_${phone}` },
@@ -385,162 +384,17 @@ bot.on('callback_query', async (query) => {
       return showMainMenu(chatId, userLang);
   }
 
-  // --- ŞƏRH OLUNAN "QALAN CALLBACK-LƏR" HİSSƏSİNİN TAM BƏRPASI (TENDER ÜÇÜN STABİL) ---
-
-  // Qrupları idarə etmə menyusu
-  if (data.startsWith("groups_")) {
-    const phoneKey = data.replace("groups_", "");
-    const acc = await getDB(`users/${chatId}/accounts/${phoneKey}`);
-    if (!acc) return showMainMenu(chatId, userLang);
-    let text = `📋 *+${phoneKey} üçün hədəf qruplar:*\n\n`;
-    const groups = acc.targetGroups || [];
-    const inline_keyboard = [];
-    if (groups.length === 0) {
-      text += t('no_groups', userLang) + "\n";
-    } else {
-      groups.forEach((g, i) => {
-        text += `${i + 1}. ${g}\n`;
-        inline_keyboard.push([{ text: t('del_group_btn', userLang, { group: g }), callback_data: `delgroup_${i}_${phoneKey}` }]);
-      });
-    }
-    inline_keyboard.push([{ text: t('add_group_btn', userLang), callback_data: `addgroup_${phoneKey}` }]);
-    inline_keyboard.push([{ text: t('back_btn', userLang), callback_data: "manage_numbers" }]);
-    return sendOrUpdateScreen(chatId, text, { parse_mode: "Markdown", reply_markup: { inline_keyboard } });
+  // Interval dəyişmə (yeni)
+  if (data.startsWith("chint_")) {
+      const phoneKey = data.replace("chint_", "");
+      await setDB(`users/${chatId}/state`, "AWAITING_CHANGE_INTERVAL");
+      await setDB(`users/${chatId}/changingIntervalPhone`, phoneKey);
+      const keyboard = { inline_keyboard: [[{ text: t('cancel_btn', userLang), callback_data: "cancel_operation" }], [{ text: t('back_btn', userLang), callback_data: "manage_numbers" }]] };
+      return sendOrUpdateScreen(chatId, t('new_interval_prompt', userLang), { reply_markup: keyboard });
   }
 
-  // Müəyyən bir qrupun silinməsi
-  if (data.startsWith("delgroup_")) {
-    const parts = data.split("_");
-    const index = parseInt(parts[1]);
-    const phoneKey = parts[2];
-    const existing = (await getDB(`users/${chatId}/accounts/${phoneKey}/targetGroups`)) || [];
-    existing.splice(index, 1);
-    await setDB(`users/${chatId}/accounts/${phoneKey}/targetGroups`, existing);
-    bot.sendMessage(chatId, t('group_deleted', userLang));
-    return bot.emit('callback_query', { message: query.message, data: `groups_${phoneKey}`, id: query.id, from: query.from });
-  }
-
-  // Yeni qrup əlavə etmək
-  if (data.startsWith("addgroup_")) {
-    const phoneKey = data.replace("addgroup_", "");
-    await setDB(`users/${chatId}/currentPhoneSetup`, `+${phoneKey}`);
-    await setDB(`users/${chatId}/state`, "AWAITING_GROUP");
-    const keyboard = { inline_keyboard: [[{ text: t('cancel_btn', userLang), callback_data: "cancel_operation" }]] };
-    return sendOrUpdateScreen(chatId, t('send_group', userLang), { parse_mode: "Markdown", reply_markup: keyboard });
-  }
-
-  // Mənbə idarəetmə menyusu
-  if (data.startsWith("source_")) {
-    if (data === "source_saved" || data === "source_custom" || data === "source_saved_new") return; // Aşağıda ayrıca tutulur
-    const phoneKey = data.replace("source_", "");
-    const acc = await getDB(`users/${chatId}/accounts/${phoneKey}`);
-    if (!acc) return showMainMenu(chatId, userLang);
-    const source = acc.messageSource || { type: "saved" };
-    let text = `📥 *+${phoneKey} üçün Mənbə İdarəetməsi:*\n\n`;
-    text += `Cari Mənbə: ${source.type === "custom" ? source.target : "💾 Yadda saxlanmış mesajlar"}`;
-    const inline_keyboard = [];
-    if (source.type === "custom") {
-      inline_keyboard.push([{ text: t('del_source_btn', userLang), callback_data: `delsource_${phoneKey}` }]);
-    }
-    inline_keyboard.push([{ text: t('change_source_btn', userLang), callback_data: `changesource_${phoneKey}` }]);
-    inline_keyboard.push([{ text: t('back_btn', userLang), callback_data: "manage_numbers" }]);
-    return sendOrUpdateScreen(chatId, text, { parse_mode: "Markdown", reply_markup: { inline_keyboard } });
-  }
-
-  // Mənbəni yadda saxlanmış mesaja qaytar (sil)
-  if (data.startsWith("delsource_")) {
-    const phoneKey = data.replace("delsource_", "");
-    await setDB(`users/${chatId}/accounts/${phoneKey}/messageSource`, { type: "saved" });
-    bot.sendMessage(chatId, t('source_deleted', userLang));
-    return bot.emit('callback_query', { message: query.message, data: `source_${phoneKey}`, id: query.id, from: query.from });
-  }
-
-  // Mənbə dəyişdirmə dialoqu
-  if (data.startsWith("changesource_")) {
-    const phoneKey = data.replace("changesource_", "");
-    await setDB(`users/${chatId}/currentPhoneSetup`, `+${phoneKey}`);
-    const keyboard = {
-      inline_keyboard: [
-        [{ text: t('source_saved_btn', userLang), callback_data: "source_saved" }],
-        [{ text: t('source_custom_btn', userLang), callback_data: "source_custom" }],
-        [{ text: t('cancel_btn', userLang), callback_data: "cancel_operation" }]
-      ]
-    };
-    return sendOrUpdateScreen(chatId, t('source_prompt', userLang), { reply_markup: keyboard });
-  }
-
-  // Təsdiqləmə pəncərəsində Yadda saxlanmış seçim
-  if (data === "source_saved") {
-    const currentPhone = await getDB(`users/${chatId}/currentPhoneSetup`);
-    const phoneKey = currentPhone.replace('+', '');
-    await setDB(`users/${chatId}/accounts/${phoneKey}/messageSource`, { type: "saved" });
-    bot.sendMessage(chatId, t('source_set_saved', userLang));
-    await setDB(`users/${chatId}/state`, "IDLE");
-    return bot.emit('callback_query', { message: query.message, data: `source_${phoneKey}`, id: query.id, from: query.from });
-  }
-
-  // Qrup əlavəsindən sonra yadda saxlanmış mənbə seçildikdə intervala yönləndirmək
-  if (data === "source_saved_new") {
-    const currentPhone = await getDB(`users/${chatId}/currentPhoneSetup`);
-    const phoneKey = currentPhone.replace('+', '');
-    await setDB(`users/${chatId}/accounts/${phoneKey}/messageSource`, { type: "saved" });
-    bot.sendMessage(chatId, t('source_set_saved', userLang));
-    await setDB(`users/${chatId}/state`, "AWAITING_INTERVAL");
-    const keyboard = { inline_keyboard: [[{ text: t('cancel_btn', userLang), callback_data: "cancel_operation" }]] };
-    return sendOrUpdateScreen(chatId, t('ask_interval', userLang), { reply_markup: keyboard });
-  }
-
-  // Xüsusi mənbə əlavəsi
-  if (data === "source_custom") {
-    await setDB(`users/${chatId}/state`, "AWAITING_CUSTOM_SOURCE");
-    const keyboard = { inline_keyboard: [[{ text: t('cancel_btn', userLang), callback_data: "cancel_operation" }]] };
-    return sendOrUpdateScreen(chatId, t('enter_source', userLang), { reply_markup: keyboard });
-  }
-
-  // Nömrəni sistemdən silmə (Təsdiqləmə)
-  if (data.startsWith("delete_")) {
-    const phoneKey = data.replace("delete_", "");
-    const keyboard = {
-      inline_keyboard: [
-        [{ text: t('confirm_delete_num_yes', userLang), callback_data: `confirm_delete_yes_${phoneKey}` }],
-        [{ text: t('confirm_delete_num_no', userLang), callback_data: "manage_numbers" }]
-      ]
-    };
-    return sendOrUpdateScreen(chatId, t('confirm_delete_num', userLang, { phone: phoneKey }), { reply_markup: keyboard });
-  }
-
-  // Nömrəni tam sil (Hə)
-  if (data.startsWith("confirm_delete_yes_")) {
-    const phoneKey = data.replace("confirm_delete_yes_", "");
-    await setDB(`users/${chatId}/accounts/${phoneKey}`, null); // Hesab db-dən silinir
-    bot.sendMessage(chatId, t('num_deleted', userLang, { phone: phoneKey }));
-    return bot.emit('callback_query', { message: query.message, data: "manage_numbers", id: query.id, from: query.from });
-  }
-
-  // Ardıcıl qrup əlavə et
-  if (data === "add_more_group") {
-    await setDB(`users/${chatId}/state`, "AWAITING_GROUP");
-    const keyboard = { inline_keyboard: [[{ text: t('cancel_btn', userLang), callback_data: "cancel_operation" }]] };
-    return sendOrUpdateScreen(chatId, t('send_group', userLang), { parse_mode: "Markdown", reply_markup: keyboard });
-  }
-
-  // Qrup əlavə etməsini bitir
-  if (data === "finish_groups") {
-    const keyboard = {
-      inline_keyboard: [
-        [{ text: t('source_saved_btn', userLang), callback_data: "source_saved_new" }],
-        [{ text: t('source_custom_btn', userLang), callback_data: "source_custom" }],
-        [{ text: t('cancel_btn', userLang), callback_data: "cancel_operation" }]
-      ]
-    };
-    return sendOrUpdateScreen(chatId, t('source_prompt', userLang), { reply_markup: keyboard });
-  }
-
-  // --- ŞƏRH HİSSƏSİNİN SONU ---
-
-  // Qrup Skanı (Skan Funksiyası eynilə qalır)
+  // Qrup Skanı
   if (data.startsWith("scan_")) {
-    if(data.startsWith("scanselect_") || data.startsWith("scan_confirm") || data.startsWith("scan_more") || data.startsWith("scan_back")) return;
     const phoneKey = data.replace("scan_", "");
     const acc = await getDB(`users/${chatId}/accounts/${phoneKey}`);
     if (!acc || !acc.telegramSession) return bot.sendMessage(chatId, t('no_numbers', userLang));
@@ -619,6 +473,154 @@ bot.on('callback_query', async (query) => {
     userSessions[chatId].scanPage--;
     return sendScanPage(chatId, userLang);
   }
+
+  // Qrupları göstər (mövcud)
+  if (data.startsWith("groups_")) {
+      const phoneKey = data.replace("groups_", "");
+      const acc = await getDB(`users/${chatId}/accounts/${phoneKey}`);
+      if (!acc) return bot.sendMessage(chatId, t('no_numbers', userLang));
+      const groups = acc.targetGroups || [];
+      let msg = `📱 *+${phoneKey}* üçün hədəf qruplar:\n\n`;
+      const inline_keyboard = [];
+      if (groups.length === 0) {
+          msg += t('no_groups', userLang);
+      } else {
+          groups.forEach((g, i) => {
+              msg += `${i+1}. ${g}\n`;
+              inline_keyboard.push([{ text: t('del_group_btn', userLang, { group: g.substring(0,20) }), callback_data: `delgroup_${phoneKey}_${i}` }]);
+          });
+      }
+      inline_keyboard.push([{ text: t('add_group_btn', userLang), callback_data: `addgroup_${phoneKey}` }]);
+      inline_keyboard.push([{ text: t('back_btn', userLang), callback_data: "manage_numbers" }]);
+      inline_keyboard.push([{ text: t('back_main', userLang), callback_data: "back_to_main" }]);
+      return sendOrUpdateScreen(chatId, msg, { parse_mode: "Markdown", reply_markup: { inline_keyboard } });
+  }
+
+  if (data.startsWith("delgroup_")) {
+      const parts = data.split("_");
+      const phoneKey = parts[1];
+      const idx = parseInt(parts[2]);
+      const acc = await getDB(`users/${chatId}/accounts/${phoneKey}`);
+      if (!acc || !acc.targetGroups) return;
+      acc.targetGroups.splice(idx, 1);
+      await setDB(`users/${chatId}/accounts/${phoneKey}/targetGroups`, acc.targetGroups);
+      bot.sendMessage(chatId, t('group_deleted', userLang));
+      return bot.emit('callback_query', { message: query.message, data: `groups_${phoneKey}`, id: query.id, from: query.from });
+  }
+
+  if (data.startsWith("addgroup_")) {
+      const phoneKey = data.replace("addgroup_", "");
+      await setDB(`users/${chatId}/currentPhoneSetup`, "+" + phoneKey);
+      await setDB(`users/${chatId}/state`, "AWAITING_GROUP");
+      const keyboard = { inline_keyboard: [[{ text: t('cancel_btn', userLang), callback_data: "cancel_operation" }], [{ text: t('back_btn', userLang), callback_data: `groups_${phoneKey}` }]] };
+      return sendOrUpdateScreen(chatId, t('send_group', userLang), { parse_mode: "Markdown", reply_markup: keyboard });
+  }
+
+  // Mənbə idarəetmə
+  if (data.startsWith("source_")) {
+      const phoneKey = data.replace("source_", "");
+      const acc = await getDB(`users/${chatId}/accounts/${phoneKey}`);
+      if (!acc) return;
+      const source = acc.messageSource;
+      let msg = `📥 *+${phoneKey}* mesaj mənbəyi:\n\n`;
+      const inline_keyboard = [];
+      if (!source || source.type === "saved") {
+          msg += "💾 Yadda saxlanmış mesajlar";
+      } else {
+          msg += `🔗 Xüsusi mənbə: ${source.target}`;
+      }
+      inline_keyboard.push([{ text: t('del_source_btn', userLang), callback_data: `delsource_${phoneKey}` }]);
+      inline_keyboard.push([{ text: t('change_source_btn', userLang), callback_data: `changesource_${phoneKey}` }]);
+      inline_keyboard.push([{ text: t('back_btn', userLang), callback_data: "manage_numbers" }]);
+      inline_keyboard.push([{ text: t('back_main', userLang), callback_data: "back_to_main" }]);
+      return sendOrUpdateScreen(chatId, msg, { parse_mode: "Markdown", reply_markup: { inline_keyboard } });
+  }
+
+  if (data.startsWith("delsource_")) {
+      const phoneKey = data.replace("delsource_", "");
+      await setDB(`users/${chatId}/accounts/${phoneKey}/messageSource`, { type: "saved" });
+      bot.sendMessage(chatId, t('source_deleted', userLang));
+      return bot.emit('callback_query', { message: query.message, data: `source_${phoneKey}`, id: query.id, from: query.from });
+  }
+
+  if (data.startsWith("changesource_")) {
+      const phoneKey = data.replace("changesource_", "");
+      await setDB(`users/${chatId}/currentPhoneSetup`, "+" + phoneKey);
+      await setDB(`users/${chatId}/state`, "AWAITING_CUSTOM_SOURCE");
+      const keyboard = { inline_keyboard: [[{ text: t('cancel_btn', userLang), callback_data: "cancel_operation" }], [{ text: t('back_btn', userLang), callback_data: "manage_numbers" }]] };
+      return sendOrUpdateScreen(chatId, t('enter_source', userLang), { reply_markup: keyboard });
+  }
+
+  if (data.startsWith("delete_")) {
+      const phoneKey = data.replace("delete_", "");
+      const keyboard = {
+        inline_keyboard: [
+          [{ text: t('confirm_delete_num_yes', userLang), callback_data: `confirm_delete_${phoneKey}` }],
+          [{ text: t('confirm_delete_num_no', userLang), callback_data: "manage_numbers" }],
+          [{ text: t('back_main', userLang), callback_data: "back_to_main" }]
+        ]
+      };
+      return sendOrUpdateScreen(chatId, t('confirm_delete_num', userLang, { phone: phoneKey }), { reply_markup: keyboard });
+  }
+
+  if (data.startsWith("confirm_delete_")) {
+      const phoneKey = data.replace("confirm_delete_", "");
+      await setDB(`users/${chatId}/accounts/${phoneKey}`, null);
+      const user = await getDB(`users/${chatId}`);
+      if (user && user.activeLicense) {
+        await setDB(`licenses/${user.activeLicense}/registeredPhones/${phoneKey}`, null);
+      }
+      bot.sendMessage(chatId, t('num_deleted', userLang, { phone: phoneKey }));
+      delete userSessions[chatId];
+      await setDB(`users/${chatId}/state`, "IDLE");
+      return showMainMenu(chatId, userLang);
+  }
+
+  if (data === "back_to_main") {
+    await setDB(`users/${chatId}/state`, "IDLE");
+    delete userSessions[chatId];
+    return showMainMenu(chatId, userLang);
+  }
+
+  if (data === "delete_auto_reply") {
+    await setDB(`users/${chatId}/autoReplyMessage`, null);
+    bot.sendMessage(chatId, t('auto_reply_deleted', userLang));
+    return showMainMenu(chatId, userLang);
+  }
+
+  if (data === "add_more_group") {
+    await setDB(`users/${chatId}/state`, "AWAITING_GROUP");
+    const keyboard = { inline_keyboard: [[{ text: t('cancel_btn', userLang), callback_data: "cancel_operation" }], [{ text: t('back_main', userLang), callback_data: "back_to_main" }]] };
+    return sendOrUpdateScreen(chatId, t('send_group', userLang), { parse_mode: "Markdown", reply_markup: keyboard });
+  }
+
+  if (data === "finish_groups") {
+    await setDB(`users/${chatId}/state`, "AWAITING_SOURCE");
+    const keyboard = {
+      inline_keyboard: [
+        [{ text: t('source_saved_btn', userLang), callback_data: "source_saved" }],
+        [{ text: t('source_custom_btn', userLang), callback_data: "source_custom" }],
+        [{ text: t('cancel_btn', userLang), callback_data: "cancel_operation" }],
+        [{ text: t('back_main', userLang), callback_data: "back_to_main" }]
+      ]
+    };
+    return sendOrUpdateScreen(chatId, t('source_prompt', userLang), { reply_markup: keyboard });
+  }
+
+  if (data === "source_saved") {
+    const currentPhone = await getDB(`users/${chatId}/currentPhoneSetup`);
+    const phoneKey = currentPhone.replace('+', '');
+    await setDB(`users/${chatId}/accounts/${phoneKey}/messageSource`, { type: "saved" });
+    await setDB(`users/${chatId}/state`, "AWAITING_INTERVAL");
+    const keyboard = { inline_keyboard: [[{ text: t('cancel_btn', userLang), callback_data: "cancel_operation" }], [{ text: t('back_main', userLang), callback_data: "back_to_main" }]] };
+    return sendOrUpdateScreen(chatId, t('ask_interval', userLang), { reply_markup: keyboard });
+  }
+
+  if (data === "source_custom") {
+    await setDB(`users/${chatId}/state`, "AWAITING_CUSTOM_SOURCE");
+    const keyboard = { inline_keyboard: [[{ text: t('cancel_btn', userLang), callback_data: "cancel_operation" }], [{ text: t('back_main', userLang), callback_data: "back_to_main" }]] };
+    return sendOrUpdateScreen(chatId, t('enter_source', userLang), { reply_markup: keyboard });
+  }
 });
 
 // Skan səhifəsini göstərən funksiya
@@ -680,6 +682,18 @@ bot.on('message', async (msg) => {
   if (text === t('cancel_btn', userLang)) {
     delete userSessions[chatId];
     await setDB(`users/${chatId}/state`, "IDLE");
+    return showMainMenu(chatId, userLang);
+  }
+
+  if (state === "AWAITING_CHANGE_INTERVAL") {
+    const min = parseInt(text);
+    if (isNaN(min) || min < 2 || min > 5) return bot.sendMessage(chatId, t('interval_err', userLang));
+    const phoneKey = await getDB(`users/${chatId}/changingIntervalPhone`);
+    if (!phoneKey) return showMainMenu(chatId, userLang);
+    await setDB(`users/${chatId}/accounts/${phoneKey}/intervalMinutes`, min);
+    await setDB(`users/${chatId}/state`, "IDLE");
+    await setDB(`users/${chatId}/changingIntervalPhone`, null);
+    bot.sendMessage(chatId, t('interval_updated', userLang, { min }));
     return showMainMenu(chatId, userLang);
   }
 
@@ -796,7 +810,7 @@ bot.on('message', async (msg) => {
 
   if (state === "AWAITING_INTERVAL") {
     const min = parseInt(text);
-    if (isNaN(min) || min < 2 || min > 60) return bot.sendMessage(chatId, t('interval_err', userLang));
+    if (isNaN(min) || min < 2 || min > 5) return bot.sendMessage(chatId, t('interval_err', userLang));
     const currentPhone = await getDB(`users/${chatId}/currentPhoneSetup`);
     const phoneKey = currentPhone.replace('+', '');
     await setDB(`users/${chatId}/accounts/${phoneKey}/intervalMinutes`, min);
@@ -841,7 +855,7 @@ setInterval(async () => {
   }
 }, 15000);
 
-// Avtomatik göndərim (təsadüfi 2‑4 dəqiqə arası gecikmə ilə, interval 60 saniyəlik yoxlama)
+// Avtomatik göndərim (təsadüfi 2‑4 dəqiqə arası gecikmə ilə, interval 60 saniyə yoxlama)
 setInterval(async () => {
   const users = await getDB("users");
   if (!users) return;
