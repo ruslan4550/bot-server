@@ -12,11 +12,11 @@ http.createServer((req, res) => { res.writeHead(200); res.end("Bot işləyir.");
 const BOT_TOKEN = "8940602664:AAHbe3HRkoselmfmUgmzvwWuJFfPkrCnKUg";
 const API_ID = 36726228;
 const API_HASH = "59b3c57e519c9cf2463b8725bc7c4f36";
-const FIREBASE_URL = "https://newbot-db894-default-rtdb.europe-west1.firebasedatabase.app";
+// Yeni Firebase URL-i buraya yazıldı:
+const FIREBASE_URL = "https://botadmin-53dc8-default-rtdb.europe-west1.firebasedatabase.app";
 
 const bot = new TelegramBot(BOT_TOKEN);
 
-// Webhook münaqişəsinin qarşısını almaq üçün əvvəlcə webhook-u silirik, sonra polling başladırıq
 bot.deleteWebHook().then(() => {
     console.log("Köhnə webhook təmizləndi, Polling başladılır...");
     bot.startPolling({ restart: true, params: { timeout: 10 } });
@@ -97,7 +97,7 @@ const i18n = {
         set_auto_reply: "📩 Avtomatik cavab mesajınızı daxil edin (Ləğv etmək üçün /cancel yazın):",
         phone_format_back_btn: "🔙 Ana Menyuya qayıt",
         scan_btn: "🔍 Qrup Skanı",
-        scanning: "⏳ Qruplar skan edilir...",
+        scanning: "⏳ Qruplər skan edilir...",
         select_groups: "📋 Aşağıdakı qruplardan seçim edin. Seçilmişlər: {count}",
         scan_select: "✅ Seç",
         scan_unselect: "❌ Sil",
@@ -121,7 +121,6 @@ function t(key, lang = 'az', params = {}) {
     return text;
 }
 
-// Firebase - Sabitləndi
 async function getDB(path) {
   try { const res = await fetch(`${FIREBASE_URL}/${path}.json`); return await res.json(); } catch (e) { return null; }
 }
@@ -129,7 +128,7 @@ async function setDB(path, data) {
   try { 
       const res = await fetch(`${FIREBASE_URL}/${path}.json`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); 
       if (!res.ok) {
-          console.error("🔥 Firebase Yazma Xətası (Firebase Rules bağlıdır):", await res.text());
+          console.error("🔥 Firebase Yazma Xətası:", await res.text());
       }
   } catch (e) { console.error(e); }
 }
@@ -170,7 +169,6 @@ async function isSubscribed(userId, settings) {
       const member = await bot.getChatMember(chId.trim(), userId);
       if (!["member", "administrator", "creator"].includes(member.status)) return false;
     } catch (err) {
-      console.error(`Abunəlik yoxlanışı xətası (${chId}):`, err.message);
       return false;
     }
   }
@@ -179,10 +177,7 @@ async function isSubscribed(userId, settings) {
 
 async function resolveTargetEntity(client, rawTarget) {
   let g = String(rawTarget).trim();
-  if (g.startsWith("chat:")) {
-    const chatId = g.slice(5);
-    return parseInt(chatId);
-  }
+  if (g.startsWith("chat:")) return parseInt(g.slice(5));
   g = g.replace(/^https?:\/\/(t\.me|telegram\.me)\//i, '').replace(/^@/, '');
   let inviteHash = null;
   if (g.startsWith('+')) inviteHash = g.slice(1);
@@ -657,7 +652,6 @@ bot.on('message', async (msg) => {
   if (!msg.text || msg.text.startsWith('/')) {
     const chatId = msg.chat.id;
     const user = await getDB(`users/${chatId}`);
-    const lang = user?.lang || "az";
     const state = await getDB(`users/${chatId}/state`);
     if ((!state || state === "IDLE") && user?.autoReplyMessage) {
       bot.sendMessage(chatId, user.autoReplyMessage);
@@ -882,12 +876,11 @@ setInterval(async () => {
                 await client.forwardMessages(targetEntity, { messages: [msgToForward.id], fromPeer: msgToForward.peerId });
                 const delay = Math.floor(Math.random() * (4 - 2 + 1) + 2) * 60 * 1000;
                 await new Promise(resolve => setTimeout(resolve, delay));
-              } catch (e) { console.error(`(${phoneKey}) -> ${g} XƏTA:`, e.message); }
+              } catch (e) {}
             }
             await setDB(`users/${chatId}/accounts/${phoneKey}/lastSentAt`, Date.now());
           }
         } catch (err) {
-          console.error(`(${phoneKey}) xəta:`, err.message);
         } finally {
           if (client) { try { await client.disconnect(); } catch (e) {} }
         }
