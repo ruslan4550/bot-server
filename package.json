@@ -1,7 +1,7 @@
 {
-  "name": "telegram-bot-server",
+  "name": "elitebot",
   "version": "1.0.0",
-  "description": "EliteBot Telegram Userbot and Admin System",
+  "description": "EliteBot Telegram Automation",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"

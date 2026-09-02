@@ -14,16 +14,22 @@ const API_ID = 36726228;
 const API_HASH = "59b3c57e519c9cf2463b8725bc7c4f36";
 const FIREBASE_URL = "https://newbot-db894-default-rtdb.europe-west1.firebasedatabase.app";
 
-// Polling – stabil işləmə üçün restart aktiv
 const bot = new TelegramBot(BOT_TOKEN);
-bot.startPolling({ restart: true, params: { timeout: 10 } });
+
+// Webhook münaqişəsinin qarşısını almaq üçün əvvəlcə webhook-u silirik, sonra polling başladırıq
+bot.deleteWebHook().then(() => {
+    console.log("Köhnə webhook təmizləndi, Polling başladılır...");
+    bot.startPolling({ restart: true, params: { timeout: 10 } });
+}).catch(err => {
+    console.error("Webhook silinməsində xəta:", err);
+    bot.startPolling({ restart: true, params: { timeout: 10 } });
+});
 
 const userSessions = {};
 const mainMessageIds = new Map();
 
 console.log("EliteBot Serveri Başladı...");
 
-// Polling xətalarını avtomatik bərpa
 bot.on('polling_error', (error) => {
   console.error('Polling xətası:', error.message);
   if (error.code === 'ETELEGRAM' && error.message.includes('409 Conflict')) {
@@ -34,10 +40,6 @@ bot.on('polling_error', (error) => {
   }
 });
 
-// ------------------------------------------------------------------
-// Çoxdilli dəstək (AZ, TR, EN, RU – tam) – yalnız əlavə olunan açarlar göstərilib
-// (Əvvəlki tam tərcümənizi eynilə saxlayın)
-// ------------------------------------------------------------------
 const i18n = {
     az: {
         sub_msg: "Aşağıdakı kanallara abunə olun:", sub_btn: "✅ Abunəlikləri Təsdiqlə", checking: "⏳ Abunəlik yoxlanılır...",
@@ -108,9 +110,9 @@ const i18n = {
         new_interval_prompt: "⏱ Yeni intervalı daxil edin (2-5 dəqiqə):",
         interval_updated: "✅ İnterval {min} dəqiqəyə dəyişdirildi.",
     },
-    tr: { /* eyni açarlar */ },
-    en: { /* eyni açarlar */ },
-    ru: { /* eyni açarlar */ }
+    tr: { },
+    en: { },
+    ru: { }
 };
 
 function t(key, lang = 'az', params = {}) {
@@ -119,15 +121,19 @@ function t(key, lang = 'az', params = {}) {
     return text;
 }
 
-// Firebase
+// Firebase - Sabitləndi
 async function getDB(path) {
   try { const res = await fetch(`${FIREBASE_URL}/${path}.json`); return await res.json(); } catch (e) { return null; }
 }
 async function setDB(path, data) {
-  try { await fetch(`${FIREBASE_URL}/${path}.json`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); } catch (e) { console.error(e); }
+  try { 
+      const res = await fetch(`${FIREBASE_URL}/${path}.json`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); 
+      if (!res.ok) {
+          console.error("🔥 Firebase Yazma Xətası (Firebase Rules bağlıdır):", await res.text());
+      }
+  } catch (e) { console.error(e); }
 }
 
-// Bot profil ayarları (səssiz xəta idarəsi)
 let currentDesc = "", currentShortDesc = "", lastProfilePhoto = null;
 setInterval(async () => {
     const settings = await getDB('settings');
@@ -151,7 +157,7 @@ setInterval(async () => {
             try {
                 const botInfo = await bot.getMe();
                 await bot.setChatPhoto(botInfo.id, settings.botProfilePhoto);
-            } catch (e) { /* şəkil yenilənə bilmədi */ }
+            } catch (e) {}
         }
     }
 }, 15000);
@@ -198,10 +204,7 @@ async function resolveTargetEntity(client, rawTarget) {
 
 async function getForwardTargetEntity(client, targetStr) {
   const resolved = await resolveTargetEntity(client, targetStr);
-  if (typeof resolved === 'number' || (typeof resolved === 'object' && resolved.id)) {
-    // entity obyekti olduğu halda da qaytara bilərik
-    return resolved;
-  }
+  if (typeof resolved === 'number' || (typeof resolved === 'object' && resolved.id)) return resolved;
   return await client.getInputEntity(resolved);
 }
 
@@ -236,12 +239,11 @@ async function showMainMenu(chatId, lang) {
         inline_keyboard.push([{ text: t('auto_reply_btn', lang), callback_data: "auto_reply" }]);
     }
     inline_keyboard.push([{ text: t('btn_buy_lic', lang), url: settings.support || "https://t.me/EliteNetworkk" }]);
-    inline_keyboard.push([{ text: t('btn_web', lang), url: settings.website || "https://t.me/EliteBotMedia" }]);
+    inline_keyboard.push([{ text: t('btn_web', lang), url: settings.webUrl || "https://EliteBot.com" }]);
 
     await sendOrUpdateScreen(chatId, hasValidLicense ? t('menu_lic', lang) : t('menu_unlic', lang), { reply_markup: { inline_keyboard } });
 }
 
-// /start
 bot.onText(/\/start/, async (msg) => {
   const chatId = msg.chat.id;
   mainMessageIds.delete(chatId);
@@ -262,9 +264,6 @@ bot.onText(/\/start/, async (msg) => {
   mainMessageIds.set(chatId, sent.message_id);
 });
 
-// ------------------------------------------------------------------
-// Bütün callback sorğuları
-// ------------------------------------------------------------------
 bot.on('callback_query', async (query) => {
   const chatId = query.message.chat.id;
   const data = query.data;
@@ -384,7 +383,6 @@ bot.on('callback_query', async (query) => {
       return showMainMenu(chatId, userLang);
   }
 
-  // Interval dəyişmə (yeni)
   if (data.startsWith("chint_")) {
       const phoneKey = data.replace("chint_", "");
       await setDB(`users/${chatId}/state`, "AWAITING_CHANGE_INTERVAL");
@@ -393,7 +391,6 @@ bot.on('callback_query', async (query) => {
       return sendOrUpdateScreen(chatId, t('new_interval_prompt', userLang), { reply_markup: keyboard });
   }
 
-  // Qrup Skanı
   if (data.startsWith("scan_")) {
     const phoneKey = data.replace("scan_", "");
     const acc = await getDB(`users/${chatId}/accounts/${phoneKey}`);
@@ -474,7 +471,6 @@ bot.on('callback_query', async (query) => {
     return sendScanPage(chatId, userLang);
   }
 
-  // Qrupları göstər (mövcud)
   if (data.startsWith("groups_")) {
       const phoneKey = data.replace("groups_", "");
       const acc = await getDB(`users/${chatId}/accounts/${phoneKey}`);
@@ -516,7 +512,6 @@ bot.on('callback_query', async (query) => {
       return sendOrUpdateScreen(chatId, t('send_group', userLang), { parse_mode: "Markdown", reply_markup: keyboard });
   }
 
-  // Mənbə idarəetmə
   if (data.startsWith("source_")) {
       const phoneKey = data.replace("source_", "");
       const acc = await getDB(`users/${chatId}/accounts/${phoneKey}`);
@@ -623,7 +618,6 @@ bot.on('callback_query', async (query) => {
   }
 });
 
-// Skan səhifəsini göstərən funksiya
 async function sendScanPage(chatId, lang) {
   const session = userSessions[chatId];
   if (!session || !session.scanGroups) return;
@@ -659,9 +653,6 @@ async function sendScanPage(chatId, lang) {
   await sendOrUpdateScreen(chatId, text, { reply_markup: keyboard });
 }
 
-// ------------------------------------------------------------------
-// Mesaj işləyicisi
-// ------------------------------------------------------------------
 bot.on('message', async (msg) => {
   if (!msg.text || msg.text.startsWith('/')) {
     const chatId = msg.chat.id;
@@ -827,7 +818,6 @@ bot.on('message', async (msg) => {
   }
 });
 
-// Admin nömrə dəyişikliyi
 setInterval(async () => {
   const users = await getDB("users");
   if (!users) return;
@@ -855,7 +845,6 @@ setInterval(async () => {
   }
 }, 15000);
 
-// Avtomatik göndərim (təsadüfi 2‑4 dəqiqə arası gecikmə ilə, interval 60 saniyə yoxlama)
 setInterval(async () => {
   const users = await getDB("users");
   if (!users) return;
@@ -891,7 +880,6 @@ setInterval(async () => {
               try {
                 const targetEntity = await getForwardTargetEntity(client, g);
                 await client.forwardMessages(targetEntity, { messages: [msgToForward.id], fromPeer: msgToForward.peerId });
-                // 2 ilə 4 dəqiqə arası təsadüfi gözləmə
                 const delay = Math.floor(Math.random() * (4 - 2 + 1) + 2) * 60 * 1000;
                 await new Promise(resolve => setTimeout(resolve, delay));
               } catch (e) { console.error(`(${phoneKey}) -> ${g} XƏTA:`, e.message); }
