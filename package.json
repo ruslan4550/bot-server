@@ -1,7 +1,6 @@
 {
   "name": "elitebot",
   "version": "1.0.0",
-  "description": "Elite Otomesaj Botu",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
