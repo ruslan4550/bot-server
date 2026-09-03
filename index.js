@@ -340,31 +340,63 @@ async function setDB(path, data) {
   } catch (e) { console.error(e); }
 }
 
+const defaultAboutText = `👑 𝐄𝐋𝐈𝐓𝐄 𝐎𝐓𝐎𝐌𝐄𝐒𝐀𝐉 𝐁𝐎𝐓𝐔
+
+🌐 𝐒𝐈𝐓𝐄: www.elitebot.com
+🛡️ 𝐑𝐄𝐒𝐌Î 𝐘Ö𝐍𝐄𝐓İ𝐂İ: @EliteNetworkk ✅
+👥 𝐀𝐊𝐓İ𝐅 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐂𝐈: 𝟏𝟎𝟎𝟎+
+━━━━━━━━━━━━━━━━━━
+
+🚀 𝐌𝐎𝐁İ𝐋 & 𝐁İ𝐋𝐆İ𝐒𝐀𝐘𝐀𝐑 𝐃𝐄𝐒𝐓𝐄𝐊𝐋İ
+🤖 𝐎𝐓𝐎𝐌𝐀𝐓İ𝐊 𝐌𝐄𝐒𝐀𝐉 𝐒İ𝐒𝐓𝐄𝐌İ
+⚡ 𝐇ı𝕫𝐋𝐈 • 𝐆Ü𝐕𝐄𝐍𝐋İ • 𝐏𝐑𝐎𝐅𝐄𝐒𝐘𝐎𝐍𝐄𝐋
+━━━━━━━━━━━━━━━━━━
+
+💎 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ & 𝐅İ𝐘𝐀𝐓𝐋𝐀𝐑
+
+📌 𝐆Ü𝐍𝐂𝐄𝐋 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ, 𝐊𝐀𝐌𝐏𝐀𝐍𝐘𝐀𝐋𝐀𝐑 𝐕𝐄 𝐅İ𝐘𝐀𝐓 𝐃𝐄𝐓𝐀𝐘𝐋𝐀𝐑𝐈:
+📢 @EliteBotMedia
+━━━━━━━━━━━━━━━━━━
+
+🌍 𝐁𝐎𝐓 𝐇𝐀𝐊𝐊𝐈𝐍𝐃𝐀 𝐃𝐄𝐓𝐀𝐘𝐋𝐈 𝐁İ𝐋𝐆İ
+
+📖 𝐓Ü𝐌 Ö𝐙𝐄𝐋𝐋İ𝐊𝐋𝐄𝐑, 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐌 𝐑𝐄𝐇𝐁𝐄𝐑İ 𝐕𝐄 𝐆Ü𝐍𝐂𝐄𝐋 𝐒Ü𝐑Ü𝐌𝐋𝐄𝐑:
+🔗 www.elitebot.com
+━━━━━━━━━━━━━━━━━━
+
+🛒 𝐒𝐀𝐓𝐈𝐍 𝐀𝐋𝐌𝐀 & 𝐈𝐋𝐄𝐓İŞİ𝐌
+
+👤 𝐒𝐀𝐓𝐈Ş 𝐘𝐄𝐓𝐊İ𝐋İ𝐒İ: @EliteNetworkk ✅
+💬 𝐃𝐄𝐒𝐓𝐄𝐊 𝐇𝐀𝐓𝐓𝐈: @EliteBotMedya
+📣 𝐑𝐄𝐒𝐌Î 𝐑𝐄𝐅 𝐊𝐀𝐍𝐀𝐋𝐈: @EliteBotMedia ✅
+━━━━━━━━━━━━━━━━━━
+
+⚠️ 𝐋Ü𝐓𝐅𝐄𝐍 Ö𝐃𝐄𝐌𝐄 𝐘𝐀𝐏𝐌𝐀𝐃𝐀𝐍 Ö𝐍𝐂𝐄 𝐒𝐀𝐃𝐄𝐂𝐄 𝐑𝐄𝐒𝐌Î 𝐇𝐄𝐒𝐀𝐏𝐋𝐀𝐑𝐈𝐌𝐈𝐙𝐈 𝐃𝐎Ğ𝐑𝐔𝐋𝐀𝐘𝐀𝐑𝐀𝐊 İŞ𝐋𝐄𝐌 𝐘𝐀𝐏𝐈𝐍𝐈𝐙.`;
+
 let currentDesc = "", currentShortDesc = "", lastProfilePhoto = null;
 setInterval(async () => {
-    const settings = await getDB('settings');
-    if (settings) {
-        if (settings.botDescription && settings.botDescription !== currentDesc) {
-            currentDesc = settings.botDescription;
-            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/setMyDescription`, {
-                method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ description: settings.botDescription || "" })
-            }).catch(() => {});
-        }
-        if (settings.botShortDescription && settings.botShortDescription !== currentShortDesc) {
-            currentShortDesc = settings.botShortDescription;
-            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/setMyShortDescription`, {
-                method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ short_description: settings.botShortDescription || "" })
-            }).catch(() => {});
-        }
-        if (settings.botProfilePhoto && settings.botProfilePhoto !== lastProfilePhoto) {
-            lastProfilePhoto = settings.botProfilePhoto;
-            try {
-                const botInfo = await bot.getMe();
-                await bot.setChatPhoto(botInfo.id, settings.botProfilePhoto);
-            } catch (e) {}
-        }
+    const settings = await getDB('settings') || {};
+    const descToSet = settings.botDescription || defaultAboutText;
+    if (descToSet !== currentDesc) {
+        currentDesc = descToSet;
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/setMyDescription`, {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ description: descToSet })
+        }).catch(() => {});
+    }
+    if (settings.botShortDescription && settings.botShortDescription !== currentShortDesc) {
+        currentShortDesc = settings.botShortDescription;
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/setMyShortDescription`, {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ short_description: settings.botShortDescription || "" })
+        }).catch(() => {});
+    }
+    if (settings.botProfilePhoto && settings.botProfilePhoto !== lastProfilePhoto) {
+        lastProfilePhoto = settings.botProfilePhoto;
+        try {
+            const botInfo = await bot.getMe();
+            await bot.setChatPhoto(botInfo.id, settings.botProfilePhoto);
+        } catch (e) {}
     }
 }, 15000);
 
@@ -440,7 +472,8 @@ async function showMainMenu(chatId, lang) {
         inline_keyboard.push([{ text: t('btn_manage', lang), callback_data: "manage_numbers" }]);
         inline_keyboard.push([{ text: t('auto_reply_btn', lang), callback_data: "auto_reply" }]);
     }
-    inline_keyboard.push([{ text: t('btn_buy_lic', lang), url: settings.support || "https://t.me/EliteNetworkk" }]);
+    inline_keyboard.push([{ text: t('btn_buy_lic', lang), url: "https://t.me/ELITEBOTMEDYA" }]);
+    inline_keyboard.push([{ text: "💬 WhatsApp Dəstək", url: "https://wa.me/19048477074" }]);
     inline_keyboard.push([{ text: t('btn_web', lang), url: settings.webUrl || "https://EliteBot.com" }]);
 
     await sendOrUpdateScreen(chatId, hasValidLicense ? t('menu_lic', lang) : t('menu_unlic', lang), { reply_markup: { inline_keyboard } });
