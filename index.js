@@ -9,6 +9,13 @@ http.createServer((req, res) => { res.writeHead(200); res.end("Bot işləyir.");
   console.log(`Health-check serveri ${PORT} portunda işə düşdü.`);
 });
 
+// Cron job – özünü oyaq saxlamaq üçün (əgər URL məlumdursa)
+setInterval(() => {
+  // Əgər app URL məlumdursa, bura ping göndərilə bilər
+  // Sadəcə boş bir əməliyyat
+  console.log("Cron işlədi – bot aktivdir.");
+}, 600000); // hər 10 dəqiqə
+
 const BOT_TOKEN = "8940602664:AAHbe3HRkoselmfmUgmzvwWuJFfPkrCnKUg";
 const API_ID = 36726228;
 const API_HASH = "59b3c57e519c9cf2463b8725bc7c4f36";
@@ -50,7 +57,7 @@ bot.on('polling_error', (error) => {
       channel2_id: "@EliteBotMedia",
       webUrl: "https://EliteBot.com",
       startPhotoUrl: "",
-      botDescription: "👑 𝐄𝐋𝐈𝐓𝐄 𝐎𝐓𝐎𝐌𝐄𝐒𝐀𝐉 𝐁𝐎𝐓𝐔\n\n🌐 𝐒𝐈𝐓𝐄: www.elitebot.com\n🛡️ 𝐑𝐄𝐒𝐌Î 𝐘Ö𝐍𝐄𝐓İ𝐂İ: @EliteNetworkk ✅\n👥 𝐀𝐊𝐓İ𝐅 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐂𝐈: 𝟏𝟎𝟎𝟎+\n━━━━━━━━━━━━━━━━━━\n\n🚀 𝐌𝐎𝐁İ𝐋 & 𝐁İ𝐋𝐆İ𝐒𝐀𝐘𝐀𝐑 𝐃𝐄𝐒𝐓𝐄𝐊𝐋İ\n🤖 𝐎𝐓𝐎𝐌𝐀𝐓İ𝐊 𝐌𝐄𝐒𝐀𝐉 𝐒İ𝐒𝐓𝐄𝐌İ\n⚡ 𝐇ı𝕫𝐋𝐈 • 𝐆Ü𝐕𝐄𝐍𝐋İ • 𝐏𝐑𝐎𝐅𝐄𝐒𝐘𝐎𝐍𝐄𝐋\n━━━━━━━━━━━━━━━━━━\n\n💎 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ & 𝐅İ𝐘𝐀𝐓𝐋𝐀𝐑\n\n📌 𝐆Ü𝐍𝐂𝐄𝐋 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ, 𝐊𝐀𝐌𝐏𝐀𝐍𝐘𝐀𝐋𝐀𝐑 𝐕𝐄 𝐅İ𝐘𝐀𝐓 𝐃𝐄𝐓𝐀𝐘𝐋𝐀𝐑𝐈:\n📢 @EliteBotMedia\n━━━━━━━━━━━━━━━━━━\n\n🌍 𝐁𝐎𝐓 𝐇𝐀𝐊𝐊𝐈𝐍𝐃𝐀 𝐃𝐄𝐓𝐀𝐘𝐋𝐈 𝐁İ𝐋𝐆İ\n\n📖 𝐓Ü𝐌 Ö𝐙𝐄𝐋𝐋İ𝐊𝐋𝐄𝐑, 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐌 𝐑𝐄𝐇𝐁𝐄𝐑İ 𝐕𝐄 𝐆Ü𝐍𝐂𝐄𝐋 𝐒Ü𝐑Ü𝐌𝐋𝐄𝐑:\n🔗 www.elitebot.com\n━━━━━━━━━━━━━━━━━━\n\n🛒 𝐒𝐀𝐓𝐈𝐍 𝐀𝐋𝐌𝐀 & 𝐈𝐋𝐄𝐓İŞİ𝐌\n\n👤 𝐒𝐀𝐓𝐈Ş 𝐘𝐄𝐓𝐊İ𝐋İ𝐒İ: @EliteNetworkk ✅\n💬 𝐃𝐄𝐒𝐓𝐄𝐊 𝐇𝐀𝐓𝐓𝐈: @EliteBotMedya\n📣 𝐑𝐄𝐒𝐌Î 𝐑𝐄𝐅 𝐊𝐀𝐍𝐀𝐋𝐈: @EliteBotMedia ✅\n━━━━━━━━━━━━━━━━━━\n\n⚠️ 𝐋Ü𝐓𝐅𝐄𝐍 Ö𝐃𝐄𝐌𝐄 𝐘𝐀𝐏𝐌𝐀𝐃𝐀𝐍 Ö𝐍𝐂𝐄 𝐒𝐀𝐃𝐄𝐂𝐄 𝐑𝐄𝐒𝐌Î 𝐇𝐄𝐒𝐀𝐏𝐋𝐀𝐑𝐈𝐌𝐈𝐙𝐈 𝐃𝐎Ğ𝐑𝐔𝐋𝐀𝐘𝐀𝐑𝐀𝐊 İŞ𝐋𝐄𝐌 𝐘𝐀𝐏𝐈𝐍𝐈𝐙.",
+      botDescription: "👑 𝐄𝐋𝐈𝐓𝐄 𝐎𝐓𝐎𝐌𝐄𝐒𝐀𝐉 𝐁𝐎𝐓𝐔\n\n🌐 𝐒𝐈𝐓𝐄: www.elitebot.com\n🛡️ 𝐑𝐄𝐒𝐌Î 𝐘Ö𝐍𝐄𝐓İ𝐂İ: @EliteNetworkk ✅\n👥 𝐀𝐊𝐓İ𝐅 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐂𝐈: 𝟏𝟎𝟎𝟎+\n━━━━━━━━━━━━━━━━━━\n\n🚀 𝐌𝐎𝐁İ𝐋 & 𝐁İ𝐋𝐆İ𝐒𝐀𝐘𝐀𝐑 𝐃𝐄𝐒𝐓𝐄𝐊𝐋İ\n🤖 𝐎𝐓𝐎𝐌𝐀𝐓İ𝐊 𝐌𝐄𝐒𝐀𝐉 𝐒İ𝐒𝐓𝐄𝐌İ\n⚡ 𝐇ı𝐙𝐋𝐈 • 𝐆Ü𝐕𝐄𝐍𝐋İ • 𝐏𝐑𝐎𝐅𝐄𝐒𝐘𝐎𝐍𝐄𝐋\n━━━━━━━━━━━━━━━━━━\n\n💎 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ & 𝐅İ𝐘𝐀𝐓𝐋𝐀𝐑\n\n📌 𝐆Ü𝐍𝐂𝐄𝐋 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ, 𝐊𝐀𝐌𝐏𝐀𝐍𝐘𝐀𝐋𝐀𝐑 𝐕𝐄 𝐅İ𝐘𝐀𝐓 𝐃𝐄𝐓𝐀𝐘𝐋𝐀𝐑𝐈:\n📢 @EliteBotMedia\n━━━━━━━━━━━━━━━━━━\n\n🌍 𝐁𝐎𝐓 𝐇𝐀𝐊𝐊𝐈𝐍𝐃𝐀 𝐃𝐄𝐓𝐀𝐘𝐋𝐈 𝐁İ𝐋𝐆İ\n\n📖 𝐓Ü𝐌 Ö𝐙𝐄𝐋𝐋İ𝐊𝐋𝐄𝐑, 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐌 𝐑𝐄𝐇𝐁𝐄𝐑İ 𝐕𝐄 𝐆Ü𝐍𝐂𝐄𝐋 𝐒Ü𝐑Ü𝐌𝐋𝐄𝐑:\n🔗 www.elitebot.com\n━━━━━━━━━━━━━━━━━━\n\n🛒 𝐒𝐀𝐓𝐈𝐍 𝐀𝐋𝐌𝐀 & 𝐈𝐋𝐄𝐓İŞİ𝐌\n\n👤 𝐒𝐀𝐓𝐈Ş 𝐘𝐄𝐓𝐊İ𝐋İ𝐒İ: @EliteNetworkk ✅\n💬 𝐃𝐄𝐒𝐓𝐄𝐊 𝐇𝐀𝐓𝐓𝐈: @EliteBotMedya\n📣 𝐑𝐄𝐒𝐌Î 𝐑𝐄𝐅 𝐊𝐀𝐍𝐀𝐋𝐈: @EliteBotMedia ✅\n━━━━━━━━━━━━━━━━━━\n\n⚠️ 𝐋Ü𝐓𝐅𝐄𝐍 Ö𝐃𝐄𝐌𝐄 𝐘𝐀𝐏𝐌𝐀𝐃𝐀𝐍 Ö𝐍𝐂𝐄 𝐒𝐀𝐃𝐄𝐂𝐄 𝐑𝐄𝐒𝐌Î 𝐇𝐄𝐒𝐀𝐏𝐋𝐀𝐑𝐈𝐌𝐈𝐙𝐈 𝐃𝐎Ğ𝐑𝐔𝐋𝐀𝐘𝐀𝐑𝐀𝐊 İŞ𝐋𝐄𝐌 𝐘𝐀𝐏𝐈𝐍𝐈𝐙.",
       botShortDescription: "Elite Otomesaj Botu",
       botProfilePhoto: ""
     });
@@ -60,6 +67,7 @@ bot.on('polling_error', (error) => {
 
 const i18n = {
     az: {
+        about: "👑 𝐄𝐋𝐈𝐓𝐄 𝐎𝐓𝐎𝐌𝐄𝐒𝐀𝐉 𝐁𝐎𝐓𝐔\n\n🌐 𝐒𝐈𝐓𝐄: www.elitebot.com\n🛡️ 𝐑𝐄𝐒𝐌Î 𝐘Ö𝐍𝐄𝐓İ𝐂İ: @EliteNetworkk ✅\n👥 𝐀𝐊𝐓İ𝐅 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐂𝐈: 𝟏𝟎𝟎𝟎+\n━━━━━━━━━━━━━━━━━━\n\n🚀 𝐌𝐎𝐁İ𝐋 & 𝐁İ𝐋𝐆İ𝐒𝐀𝐘𝐀𝐑 𝐃𝐄𝐒𝐓𝐄𝐊𝐋İ\n🤖 𝐎𝐓𝐎𝐌𝐀𝐓İ𝐊 𝐌𝐄𝐒𝐀𝐉 𝐒İ𝐒𝐓𝐄𝐌İ\n⚡ 𝐇ı𝐙𝐋𝐈 • 𝐆Ü𝐕𝐄𝐍𝐋İ • 𝐏𝐑𝐎𝐅𝐄𝐒𝐘𝐎𝐍𝐄𝐋\n━━━━━━━━━━━━━━━━━━\n\n💎 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ & 𝐅İ𝐘𝐀𝐓𝐋𝐀𝐑\n\n📌 𝐆Ü𝐍𝐂𝐄𝐋 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ, 𝐊𝐀𝐌𝐏𝐀𝐍𝐘𝐀𝐋𝐀𝐑 𝐕𝐄 𝐅𝐈𝐘𝐀𝐓 𝐃𝐄𝐓𝐀𝐘𝐋𝐀𝐑𝐈:\n📢 @EliteBotMedia\n━━━━━━━━━━━━━━━━━━\n\n🌍 𝐁𝐎𝐓 𝐇𝐀𝐊𝐊𝐈𝐍𝐃𝐀 𝐃𝐄𝐓𝐀𝐘𝐋𝐈 𝐁İ𝐋𝐆İ\n\n📖 𝐓Ü𝐌 Ö𝐙𝐄𝐋𝐋İ𝐊𝐋𝐄𝐑, 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐌 𝐑𝐄𝐇𝐁𝐄𝐑İ 𝐕𝐄 𝐆Ü𝐍𝐂𝐄𝐋 𝐒Ü𝐑Ü𝐌𝐋𝐄𝐑:\n🔗 www.elitebot.com\n━━━━━━━━━━━━━━━━━━\n\n🛒 𝐒𝐀𝐓𝐈𝐍 𝐀𝐋𝐌𝐀 & 𝐈𝐋𝐄𝐓İŞİ𝐌\n\n👤 𝐒𝐀𝐓𝐈Ş 𝐘𝐄𝐓𝐊İ𝐋İ𝐒İ: @EliteNetworkk ✅\n💬 𝐃𝐄𝐒𝐓𝐄𝐊 𝐇𝐀𝐓𝐓𝐈: @EliteBotMedya\n📣 𝐑𝐄𝐒𝐌Î 𝐑𝐄𝐅 𝐊𝐀𝐍𝐀𝐋𝐈: @EliteBotMedia ✅\n━━━━━━━━━━━━━━━━━━\n\n⚠️ 𝐋Ü𝐓𝐅𝐄𝐍 Ö𝐃𝐄𝐌𝐄 𝐘𝐀𝐏𝐌𝐀𝐃𝐀𝐍 Ö𝐍𝐂𝐄 𝐒𝐀𝐃𝐄𝐂𝐄 𝐑𝐄𝐒𝐌Î 𝐇𝐄𝐒𝐀𝐏𝐋𝐀𝐑𝐈𝐌𝐈𝐙𝐈 𝐃𝐎Ğ𝐑𝐔𝐋𝐀𝐘𝐀𝐑𝐀𝐊 İŞ𝐋𝐄𝐌 𝐘𝐀𝐏𝐈𝐍𝐈𝐙.",
         sub_msg: "Aşağıdakı kanallara abunə olun:", sub_btn: "✅ Abunəlikləri Təsdiqlə", checking: "⏳ Abunəlik yoxlanılır...",
         confirmed: "✅ Təsdiqləndi!", not_subscribed: "❌ Siz hələ bütün kanallara abunə olmamısınız! Zəhmət olmasa əvvəlcə kanallara qoşulun və yenidən yoxlayın.",
         menu_unlic: "Zəhmət olmasa lisenziya aktivləşdirin:", btn_act_lic: "🔑 Lisenziya Aktivləşdir",
@@ -130,6 +138,7 @@ const i18n = {
         session_expired: "⚠️ Sessiya vaxtı bitdi. Zəhmət olmasa yenidən skan edin."
     },
     tr: {
+        about: "👑 𝐄𝐋𝐈𝐓𝐄 𝐎𝐓𝐎𝐌𝐄𝐒𝐀𝐉 𝐁𝐎𝐓𝐔\n\n🌐 𝐒𝐈𝐓𝐄: www.elitebot.com\n🛡️ 𝐑𝐄𝐒𝐌Î 𝐘Ö𝐍𝐄𝐓İ𝐂İ: @EliteNetworkk ✅\n👥 𝐀𝐊𝐓İ𝐅 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐂𝐈: 𝟏𝟎𝟎𝟎+\n━━━━━━━━━━━━━━━━━━\n\n🚀 𝐌𝐎𝐁İ𝐋 & 𝐁İ𝐋𝐆İ𝐒𝐀𝐘𝐀𝐑 𝐃𝐄𝐒𝐓𝐄𝐊𝐋İ\n🤖 𝐎𝐓𝐎𝐌𝐀𝐓İ𝐊 𝐌𝐄𝐒𝐀𝐉 𝐒İ𝐒𝐓𝐄𝐌İ\n⚡ 𝐇ı𝐙𝐋𝐈 • 𝐆Ü𝐕𝐄𝐍𝐋İ • 𝐏𝐑𝐎𝐅𝐄𝐒𝐘𝐎𝐍𝐄𝐋\n━━━━━━━━━━━━━━━━━━\n\n💎 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ & 𝐅İ𝐘𝐀𝐓𝐋𝐀𝐑\n\n📌 𝐆Ü𝐍𝐂𝐄𝐋 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ, 𝐊𝐀𝐌𝐏𝐀𝐍𝐘𝐀𝐋𝐀𝐑 𝐕𝐄 𝐅𝐈𝐘𝐀𝐓 𝐃𝐄𝐓𝐀𝐘𝐋𝐀𝐑𝐈:\n📢 @EliteBotMedia\n━━━━━━━━━━━━━━━━━━\n\n🌍 𝐁𝐎𝐓 𝐇𝐀𝐊𝐊𝐈𝐍𝐃𝐀 𝐃𝐄𝐓𝐀𝐘𝐋𝐈 𝐁İ𝐋𝐆İ\n\n📖 𝐓Ü𝐌 Ö𝐙𝐄𝐋𝐋İ𝐊𝐋𝐄𝐑, 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐌 𝐑𝐄𝐇𝐁𝐄𝐑İ 𝐕𝐄 𝐆Ü𝐍𝐂𝐄𝐋 𝐒Ü𝐑Ü𝐌𝐋𝐄𝐑:\n🔗 www.elitebot.com\n━━━━━━━━━━━━━━━━━━\n\n🛒 𝐒𝐀𝐓𝐈𝐍 𝐀𝐋𝐌𝐀 & 𝐈𝐋𝐄𝐓İŞİ𝐌\n\n👤 𝐒𝐀𝐓𝐈Ş 𝐘𝐄𝐓𝐊İ𝐋𝐈𝐒İ: @EliteNetworkk ✅\n💬 𝐃𝐄𝐒𝐓𝐄𝐊 𝐇𝐀𝐓𝐓𝐈: @EliteBotMedya\n📣 𝐑𝐄𝐒𝐌Î 𝐑𝐄𝐅 𝐊𝐀𝐍𝐀𝐋𝐈: @EliteBotMedia ✅\n━━━━━━━━━━━━━━━━━━\n\n⚠️ 𝐋Ü𝐓𝐅𝐄𝐍 Ö𝐃𝐄𝐌𝐄 𝐘𝐀𝐏𝐌𝐀𝐃𝐀𝐍 Ö𝐍𝐂𝐄 𝐒𝐀𝐃𝐄𝐂𝐄 𝐑𝐄𝐒𝐌Î 𝐇𝐄𝐒𝐀𝐏𝐋𝐀𝐑𝐈𝐌𝐈𝐙𝐈 𝐃𝐎Ğ𝐑𝐔𝐋𝐀𝐘𝐀𝐑𝐀𝐊 İŞ𝐋𝐄𝐌 𝐘𝐀𝐏𝐈𝐍𝐈𝐙.",
         sub_msg: "Aşağıdaki kanallara abone olun:", sub_btn: "✅ Abonelikleri Doğrula", checking: "⏳ Abonelik kontrol ediliyor...",
         confirmed: "✅ Doğrulandı!", not_subscribed: "❌ Henüz tüm kanallara abone olmadınız! Lütfen önce kanallara katılın ve tekrar kontrol edin.",
         menu_unlic: "Lütfen bir lisans etkinleştirin:", btn_act_lic: "🔑 Lisans Etkinleştir",
@@ -200,6 +209,7 @@ const i18n = {
         session_expired: "⚠️ Oturum zaman aşımına uğradı. Lütfen tekrar tarayın."
     },
     en: {
+        about: "👑 𝐄𝐋𝐈𝐓𝐄 𝐎𝐓𝐎𝐌𝐄𝐒𝐀𝐉 𝐁𝐎𝐓𝐔\n\n🌐 𝐒𝐈𝐓𝐄: www.elitebot.com\n🛡️ 𝐑𝐄𝐒𝐌Î 𝐘Ö𝐍𝐄𝐓İ𝐂İ: @EliteNetworkk ✅\n👥 𝐀𝐊𝐓İ𝐅 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐂𝐈: 𝟏𝟎𝟎𝟎+\n━━━━━━━━━━━━━━━━━━\n\n🚀 𝐌𝐎𝐁İ𝐋 & 𝐁İ𝐋𝐆İ𝐒𝐀𝐘𝐀𝐑 𝐃𝐄𝐒𝐓𝐄𝐊𝐋İ\n🤖 𝐎𝐓𝐎𝐌𝐀𝐓İ𝐊 𝐌𝐄𝐒𝐀𝐉 𝐒İ𝐒𝐓𝐄𝐌İ\n⚡ 𝐇ı𝐙𝐋𝐈 • 𝐆Ü𝐕𝐄𝐍𝐋İ • 𝐏𝐑𝐎𝐅𝐄𝐒𝐘𝐎𝐍𝐄𝐋\n━━━━━━━━━━━━━━━━━━\n\n💎 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ & 𝐅İ𝐘𝐀𝐓𝐋𝐀𝐑\n\n📌 𝐆Ü𝐍𝐂𝐄𝐋 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ, 𝐊𝐀𝐌𝐏𝐀𝐍𝐘𝐀𝐋𝐀𝐑 𝐕𝐄 𝐅𝐈𝐘𝐀𝐓 𝐃𝐄𝐓𝐀𝐘𝐋𝐀𝐑𝐈:\n📢 @EliteBotMedia\n━━━━━━━━━━━━━━━━━━\n\n🌍 𝐁𝐎𝐓 𝐇𝐀𝐊𝐊𝐈𝐍𝐃𝐀 𝐃𝐄𝐓𝐀𝐘𝐋𝐈 𝐁İ𝐋𝐆İ\n\n📖 𝐓Ü𝐌 Ö𝐙𝐄𝐋𝐋İ𝐊𝐋𝐄𝐑, 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐌 𝐑𝐄𝐇𝐁𝐄𝐑İ 𝐕𝐄 𝐆Ü𝐍𝐂𝐄𝐋 𝐒Ü𝐑Ü𝐌𝐋𝐄𝐑:\n🔗 www.elitebot.com\n━━━━━━━━━━━━━━━━━━\n\n🛒 𝐒𝐀𝐓𝐈𝐍 𝐀𝐋𝐌𝐀 & 𝐈𝐋𝐄𝐓İŞİ𝐌\n\n👤 𝐒𝐀𝐓𝐈Ş 𝐘𝐄𝐓𝐊İ𝐋𝐈𝐒İ: @EliteNetworkk ✅\n💬 𝐃𝐄𝐒𝐓𝐄𝐊 𝐇𝐀𝐓𝐓𝐈: @EliteBotMedya\n📣 𝐑𝐄𝐒𝐌Î 𝐑𝐄𝐅 𝐊𝐀𝐍𝐀𝐋𝐈: @EliteBotMedia ✅\n━━━━━━━━━━━━━━━━━━\n\n⚠️ 𝐋Ü𝐓𝐅𝐄𝐍 Ö𝐃𝐄𝐌𝐄 𝐘𝐀𝐏𝐌𝐀𝐃𝐀𝐍 Ö𝐍𝐂𝐄 𝐒𝐀𝐃𝐄𝐂𝐄 𝐑𝐄𝐒𝐌Î 𝐇𝐄𝐒𝐀𝐏𝐋𝐀𝐑𝐈𝐌𝐈𝐙𝐈 𝐃𝐎Ğ𝐑𝐔𝐋𝐀𝐘𝐀𝐑𝐀𝐊 İŞ𝐋𝐄𝐌 𝐘𝐀𝐏𝐈𝐍𝐈𝐙.",
         sub_msg: "Please subscribe to the channels below:", sub_btn: "✅ Verify Subscriptions", checking: "⏳ Checking subscription...",
         confirmed: "✅ Confirmed!", not_subscribed: "❌ You have not subscribed to all channels yet! Please join the channels first and check again.",
         menu_unlic: "Please activate a license:", btn_act_lic: "🔑 Activate License",
@@ -270,6 +280,7 @@ const i18n = {
         session_expired: "⚠️ Session expired. Please scan again."
     },
     ru: {
+        about: "👑 𝐄𝐋𝐈𝐓𝐄 𝐎𝐓𝐎𝐌𝐄𝐒𝐀𝐉 𝐁𝐎𝐓𝐔\n\n🌐 𝐒𝐈𝐓𝐄: www.elitebot.com\n🛡️ 𝐑𝐄𝐒𝐌Î 𝐘Ö𝐍𝐄𝐓İ𝐂İ: @EliteNetworkk ✅\n👥 𝐀𝐊𝐓İ𝐅 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐂𝐈: 𝟏𝟎𝟎𝟎+\n━━━━━━━━━━━━━━━━━━\n\n🚀 𝐌𝐎𝐁İ𝐋 & 𝐁İ𝐋𝐆İ𝐒𝐀𝐘𝐀𝐑 𝐃𝐄𝐒𝐓𝐄𝐊𝐋İ\n🤖 𝐎𝐓𝐎𝐌𝐀𝐓İ𝐊 𝐌𝐄𝐒𝐀𝐉 𝐒İ𝐒𝐓𝐄𝐌İ\n⚡ 𝐇ı𝐙𝐋𝐈 • 𝐆Ü𝐕𝐄𝐍𝐋İ • 𝐏𝐑𝐎𝐅𝐄𝐒𝐘𝐎𝐍𝐄𝐋\n━━━━━━━━━━━━━━━━━━\n\n💎 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ & 𝐅İ𝐘𝐀𝐓𝐋𝐀𝐑\n\n📌 𝐆Ü𝐍𝐂𝐄𝐋 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ, 𝐊𝐀𝐌𝐏𝐀𝐍𝐘𝐀𝐋𝐀𝐑 𝐕𝐄 𝐅𝐈𝐘𝐀𝐓 𝐃𝐄𝐓𝐀𝐘𝐋𝐀𝐑𝐈:\n📢 @EliteBotMedia\n━━━━━━━━━━━━━━━━━━\n\n🌍 𝐁𝐎𝐓 𝐇𝐀𝐊𝐊𝐈𝐍𝐃𝐀 𝐃𝐄𝐓𝐀𝐘𝐋𝐈 𝐁İ𝐋𝐆İ\n\n📖 𝐓Ü𝐌 Ö𝐙𝐄𝐋𝐋İ𝐊𝐋𝐄𝐑, 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐌 𝐑𝐄𝐇𝐁𝐄𝐑İ 𝐕𝐄 𝐆Ü𝐍𝐂𝐄𝐋 𝐒Ü𝐑Ü𝐌𝐋𝐄𝐑:\n🔗 www.elitebot.com\n━━━━━━━━━━━━━━━━━━\n\n🛒 𝐒𝐀𝐓𝐈𝐍 𝐀𝐋𝐌𝐀 & 𝐈𝐋𝐄𝐓İŞİ𝐌\n\n👤 𝐒𝐀𝐓𝐈Ş 𝐘𝐄𝐓𝐊İ𝐋𝐈𝐒İ: @EliteNetworkk ✅\n💬 𝐃𝐄𝐒𝐓𝐄𝐊 𝐇𝐀𝐓𝐓𝐈: @EliteBotMedya\n📣 𝐑𝐄𝐒𝐌Î 𝐑𝐄𝐅 𝐊𝐀𝐍𝐀𝐋𝐈: @EliteBotMedia ✅\n━━━━━━━━━━━━━━━━━━\n\n⚠️ 𝐋Ü𝐓𝐅𝐄𝐍 Ö𝐃𝐄𝐌𝐄 𝐘𝐀𝐏𝐌𝐀𝐃𝐀𝐍 Ö𝐍𝐂𝐄 𝐒𝐀𝐃𝐄𝐂𝐄 𝐑𝐄𝐒𝐌Î 𝐇𝐄𝐒𝐀𝐏𝐋𝐀𝐑𝐈𝐌𝐈𝐙𝐈 𝐃𝐎Ğ𝐑𝐔𝐋𝐀𝐘𝐀𝐑𝐀𝐊 İŞ𝐋𝐄𝐌 𝐘𝐀𝐏𝐈𝐍𝐈𝐙.",
         sub_msg: "Пожалуйста, подпишитесь на каналы ниже:", sub_btn: "✅ Подтвердить подписку", checking: "⏳ Проверка подписки...",
         confirmed: "✅ Подтверждено!", not_subscribed: "❌ Вы еще не подписались на все каналы! Пожалуйста, сначала подпишитесь и проверьте снова.",
         menu_unlic: "Пожалуйста, активируйте лицензию:", btn_act_lic: "🔑 Активировать лицензию",
@@ -368,7 +379,7 @@ const defaultAboutText = `👑 𝐄𝐋𝐈𝐓𝐄 𝐎𝐓𝐎𝐌𝐄𝐒𝐀
 
 🚀 𝐌𝐎𝐁İ𝐋 & 𝐁İ𝐋𝐆İ𝐒𝐀𝐘𝐀𝐑 𝐃𝐄𝐒𝐓𝐄𝐊𝐋İ
 🤖 𝐎𝐓𝐎𝐌𝐀𝐓İ𝐊 𝐌𝐄𝐒𝐀𝐉 𝐒İ𝐒𝐓𝐄𝐌İ
-⚡ 𝐇ı𝕫𝐋𝐈 • 𝐆Ü𝐕𝐄𝐍𝐋İ • 𝐏𝐑𝐎𝐅𝐄𝐒𝐘𝐎𝐍𝐄𝐋
+⚡ 𝐇ı𝐙𝐋𝐈 • 𝐆Ü𝐕𝐄𝐍𝐋İ • 𝐏𝐑𝐎𝐅𝐄𝐒𝐘𝐎𝐍𝐄𝐋
 ━━━━━━━━━━━━━━━━━━
 
 💎 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ & 𝐅İ𝐘𝐀𝐓𝐋𝐀𝐑
@@ -385,7 +396,7 @@ const defaultAboutText = `👑 𝐄𝐋𝐈𝐓𝐄 𝐎𝐓𝐎𝐌𝐄𝐒𝐀
 
 🛒 𝐒𝐀𝐓𝐈𝐍 𝐀𝐋𝐌𝐀 & 𝐈𝐋𝐄𝐓İŞİ𝐌
 
-👤 𝐒𝐀𝐓𝐈Ş 𝐘𝐄𝐓𝐊İ𝐋İ𝐒İ: @EliteNetworkk ✅
+👤 𝐒𝐀𝐓𝐈Ş 𝐘𝐄𝐓𝐊İ𝐋𝐈𝐒İ: @EliteNetworkk ✅
 💬 𝐃𝐄𝐒𝐓𝐄𝐊 𝐇𝐀𝐓𝐓𝐈: @EliteBotMedya
 📣 𝐑𝐄𝐒𝐌Î 𝐑𝐄𝐅 𝐊𝐀𝐍𝐀𝐋𝐈: @EliteBotMedia ✅
 ━━━━━━━━━━━━━━━━━━
@@ -484,6 +495,9 @@ async function showMainMenu(chatId, lang) {
         hasValidLicense = !!(lic && lic.active);
     }
 
+    // About mətni
+    const aboutText = t('about', lang);
+
     if (!hasValidLicense) {
         // Lisenziya aktiv deyil
         inline_keyboard.push([
@@ -516,7 +530,7 @@ async function showMainMenu(chatId, lang) {
         ]);
     }
 
-    await sendOrUpdateScreen(chatId, hasValidLicense ? t('menu_lic', lang) : t('menu_unlic', lang), { reply_markup: { inline_keyboard } });
+    await sendOrUpdateScreen(chatId, aboutText, { reply_markup: { inline_keyboard } });
 }
 
 bot.onText(/\/start/, async (msg) => {
@@ -600,12 +614,19 @@ bot.on('callback_query', async (query) => {
 
   if (data === "add_new_number") {
       const user = await getDB(`users/${chatId}`);
-      if (!user || !user.activeLicense) return bot.sendMessage(chatId, t('no_lic', userLang));
+      if (!user || !user.activeLicense) {
+          await sendOrUpdateScreen(chatId, t('no_lic', userLang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', userLang), callback_data: "back_to_main" }]] } });
+          return;
+      }
       const lic = await getDB(`licenses/${user.activeLicense}`);
-      if (!lic || !lic.active) return bot.sendMessage(chatId, t('blocked_lic', userLang));
+      if (!lic || !lic.active) {
+          await sendOrUpdateScreen(chatId, t('blocked_lic', userLang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', userLang), callback_data: "back_to_main" }]] } });
+          return;
+      }
       const accountsCount = user.accounts ? Object.keys(user.accounts).length : 0;
       if (accountsCount >= lic.maxAccounts) {
-         return bot.sendMessage(chatId, t('limit_reached', userLang, { max: lic.maxAccounts }));
+         await sendOrUpdateScreen(chatId, t('limit_reached', userLang, { max: lic.maxAccounts }), { reply_markup: { inline_keyboard: [[{ text: t('back_main', userLang), callback_data: "back_to_main" }]] } });
+         return;
       }
       await setDB(`users/${chatId}/state`, "AWAITING_PHONE");
       const keyboard = { inline_keyboard: [[{ text: t('cancel_btn', userLang), callback_data: "cancel_operation" }], [{ text: t('back_main', userLang), callback_data: "back_to_main" }]] };
@@ -614,7 +635,10 @@ bot.on('callback_query', async (query) => {
 
   if (data === "manage_numbers") {
       const user = await getDB(`users/${chatId}`);
-      if (!user || !user.accounts) return bot.sendMessage(chatId, t('no_numbers', userLang));
+      if (!user || !user.accounts) {
+          await sendOrUpdateScreen(chatId, t('no_numbers', userLang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', userLang), callback_data: "back_to_main" }]] } });
+          return;
+      }
       let msg = t('my_accounts', userLang);
       const inline_keyboard = [];
       for (const phone in user.accounts) {
@@ -623,17 +647,14 @@ bot.on('callback_query', async (query) => {
           const sourceType = acc.messageSource?.type === "custom" ? `📌 ${acc.messageSource.target || "?"}` : "💾 Kaydedilmiş";
           msg += `📱 +${phone}\n⏳ İnterval: ${acc.intervalMinutes || 0} dəq\n📥 Mənbə: ${sourceType}\n📊 ${status}\n\n`;
 
-          // 1-ci sətir: Qrupları İdarə Et | Mənbəni İdarə Et
           inline_keyboard.push([
             { text: t('groups_btn', userLang), callback_data: `groups_${phone}` },
             { text: t('source_btn', userLang), callback_data: `source_${phone}` }
           ]);
-          // 2-ci sətir: Qrup Skanı | Intervalı Dəyiş
           inline_keyboard.push([
             { text: t('scan_btn', userLang), callback_data: `scan_${phone}` },
             { text: t('change_interval_btn', userLang), callback_data: `chint_${phone}` }
           ]);
-          // 3-cü sətir: Dayandır/Başlat | Sil
           inline_keyboard.push([
             { text: (acc.status === "ACTIVE" ? t('stop_btn', userLang) : t('resume_btn', userLang)), callback_data: `toggle_${phone}` },
             { text: t('delete_btn', userLang), callback_data: `delete_${phone}` }
@@ -655,7 +676,8 @@ bot.on('callback_query', async (query) => {
       if (acc) {
         const newStatus = acc.status === "ACTIVE" ? "STOPPED" : "ACTIVE";
         await setDB(`users/${chatId}/accounts/${phoneKey}/status`, newStatus);
-        bot.sendMessage(chatId, newStatus === "STOPPED" ? t('stop_single', userLang, { phone: phoneKey }) : t('resume_single', userLang, { phone: phoneKey }));
+        // Qısa xəbərdarlıq
+        bot.sendMessage(chatId, newStatus === "STOPPED" ? t('stop_single', userLang, { phone: phoneKey }) : t('resume_single', userLang, { phone: phoneKey })).then(m => setTimeout(() => bot.deleteMessage(chatId, m.message_id).catch(()=>{}), 5000));
         return bot.emit('callback_query', { message: query.message, data: 'manage_numbers', id: query.id, from: query.from });
       }
       return showMainMenu(chatId, userLang);
@@ -672,7 +694,10 @@ bot.on('callback_query', async (query) => {
   if (data.startsWith("scan_")) {
     const phoneKey = data.replace("scan_", "");
     const acc = await getDB(`users/${chatId}/accounts/${phoneKey}`);
-    if (!acc || !acc.telegramSession) return bot.sendMessage(chatId, t('no_numbers', userLang));
+    if (!acc || !acc.telegramSession) {
+        await sendOrUpdateScreen(chatId, t('no_numbers', userLang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', userLang), callback_data: "back_to_main" }]] } });
+        return;
+    }
 
     const waitMsg = await bot.sendMessage(chatId, t('scanning', userLang));
     let client;
@@ -688,7 +713,8 @@ bot.on('callback_query', async (query) => {
 
       if (groups.length === 0) {
         await bot.deleteMessage(chatId, waitMsg.message_id).catch(()=>{});
-        return bot.sendMessage(chatId, t('no_groups_found', userLang));
+        await sendOrUpdateScreen(chatId, t('no_groups_found', userLang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', userLang), callback_data: "back_to_main" }]] } });
+        return;
       }
 
       userSessions[chatId] = userSessions[chatId] || {};
@@ -701,7 +727,7 @@ bot.on('callback_query', async (query) => {
       return sendScanPage(chatId, userLang);
     } catch (err) {
       await bot.deleteMessage(chatId, waitMsg.message_id).catch(()=>{});
-      bot.sendMessage(chatId, t('err', userLang) + err.message);
+      await sendOrUpdateScreen(chatId, t('err', userLang) + err.message, { reply_markup: { inline_keyboard: [[{ text: t('back_main', userLang), callback_data: "back_to_main" }]] } });
     } finally {
       if (client) { try { await client.disconnect(); } catch (e) {} }
     }
@@ -711,7 +737,10 @@ bot.on('callback_query', async (query) => {
   if (data.startsWith("scanselect_")) {
     const groupIndex = parseInt(data.split("_")[1]);
     const session = userSessions[chatId];
-    if (!session || !session.scanGroups) return bot.sendMessage(chatId, t('session_expired', userLang));
+    if (!session || !session.scanGroups) {
+        await sendOrUpdateScreen(chatId, t('session_expired', userLang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', userLang), callback_data: "back_to_main" }]] } });
+        return;
+    }
     if (session.scanSelected.has(groupIndex)) {
       session.scanSelected.delete(groupIndex);
     } else {
@@ -723,8 +752,8 @@ bot.on('callback_query', async (query) => {
   if (data === "scan_confirm") {
     const session = userSessions[chatId];
     if (!session || !session.scanGroups) {
-      bot.sendMessage(chatId, t('session_expired', userLang));
-      return showMainMenu(chatId, userLang);
+      await sendOrUpdateScreen(chatId, t('session_expired', userLang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', userLang), callback_data: "back_to_main" }]] } });
+      return;
     }
     const phoneKey = session.scanPhoneKey;
     const selectedGroups = Array.from(session.scanSelected).map(i => {
@@ -736,18 +765,47 @@ bot.on('callback_query', async (query) => {
     await setDB(`users/${chatId}/accounts/${phoneKey}/targetGroups`, merged);
     delete userSessions[chatId].scanGroups;
     delete userSessions[chatId].scanSelected;
-    bot.sendMessage(chatId, t('scan_done', userLang, { count: selectedGroups.length }));
-    return bot.emit('callback_query', { message: query.message, data: `manage_numbers`, id: query.id, from: query.from });
+    
+    // Seçilmiş qruplara "Bot aktivləşdi" mesajı göndər
+    if (selectedGroups.length > 0) {
+      const acc = await getDB(`users/${chatId}/accounts/${phoneKey}`);
+      if (acc && acc.telegramSession) {
+        let tempClient;
+        try {
+          tempClient = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 3 });
+          await tempClient.connect();
+          for (const g of selectedGroups) {
+            try {
+              const entity = await resolveTargetEntity(tempClient, g);
+              if (entity) {
+                await tempClient.sendMessage(entity, { message: "✅ Bot bu qrupa hədəf olaraq əlavə edildi və aktivləşdirildi." });
+              }
+            } catch (e) {}
+          }
+        } catch (e) {} finally {
+          if (tempClient) { try { await tempClient.disconnect(); } catch (e) {} }
+        }
+      }
+    }
+
+    await sendOrUpdateScreen(chatId, t('scan_done', userLang, { count: selectedGroups.length }), { reply_markup: { inline_keyboard: [[{ text: t('back_main', userLang), callback_data: "back_to_main" }]] } });
+    return;
   }
 
   if (data === "scan_more") {
-    if (!userSessions[chatId]) return bot.sendMessage(chatId, t('session_expired', userLang));
+    if (!userSessions[chatId]) {
+        await sendOrUpdateScreen(chatId, t('session_expired', userLang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', userLang), callback_data: "back_to_main" }]] } });
+        return;
+    }
     userSessions[chatId].scanPage++;
     return sendScanPage(chatId, userLang);
   }
 
   if (data === "scan_back") {
-    if (!userSessions[chatId]) return bot.sendMessage(chatId, t('session_expired', userLang));
+    if (!userSessions[chatId]) {
+        await sendOrUpdateScreen(chatId, t('session_expired', userLang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', userLang), callback_data: "back_to_main" }]] } });
+        return;
+    }
     userSessions[chatId].scanPage--;
     return sendScanPage(chatId, userLang);
   }
@@ -755,7 +813,10 @@ bot.on('callback_query', async (query) => {
   if (data.startsWith("groups_")) {
       const phoneKey = data.replace("groups_", "");
       const acc = await getDB(`users/${chatId}/accounts/${phoneKey}`);
-      if (!acc) return bot.sendMessage(chatId, t('no_numbers', userLang));
+      if (!acc) {
+          await sendOrUpdateScreen(chatId, t('no_numbers', userLang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', userLang), callback_data: "back_to_main" }]] } });
+          return;
+      }
       const groups = acc.targetGroups || [];
       let msg = `📱 *+${phoneKey}* üçün hədəf qruplar:\n\n`;
       const inline_keyboard = [];
@@ -781,7 +842,8 @@ bot.on('callback_query', async (query) => {
       if (!acc || !acc.targetGroups) return;
       acc.targetGroups.splice(idx, 1);
       await setDB(`users/${chatId}/accounts/${phoneKey}/targetGroups`, acc.targetGroups);
-      bot.sendMessage(chatId, t('group_deleted', userLang));
+      // Qısa xəbərdarlıq
+      bot.sendMessage(chatId, t('group_deleted', userLang)).then(m => setTimeout(() => bot.deleteMessage(chatId, m.message_id).catch(()=>{}), 3000));
       return bot.emit('callback_query', { message: query.message, data: `groups_${phoneKey}`, id: query.id, from: query.from });
   }
 
@@ -796,7 +858,10 @@ bot.on('callback_query', async (query) => {
   if (data.startsWith("source_")) {
       const phoneKey = data.replace("source_", "");
       const acc = await getDB(`users/${chatId}/accounts/${phoneKey}`);
-      if (!acc) return;
+      if (!acc) {
+          await sendOrUpdateScreen(chatId, t('no_numbers', userLang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', userLang), callback_data: "back_to_main" }]] } });
+          return;
+      }
       const source = acc.messageSource;
       let msg = `📥 *+${phoneKey}* mesaj mənbəyi:\n\n`;
       const inline_keyboard = [];
@@ -815,7 +880,7 @@ bot.on('callback_query', async (query) => {
   if (data.startsWith("delsource_")) {
       const phoneKey = data.replace("delsource_", "");
       await setDB(`users/${chatId}/accounts/${phoneKey}/messageSource`, { type: "saved" });
-      bot.sendMessage(chatId, t('source_deleted', userLang));
+      bot.sendMessage(chatId, t('source_deleted', userLang)).then(m => setTimeout(() => bot.deleteMessage(chatId, m.message_id).catch(()=>{}), 3000));
       return bot.emit('callback_query', { message: query.message, data: `source_${phoneKey}`, id: query.id, from: query.from });
   }
 
@@ -846,7 +911,7 @@ bot.on('callback_query', async (query) => {
       if (user && user.activeLicense) {
         await setDB(`licenses/${user.activeLicense}/registeredPhones/${phoneKey}`, null);
       }
-      bot.sendMessage(chatId, t('num_deleted', userLang, { phone: phoneKey }));
+      bot.sendMessage(chatId, t('num_deleted', userLang, { phone: phoneKey })).then(m => setTimeout(() => bot.deleteMessage(chatId, m.message_id).catch(()=>{}), 3000));
       delete userSessions[chatId];
       await setDB(`users/${chatId}/state`, "IDLE");
       return showMainMenu(chatId, userLang);
@@ -860,7 +925,7 @@ bot.on('callback_query', async (query) => {
 
   if (data === "delete_auto_reply") {
     await setDB(`users/${chatId}/autoReplyMessage`, null);
-    bot.sendMessage(chatId, t('auto_reply_deleted', userLang));
+    bot.sendMessage(chatId, t('auto_reply_deleted', userLang)).then(m => setTimeout(() => bot.deleteMessage(chatId, m.message_id).catch(()=>{}), 3000));
     return showMainMenu(chatId, userLang);
   }
 
@@ -958,32 +1023,48 @@ bot.on('message', async (msg) => {
 
   if (state === "AWAITING_CHANGE_INTERVAL") {
     const min = parseInt(text);
-    if (isNaN(min) || min < 2 || min > 5) return bot.sendMessage(chatId, t('interval_err', userLang));
+    if (isNaN(min) || min < 2 || min > 5) {
+      await sendOrUpdateScreen(chatId, t('interval_err', userLang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', userLang), callback_data: "back_to_main" }]] } });
+      return;
+    }
     const phoneKey = await getDB(`users/${chatId}/changingIntervalPhone`);
     if (!phoneKey) return showMainMenu(chatId, userLang);
     await setDB(`users/${chatId}/accounts/${phoneKey}/intervalMinutes`, min);
     await setDB(`users/${chatId}/state`, "IDLE");
     await setDB(`users/${chatId}/changingIntervalPhone`, null);
-    bot.sendMessage(chatId, t('interval_updated', userLang, { min }));
+    bot.sendMessage(chatId, t('interval_updated', userLang, { min })).then(m => setTimeout(() => bot.deleteMessage(chatId, m.message_id).catch(()=>{}), 3000));
     return showMainMenu(chatId, userLang);
   }
 
   if (state === "AWAITING_AUTO_REPLY") {
     await setDB(`users/${chatId}/autoReplyMessage`, text);
     await setDB(`users/${chatId}/state`, "IDLE");
-    bot.sendMessage(chatId, t('auto_reply_set', userLang));
+    bot.sendMessage(chatId, t('auto_reply_set', userLang)).then(m => setTimeout(() => bot.deleteMessage(chatId, m.message_id).catch(()=>{}), 3000));
     return showMainMenu(chatId, userLang);
   }
 
   if (state === "AWAITING_LICENSE") {
-    if (!text.startsWith("ELITE-")) return bot.sendMessage(chatId, t('invalid_lic', userLang));
+    if (!text.startsWith("ELITE-")) {
+      await sendOrUpdateScreen(chatId, t('invalid_lic', userLang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', userLang), callback_data: "back_to_main" }]] } });
+      return;
+    }
     const lic = await getDB(`licenses/${text}`);
-    if (!lic) return bot.sendMessage(chatId, t('not_found_lic', userLang));
-    if (!lic.active) return bot.sendMessage(chatId, t('blocked_lic', userLang));
-    if (lic.usedBy && lic.usedBy !== chatId) return bot.sendMessage(chatId, t('used_lic', userLang));
+    if (!lic) {
+      await sendOrUpdateScreen(chatId, t('not_found_lic', userLang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', userLang), callback_data: "back_to_main" }]] } });
+      return;
+    }
+    if (!lic.active) {
+      await sendOrUpdateScreen(chatId, t('blocked_lic', userLang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', userLang), callback_data: "back_to_main" }]] } });
+      return;
+    }
+    if (lic.usedBy && lic.usedBy !== chatId) {
+      await sendOrUpdateScreen(chatId, t('used_lic', userLang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', userLang), callback_data: "back_to_main" }]] } });
+      return;
+    }
     if (!lic.usedBy) await setDB(`licenses/${text}/usedBy`, chatId);
     await setDB(`users/${chatId}/activeLicense`, text);
     await setDB(`users/${chatId}/state`, "IDLE");
+    bot.sendMessage(chatId, t('success_lic', userLang)).then(m => setTimeout(() => bot.deleteMessage(chatId, m.message_id).catch(()=>{}), 3000));
     return showMainMenu(chatId, userLang);
   }
 
@@ -1007,7 +1088,7 @@ bot.on('message', async (msg) => {
       return sendOrUpdateScreen(chatId, t('otp_info', userLang), { reply_markup: keyboard });
     } catch (err) {
       await bot.deleteMessage(chatId, waitMsg.message_id).catch(()=>{});
-      bot.sendMessage(chatId, t('err', userLang) + err.message);
+      await sendOrUpdateScreen(chatId, t('err', userLang) + err.message, { reply_markup: { inline_keyboard: [[{ text: t('back_main', userLang), callback_data: "back_to_main" }]] } });
     }
     return;
   }
@@ -1015,7 +1096,10 @@ bot.on('message', async (msg) => {
   if (state === "AWAITING_OTP") {
     const rawOtp = text.replace(/\s+/g, '');
     const sessionData = userSessions[chatId];
-    if (!sessionData) return bot.sendMessage(chatId, t('sess_lost', userLang));
+    if (!sessionData) {
+      await sendOrUpdateScreen(chatId, t('sess_lost', userLang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', userLang), callback_data: "back_to_main" }]] } });
+      return;
+    }
     try {
       await sessionData.client.invoke(new Api.auth.SignIn({
         phoneNumber: sessionData.phone,
@@ -1034,7 +1118,7 @@ bot.on('message', async (msg) => {
       const keyboard = { inline_keyboard: [[{ text: t('cancel_btn', userLang), callback_data: "cancel_operation" }], [{ text: t('back_main', userLang), callback_data: "back_to_main" }]] };
       return sendOrUpdateScreen(chatId, t('login_success', userLang, { phone: sessionData.phone }), { parse_mode: "Markdown", reply_markup: keyboard });
     } catch (err) {
-      bot.sendMessage(chatId, t('otp_err', userLang) + err.message);
+      await sendOrUpdateScreen(chatId, t('otp_err', userLang) + err.message, { reply_markup: { inline_keyboard: [[{ text: t('back_main', userLang), callback_data: "back_to_main" }]] } });
     }
     return;
   }
@@ -1060,7 +1144,10 @@ bot.on('message', async (msg) => {
     const currentPhone = await getDB(`users/${chatId}/currentPhoneSetup`);
     const phoneKey = currentPhone.replace('+', '');
     const acc = await getDB(`users/${chatId}/accounts/${phoneKey}`);
-    if (!acc || !acc.telegramSession) return bot.sendMessage(chatId, t('sess_lost', userLang));
+    if (!acc || !acc.telegramSession) {
+      await sendOrUpdateScreen(chatId, t('sess_lost', userLang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', userLang), callback_data: "back_to_main" }]] } });
+      return;
+    }
     let tempClient;
     try {
       tempClient = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 3 });
@@ -1069,7 +1156,8 @@ bot.on('message', async (msg) => {
       await tempClient.getMessages(sourceEntity, { limit: 1 });
     } catch (err) {
       if (tempClient) { try { await tempClient.disconnect(); } catch (e) {} }
-      return bot.sendMessage(chatId, t('invalid_source', userLang));
+      await sendOrUpdateScreen(chatId, t('invalid_source', userLang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', userLang), callback_data: "back_to_main" }]] } });
+      return;
     } finally {
       if (tempClient) { try { await tempClient.disconnect(); } catch (e) {} }
     }
@@ -1081,7 +1169,10 @@ bot.on('message', async (msg) => {
 
   if (state === "AWAITING_INTERVAL") {
     const min = parseInt(text);
-    if (isNaN(min) || min < 2 || min > 5) return bot.sendMessage(chatId, t('interval_err', userLang));
+    if (isNaN(min) || min < 2 || min > 5) {
+      await sendOrUpdateScreen(chatId, t('interval_err', userLang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', userLang), callback_data: "back_to_main" }]] } });
+      return;
+    }
     const currentPhone = await getDB(`users/${chatId}/currentPhoneSetup`);
     const phoneKey = currentPhone.replace('+', '');
     await setDB(`users/${chatId}/accounts/${phoneKey}/intervalMinutes`, min);
