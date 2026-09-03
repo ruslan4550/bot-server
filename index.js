@@ -39,6 +39,25 @@ bot.on('polling_error', (error) => {
   }
 });
 
+// Default settings yarat (əgər bazada yoxdursa)
+(async function initSettings() {
+  const settings = await getDB('settings');
+  if (!settings) {
+    await setDB('settings', {
+      channel1: "https://t.me/EliteBotDestek",
+      channel2: "https://t.me/EliteBotMedia",
+      channel1_id: "@EliteBotDestek",
+      channel2_id: "@EliteBotMedia",
+      webUrl: "https://EliteBot.com",
+      startPhotoUrl: "",
+      botDescription: "👑 𝐄𝐋𝐈𝐓𝐄 𝐎𝐓𝐎𝐌𝐄𝐒𝐀𝐉 𝐁𝐎𝐓𝐔\n\n🌐 𝐒𝐈𝐓𝐄: www.elitebot.com\n🛡️ 𝐑𝐄𝐒𝐌Î 𝐘Ö𝐍𝐄𝐓İ𝐂İ: @EliteNetworkk ✅\n👥 𝐀𝐊𝐓İ𝐅 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐂𝐈: 𝟏𝟎𝟎𝟎+\n━━━━━━━━━━━━━━━━━━\n\n🚀 𝐌𝐎𝐁İ𝐋 & 𝐁İ𝐋𝐆İ𝐒𝐀𝐘𝐀𝐑 𝐃𝐄𝐒𝐓𝐄𝐊𝐋İ\n🤖 𝐎𝐓𝐎𝐌𝐀𝐓İ𝐊 𝐌𝐄𝐒𝐀𝐉 𝐒İ𝐒𝐓𝐄𝐌İ\n⚡ 𝐇ı𝕫𝐋𝐈 • 𝐆Ü𝐕𝐄𝐍𝐋İ • 𝐏𝐑𝐎𝐅𝐄𝐒𝐘𝐎𝐍𝐄𝐋\n━━━━━━━━━━━━━━━━━━\n\n💎 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ & 𝐅İ𝐘𝐀𝐓𝐋𝐀𝐑\n\n📌 𝐆Ü𝐍𝐂𝐄𝐋 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ, 𝐊𝐀𝐌𝐏𝐀𝐍𝐘𝐀𝐋𝐀𝐑 𝐕𝐄 𝐅İ𝐘𝐀𝐓 𝐃𝐄𝐓𝐀𝐘𝐋𝐀𝐑𝐈:\n📢 @EliteBotMedia\n━━━━━━━━━━━━━━━━━━\n\n🌍 𝐁𝐎𝐓 𝐇𝐀𝐊𝐊𝐈𝐍𝐃𝐀 𝐃𝐄𝐓𝐀𝐘𝐋𝐈 𝐁İ𝐋𝐆İ\n\n📖 𝐓Ü𝐌 Ö𝐙𝐄𝐋𝐋İ𝐊𝐋𝐄𝐑, 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐌 𝐑𝐄𝐇𝐁𝐄𝐑İ 𝐕𝐄 𝐆Ü𝐍𝐂𝐄𝐋 𝐒Ü𝐑Ü𝐌𝐋𝐄𝐑:\n🔗 www.elitebot.com\n━━━━━━━━━━━━━━━━━━\n\n🛒 𝐒𝐀𝐓𝐈𝐍 𝐀𝐋𝐌𝐀 & 𝐈𝐋𝐄𝐓İŞİ𝐌\n\n👤 𝐒𝐀𝐓𝐈Ş 𝐘𝐄𝐓𝐊İ𝐋İ𝐒İ: @EliteNetworkk ✅\n💬 𝐃𝐄𝐒𝐓𝐄𝐊 𝐇𝐀𝐓𝐓𝐈: @EliteBotMedya\n📣 𝐑𝐄𝐒𝐌Î 𝐑𝐄𝐅 𝐊𝐀𝐍𝐀𝐋𝐈: @EliteBotMedia ✅\n━━━━━━━━━━━━━━━━━━\n\n⚠️ 𝐋Ü𝐓𝐅𝐄𝐍 Ö𝐃𝐄𝐌𝐄 𝐘𝐀𝐏𝐌𝐀𝐃𝐀𝐍 Ö𝐍𝐂𝐄 𝐒𝐀𝐃𝐄𝐂𝐄 𝐑𝐄𝐒𝐌Î 𝐇𝐄𝐒𝐀𝐏𝐋𝐀𝐑𝐈𝐌𝐈𝐙𝐈 𝐃𝐎Ğ𝐑𝐔𝐋𝐀𝐘𝐀𝐑𝐀𝐊 İŞ𝐋𝐄𝐌 𝐘𝐀𝐏𝐈𝐍𝐈𝐙.",
+      botShortDescription: "Elite Otomesaj Botu",
+      botProfilePhoto: ""
+    });
+    console.log("Default settings yaradıldı.");
+  }
+})();
+
 const i18n = {
     az: {
         sub_msg: "Aşağıdakı kanallara abunə olun:", sub_btn: "✅ Abunəlikləri Təsdiqlə", checking: "⏳ Abunəlik yoxlanılır...",
@@ -52,7 +71,7 @@ const i18n = {
         no_lic: "❌ Aktiv lisenziyanız yoxdur.", limit_reached: "❌ Lisenziya limitinizə çatdınız (Maksimum: {max} nömrə).",
         enter_phone: "📱 Bota qoşmaq istədiyiniz Telegram nömrənizi daxil edin (+ işarəsi ilə. Məs: +994501234567):",
         no_numbers: "⚠️ Hələ heç bir nömrə əlavə edilməyib.", my_accounts: "⚙️ *Aktiv Hesablarınız:*\n\n",
-        stopped: "🔴 Dayandırılıb", active: "🟢 Aktiv", stop_btn: "Dayandır: +", resume_btn: "Başlat: +", back_main: "🔙 Ana Menyu",
+        stopped: "🔴 Dayandırılıb", active: "🟢 Aktiv", stop_btn: "⏹ Dayandır", resume_btn: "▶️ Başlat", back_main: "🔙 Ana Menyu",
         phone_format: "⚠️ Nömrə '+' ilə başlamalıdır!\n\nZəhmət olmasa düzgün formatda daxil edin.", otp_sent: "⏳ OTP kodu göndərilir, gözləyin...",
         otp_info: "📩 Təhlükəsizlik kodu göndərildi. Kodu aralarında boşluqla daxil edin (Məs: 8 8 9 9 0):\n\nNömrəni səhv daxil etmisinizsə, /changenumber yazın.",
         err: "❌ Xəta: ", sess_lost: "⚠️ Sessiya yaddaşdan silinib. Zəhmət olmasa prosesə yenidən başlayın.",
@@ -88,7 +107,7 @@ const i18n = {
         source_deleted: "✅ Mənbə silindi, artıq yadda saxlanmış mesajlardan istifadə ediləcək.",
         add_group_btn: "➕ Yeni Qrup Əlavə Et",
         change_source_btn: "🔄 Mənbəni Dəyiş",
-        change_interval_btn: "⏱ İntervalı Dəyiş",
+        change_interval_btn: "⏱ Intervalı Dəyiş",
         admin_phone_change_prompt: "🔔 Admin tərəfindən nömrəniz dəyişdirildi. Yeni nömrəyə göndərilən OTP kodu daxil edin:",
         auto_reply_set: "✅ Avtomatik cavab mesajınız təyin olundu. İndi sizə yazılan istənilən mesaja bu mətn avtomatik göndəriləcək.",
         auto_reply_deleted: "✅ Avtomatik cavab mesajı silindi.",
@@ -122,7 +141,7 @@ const i18n = {
         no_lic: "❌ Aktif lisansınız yok.", limit_reached: "❌ Lisans limitinize ulaştınız (Maksimum: {max} numara).",
         enter_phone: "📱 Bota bağlamak istediğiniz Telegram numaranızı girin (+ işareti ile. Örn: +90501234567):",
         no_numbers: "⚠️ Henüz hiç numara eklenmedi.", my_accounts: "⚙️ *Aktif Hesaplarınız:*\n\n",
-        stopped: "🔴 Durduruldu", active: "🟢 Aktif", stop_btn: "Durdur: +", resume_btn: "Başlat: +", back_main: "🔙 Ana Menü",
+        stopped: "🔴 Durduruldu", active: "🟢 Aktif", stop_btn: "⏹ Durdur", resume_btn: "▶️ Başlat", back_main: "🔙 Ana Menü",
         phone_format: "⚠️ Numara '+' ile başlamalıdır!\n\nLütfen doğru formatta girin.", otp_sent: "⏳ OTP kodu gönderiliyor, bekleyin...",
         otp_info: "📩 Güvenlik kodu gönderildi. Kodu aralarında boşluk bırakarak girin (Örn: 8 8 9 9 0):\n\nNumarayı yanlış girdiyseniz /changenumber yazın.",
         err: "❌ Hata: ", sess_lost: "⚠️ Oturum hafızadan silindi. Lütfen süreci yeniden başlatın.",
@@ -192,7 +211,7 @@ const i18n = {
         no_lic: "❌ You don't have an active license.", limit_reached: "❌ You have reached your license limit (Maximum: {max} numbers).",
         enter_phone: "📱 Enter the Telegram number you want to connect to the bot (with '+' sign. Ex: +994501234567):",
         no_numbers: "⚠️ No numbers have been added yet.", my_accounts: "⚙️ *Your Active Accounts:*\n\n",
-        stopped: "🔴 Stopped", active: "🟢 Active", stop_btn: "Stop: +", resume_btn: "Start: +", back_main: "🔙 Main Menu",
+        stopped: "🔴 Stopped", active: "🟢 Active", stop_btn: "⏹ Stop", resume_btn: "▶️ Start", back_main: "🔙 Main Menu",
         phone_format: "⚠️ Number must start with '+'!\n\nPlease enter in correct format.", otp_sent: "⏳ Sending OTP code, please wait...",
         otp_info: "📩 Security code sent. Enter the code with spaces between digits (Ex: 8 8 9 9 0):\n\nIf you entered the wrong number, type /changenumber.",
         err: "❌ Error: ", sess_lost: "⚠️ Session cleared from memory. Please restart the process.",
@@ -262,7 +281,7 @@ const i18n = {
         no_lic: "❌ У вас нет активной лицензии.", limit_reached: "❌ Вы достигли лимита лицензии (Максимум: {max} номеров).",
         enter_phone: "📱 Введите номер Telegram, который хотите подключить к боту (с знаком '+'. Прим: +994501234567):",
         no_numbers: "⚠️ Номера еще не добавлены.", my_accounts: "⚙️ *Ваши активные аккаунты:*\n\n",
-        stopped: "🔴 Остановлено", active: "🟢 Активно", stop_btn: "Остановить: +", resume_btn: "Запустить: +", back_main: "🔙 Главное меню",
+        stopped: "🔴 Остановлено", active: "🟢 Активно", stop_btn: "⏹ Остановить", resume_btn: "▶️ Запустить", back_main: "🔙 Главное меню",
         phone_format: "⚠️ Номер должен начинаться с '+'!\n\nПожалуйста, введите в правильном формате.", otp_sent: "⏳ Отправка OTP кода, подождите...",
         otp_info: "📩 Код безопасности отправлен. Введите код с пробелами между цифрами (Прим: 8 8 9 9 0):\n\nЕсли вы ввели неверный номер, напишите /changenumber.",
         err: "❌ Ошибка: ", sess_lost: "⚠️ Сессия удалена из памяти. Пожалуйста, перезапустите процесс.",
@@ -466,15 +485,36 @@ async function showMainMenu(chatId, lang) {
     }
 
     if (!hasValidLicense) {
-        inline_keyboard.push([{ text: t('btn_act_lic', lang), callback_data: "enter_license" }]);
+        // Lisenziya aktiv deyil
+        inline_keyboard.push([
+            { text: t('btn_act_lic', lang), callback_data: "enter_license" },
+            { text: t('btn_buy_lic', lang), url: "https://t.me/ELITEBOTMEDYA" }
+        ]);
+        inline_keyboard.push([
+            { text: t('btn_price', lang), url: "https://t.me/EliteBotMedia" },
+            { text: t('btn_web', lang), url: settings.webUrl || "https://EliteBot.com" }
+        ]);
+        inline_keyboard.push([
+            { text: "💬 WhatsApp Dəstək", url: "https://wa.me/19048477074" }
+        ]);
     } else {
-        inline_keyboard.push([{ text: t('btn_add_num', lang), callback_data: "add_new_number" }]);
-        inline_keyboard.push([{ text: t('btn_manage', lang), callback_data: "manage_numbers" }]);
-        inline_keyboard.push([{ text: t('auto_reply_btn', lang), callback_data: "auto_reply" }]);
+        // Lisenziya aktiv
+        inline_keyboard.push([
+            { text: t('btn_add_num', lang), callback_data: "add_new_number" },
+            { text: t('btn_manage', lang), callback_data: "manage_numbers" }
+        ]);
+        inline_keyboard.push([
+            { text: t('auto_reply_btn', lang), callback_data: "auto_reply" },
+            { text: t('btn_price', lang), url: "https://t.me/EliteBotMedia" }
+        ]);
+        inline_keyboard.push([
+            { text: t('btn_buy_lic', lang), url: "https://t.me/ELITEBOTMEDYA" },
+            { text: t('btn_web', lang), url: settings.webUrl || "https://EliteBot.com" }
+        ]);
+        inline_keyboard.push([
+            { text: "💬 WhatsApp Dəstək", url: "https://wa.me/19048477074" }
+        ]);
     }
-    inline_keyboard.push([{ text: t('btn_buy_lic', lang), url: "https://t.me/ELITEBOTMEDYA" }]);
-    inline_keyboard.push([{ text: "💬 WhatsApp Dəstək", url: "https://wa.me/19048477074" }]);
-    inline_keyboard.push([{ text: t('btn_web', lang), url: settings.webUrl || "https://EliteBot.com" }]);
 
     await sendOrUpdateScreen(chatId, hasValidLicense ? t('menu_lic', lang) : t('menu_unlic', lang), { reply_markup: { inline_keyboard } });
 }
@@ -515,8 +555,8 @@ bot.on('callback_query', async (query) => {
     const lang = data.split("_")[1];
     await setDB(`users/${chatId}/lang`, lang);
     const settings = await getDB('settings') || {};
-    const ch1 = settings.channel1 || "https://t.me/+-60Ix6CPm0lmMDQ6";
-    const ch2 = settings.channel2 || "https://t.me/+SX-UgXay5hEzOGYy";
+    const ch1 = settings.channel1 || "https://t.me/EliteBotDestek";
+    const ch2 = settings.channel2 || "https://t.me/EliteBotMedia";
     const keyboard = {
       inline_keyboard: [
         [{ text: t('ch1_btn', lang), url: ch1 }],
@@ -537,8 +577,8 @@ bot.on('callback_query', async (query) => {
     if (subscribed) {
       return showMainMenu(chatId, userLang);
     } else {
-      const ch1 = settings.channel1 || "https://t.me/+-60Ix6CPm0lmMDQ6";
-      const ch2 = settings.channel2 || "https://t.me/+SX-UgXay5hEzOGYy";
+      const ch1 = settings.channel1 || "https://t.me/EliteBotDestek";
+      const ch2 = settings.channel2 || "https://t.me/EliteBotMedia";
       const keyboard = {
         inline_keyboard: [
           [{ text: t('ch1_btn', userLang), url: ch1 }],
@@ -583,18 +623,21 @@ bot.on('callback_query', async (query) => {
           const sourceType = acc.messageSource?.type === "custom" ? `📌 ${acc.messageSource.target || "?"}` : "💾 Kaydedilmiş";
           msg += `📱 +${phone}\n⏳ İnterval: ${acc.intervalMinutes || 0} dəq\n📥 Mənbə: ${sourceType}\n📊 ${status}\n\n`;
 
+          // 1-ci sətir: Qrupları İdarə Et | Mənbəni İdarə Et
           inline_keyboard.push([
             { text: t('groups_btn', userLang), callback_data: `groups_${phone}` },
             { text: t('source_btn', userLang), callback_data: `source_${phone}` }
           ]);
+          // 2-ci sətir: Qrup Skanı | Intervalı Dəyiş
           inline_keyboard.push([
+            { text: t('scan_btn', userLang), callback_data: `scan_${phone}` },
             { text: t('change_interval_btn', userLang), callback_data: `chint_${phone}` }
           ]);
+          // 3-cü sətir: Dayandır/Başlat | Sil
           inline_keyboard.push([
-            { text: (acc.status === "ACTIVE" ? t('stop_btn', userLang) : t('resume_btn', userLang)) + phone, callback_data: `toggle_${phone}` },
+            { text: (acc.status === "ACTIVE" ? t('stop_btn', userLang) : t('resume_btn', userLang)), callback_data: `toggle_${phone}` },
             { text: t('delete_btn', userLang), callback_data: `delete_${phone}` }
           ]);
-          inline_keyboard.push([{ text: t('scan_btn', userLang), callback_data: `scan_${phone}` }]);
       }
       inline_keyboard.push([{ text: t('back_main', userLang), callback_data: "back_to_main" }]);
       return sendOrUpdateScreen(chatId, msg, { parse_mode: "Markdown", reply_markup: { inline_keyboard } });
