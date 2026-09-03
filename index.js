@@ -1,3 +1,4 @@
+// index.js
 const TelegramBot = require('node-telegram-bot-api');
 const { TelegramClient, Api } = require('telegram');
 const { StringSession } = require('telegram/sessions');
@@ -5,7 +6,10 @@ const fetch = require('node-fetch');
 const http = require('http');
 
 const PORT = process.env.PORT || 3000;
-http.createServer((req, res) => { res.writeHead(200); res.end("Bot işləyir."); }).listen(PORT, () => {
+http.createServer((req, res) => { 
+  res.writeHead(200); 
+  res.end("Bot işləyir."); 
+}).listen(PORT, () => {
   console.log(`Health-check serveri ${PORT} portunda işə düşdü.`);
 });
 
@@ -56,7 +60,7 @@ bot.on('polling_error', (error) => {
         channel2_id: "@EliteBotMedia",
         webUrl: "https://EliteBot.com",
         startPhotoUrl: "",
-        botDescription: "👑 𝐄𝐋𝐈𝐓𝐄 𝐎𝐓𝐎𝐌𝐄𝐒𝐀𝐉 𝐁𝐎𝐓𝐔\n\n🌐 𝐒𝐈𝐓𝐄: www.elitebot.com\n🛡️ 𝐑𝐄𝐒𝐌Î 𝐘Ö𝐍𝐄𝐓İ𝐂İ: @EliteNetworkk ✅\n👥 𝐀𝐊𝐓İ𝐅 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐂𝐈: 𝟏𝟎𝟎𝟎+\n━━━━━━━━━━━━━━━━━━\n\n🚀 𝐌𝐎𝐁İ𝐋 & 𝐁İ𝐋𝐆İ𝐒𝐀𝐘𝐀𝐑 𝐃𝐄𝐒𝐓𝐄𝐊𝐋İ\n🤖 𝐎𝐓𝐎𝐌𝐀𝐓İ𝐊 𝐌𝐄𝐒𝐀𝐉 𝐒İ𝐒𝐓𝐄𝐌İ\n⚡ 𝐇ı𝐙𝐋𝐈 • 𝐆Ü𝐕𝐄𝐍𝐋İ • 𝐏𝐑𝐎𝐅𝐄𝐒𝐘𝐎𝐍𝐄𝐋\n━━━━━━━━━━━━━━━━━━\n\n💎 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ & 𝐅İ𝐘𝐀𝐓𝐋𝐀𝐑\n\n📌 𝐆Ü𝐍𝐂𝐄𝐋 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ, 𝐊𝐀𝐌𝐏𝐀𝐍𝐘𝐀𝐋𝐀𝐑 𝐕𝐄 𝐅İ𝐘𝐀𝐓 𝐃𝐄𝐓𝐀𝐘𝐋𝐀𝐑𝐈:\n📢 @EliteBotMedia\n━━━━━━━━━━━━━━━━━━\n\n🌍 𝐁𝐎𝐓 𝐇𝐀𝐊𝐊𝐈𝐍𝐃𝐀 𝐃𝐄𝐓𝐀𝐘𝐋𝐈 𝐁İ𝐋𝐆İ\n\n📖 𝐓Ü𝐌 Ö𝐙𝐄𝐋𝐋İ𝐊𝐋𝐄𝐑, 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐌 𝐑𝐄𝐇𝐁𝐄𝐑İ 𝐕𝐄 𝐆Ü𝐍𝐂𝐄𝐋 𝐒Ü𝐑Ü𝐌𝐋𝐄𝐑:\n🔗 www.elitebot.com\n━━━━━━━━━━━━━━━━━━\n\n🛒 𝐒𝐀𝐓𝐈𝐍 𝐀𝐋𝐌𝐀 & 𝐈𝐋𝐄𝐓İŞİ𝐌\n\n👤 𝐒𝐀𝐓𝐈Ş 𝐘𝐄𝐓𝐊İ𝐋𝐈𝐒İ: @EliteNetworkk ✅\n💬 𝐃𝐄𝐒𝐓𝐄𝐊 𝐇𝐀𝐓𝐓𝐈: @EliteBotMedya\n📣 𝐑𝐄𝐒𝐌Î 𝐑𝐄𝐅 𝐊𝐀𝐍𝐀𝐋𝐈: @EliteBotMedia ✅\n━━━━━━━━━━━━━━━━━━\n\n⚠️ 𝐋Ü𝐓𝐅𝐄𝐍 Ö𝐃𝐄𝐌𝐄 𝐘𝐀𝐏𝐌𝐀𝐃𝐀𝐍 Ö𝐍𝐂𝐄 𝐒𝐀𝐃𝐄𝐂𝐄 𝐑𝐄𝐒𝐌Î 𝐇𝐄𝐒𝐀𝐏𝐋𝐀𝐑𝐈𝐌𝐈𝐙𝐈 𝐃𝐎Ğ𝐑𝐔𝐋𝐀𝐘𝐀𝐑𝐀𝐊 İŞ𝐋𝐄𝐌 𝐘𝐀𝐏𝐈𝐍𝐈𝐙.",
+        botDescription: "👑 𝐄𝐋𝐈𝐓𝐄 𝐎𝐓𝐎𝐌𝐄𝐒𝐀𝐉 𝐁𝐎𝐓𝐔\n\n🌐 𝐒𝐈𝐓𝐄: www.elitebot.com\n🛡️ 𝐑𝐄𝐒𝐌Î 𝐘Ö𝐍𝐄𝐓İ𝐂İ: @EliteNetworkk ✅\n👥 𝐀𝐊𝐓İ𝐅 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐂𝐈: 𝟏𝟎𝟎𝟎+\n━━━━━━━━━━━━━━━━━━\n\n🚀 𝐌𝐎𝐁İ𝐋 & 𝐁İ𝐋𝐆İ𝐒𝐀𝐘𝐀𝐑 𝐃𝐄𝐒𝐓𝐄𝐊𝐋İ\n🤖 𝐎𝐓𝐎𝐌𝐀𝐓İ𝐊 𝐌𝐄𝐒𝐀𝐉 𝐒İ𝐒𝐓𝐄𝐌İ\n⚡ 𝐇ı𝐙𝐋𝐈 • 𝐆Ü𝐕𝐄𝐍𝐋İ • 𝐏𝐑𝐎𝐅𝐄𝐒𝐘𝐎𝐍𝐄𝐋\n━━━━━━━━━━━━━━━━━━\n\n💎 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ & 𝐅𝐈𝐘𝐀𝐓𝐋𝐀𝐑\n\n📌 𝐆Ü𝐍𝐂𝐄𝐋 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ, 𝐊𝐀𝐌𝐏𝐀𝐍𝐘𝐀𝐋𝐀𝐑 𝐕𝐄 𝐅𝐈𝐘𝐀𝐓 𝐃𝐄𝐓𝐀𝐘𝐋𝐀𝐑𝐈:\n📢 @EliteBotMedia\n━━━━━━━━━━━━━━━━━━\n\n🌍 𝐁𝐎𝐓 𝐇𝐀𝐊𝐊𝐈𝐍𝐃𝐀 𝐃𝐄𝐓𝐀𝐘𝐋𝐈 𝐁İ𝐋𝐆İ\n\n📖 𝐓Ü𝐌 Ö𝐙𝐄𝐋𝐋İ𝐊𝐋𝐄𝐑, 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐌 𝐑𝐄𝐇𝐁𝐄𝐑İ 𝐕𝐄 𝐆Ü𝐍𝐂𝐄𝐋 𝐒Ü𝐑Ü𝐌𝐋𝐄𝐑:\n🔗 www.elitebot.com\n━━━━━━━━━━━━━━━━━━\n\n🛒 𝐒𝐀𝐓𝐈𝐍 𝐀𝐋𝐌𝐀 & 𝐈𝐋𝐄𝐓İŞİ𝐌\n\n👤 𝐒𝐀𝐓𝐈Ş 𝐘𝐄𝐓𝐊İ𝐋𝐈𝐒İ: @EliteNetworkk ✅\n💬 𝐃𝐄𝐒𝐓𝐄𝐊 𝐇𝐀𝐓𝐓𝐈: @EliteBotMedya\n📣 𝐑𝐄𝐒𝐌Î 𝐑𝐄𝐅 𝐊𝐀𝐍𝐀𝐋𝐈: @EliteBotMedia ✅\n━━━━━━━━━━━━━━━━━━\n\n⚠️ 𝐋Ü𝐓𝐅𝐄𝐍 Ö𝐃𝐄𝐌𝐄 𝐘𝐀𝐏𝐌𝐀𝐃𝐀𝐍 Ö𝐍𝐂𝐄 𝐒𝐀𝐃𝐄𝐂𝐄 𝐑𝐄𝐒𝐌Î 𝐇𝐄𝐒𝐀𝐏𝐋𝐀𝐑𝐈𝐌𝐈𝐙𝐈 𝐃𝐎Ğ𝐑𝐔𝐋𝐀𝐘𝐀𝐑𝐀𝐊 İŞ𝐋𝐄𝐌 𝐘𝐀𝐏𝐈𝐍𝐈𝐙.",
         botShortDescription: "Elite Otomesaj Botu",
         botProfilePhoto: ""
       });
@@ -221,7 +225,7 @@ const i18n = {
         auto_reply_disabled: "✅ Otomatik yanıt durduruldu."
     },
     en: {
-        about: "👑 𝐄𝐋𝐈𝐓𝐄 𝐎𝐓𝐎𝐌𝐄𝐒𝐀𝐉 𝐁𝐎𝐓𝐔\n\n🌐 𝐒𝐈𝐓𝐄: www.elitebot.com\n🛡️ 𝐑𝐄𝐒𝐌Î 𝐘Ö𝐍𝐄𝐓İ𝐂İ: @EliteNetworkk ✅\n👥 𝐀𝐊𝐓İ𝐅 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐂𝐈: 𝟏𝟎𝟎𝟎+\n━━━━━━━━━━━━━━━━━━\n\n🚀 𝐌𝐎𝐁İ𝐋 & 𝐁İ𝐋𝐆İ𝐒𝐀𝐘𝐀𝐑 𝐃𝐄𝐒𝐓𝐄𝐊𝐋İ\n🤖 𝐎𝐓𝐎𝐌𝐀𝐓İ𝐊 𝐌𝐄𝐒𝐀𝐉 𝐒İ𝐒𝐓𝐄𝐌İ\n⚡ 𝐇ı𝐙𝐋𝐈 • 𝐆Ü𝐕𝐄𝐍𝐋İ • 𝐏𝐑𝐎𝐅𝐄𝐒𝐘𝐎𝐍𝐄𝐋\n━━━━━━━━━━━━━━━━━━\n\n💎 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ & 𝐅𝐈𝐘𝐀𝐓𝐋𝐀𝐑\n\n📌 𝐆Ü𝐍𝐂𝐄𝐋 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ, 𝐊𝐀𝐌𝐏𝐀𝐍𝐘𝐀𝐋𝐀𝐑 𝐕𝐄 𝐅𝐈𝐘𝐀𝐓 𝐃𝐄𝐓𝐀𝐘𝐋𝐀𝐑𝐈:\n📢 @EliteBotMedia\n━━━━━━━━━━━━━━━━━━\n\n🌍 𝐁𝐎𝐓 𝐇𝐀𝐊𝐊𝐈𝐍𝐃𝐀 𝐃𝐄𝐓𝐀𝐘𝐋𝐈 𝐁İ𝐋𝐆İ\n\n📖 𝐓Ü𝐌 Ö𝐙𝐄𝐋𝐋İ𝐊𝐋𝐄𝐑, 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐌 𝐑𝐄𝐇𝐁𝐄𝐑İ 𝐕𝐄 𝐆Ü𝐍𝐂𝐄𝐋 𝐒Ü𝐑Ü𝐌𝐋𝐄𝐑:\n🔗 www.elitebot.com\n━━━━━━━━━━━━━━━━━━\n\n🛒 𝐒𝐀𝐓𝐈𝐍 𝐀𝐋𝐌𝐀 & 𝐈𝐋𝐄𝐓İŞİ𝐌\n\n👤 𝐒𝐀𝐓𝐈Ş 𝐘𝐄𝐓𝐊İ𝐋𝐈𝐒İ: @EliteNetworkk ✅\n💬 𝐃𝐄𝐒𝐓𝐄𝐊 𝐇𝐀𝐓𝐓𝐈: @EliteBotMedya\n📣 𝐑𝐄𝐒𝐌Î 𝐑𝐄𝐅 𝐊𝐀𝐍𝐀𝐋𝐈: @EliteBotMedia ✅\n━━━━━━━━━━━━━━━━━━\n\n⚠️ 𝐋Ü𝐓𝐅𝐄𝐍 Ö𝐃𝐄𝐌𝐄 𝐘𝐀𝐏𝐌𝐀𝐃𝐀𝐍 Ö𝐍𝐂𝐄 𝐒𝐀𝐃𝐄𝐂𝐄 𝐑𝐄𝐒𝐌Î 𝐇𝐄𝐒𝐀𝐏𝐋𝐀𝐑𝐈𝐌𝐈𝐙𝐈 𝐃𝐎Ğ𝐑𝐔𝐋𝐀𝐘𝐀𝐑𝐀𝐊 İŞ𝐋𝐄𝐌 𝐘𝐀𝐏𝐈𝐍𝐈𝐙.",
+        about: "👑 𝐄𝐋𝐈𝐓𝐄 𝐎𝐓𝐎𝐌𝐄𝐒𝐀𝐉 𝐁𝐎𝐓𝐔\n\n🌐 𝐒𝐈𝐓𝐄: www.elitebot.com\n🛡️ 𝐑𝐄𝐒𝐌Î 𝐘Ö𝐍𝐄𝐓İ𝐂İ: @EliteNetworkk ✅\n👥 𝐀𝐊𝐓İ𝐅 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐂𝐈: 𝟏𝟎𝟎𝟎+\n━━━━━━━━━━━━━━━━━━\n\n🚀 𝐌𝐎𝐁İ𝐋 & 𝐁İ𝐋𝐆𝐈𝐒𝐀𝐘𝐀𝐑 𝐃𝐄𝐒𝐓𝐄𝐊𝐋İ\n🤖 𝐎𝐓𝐎𝐌𝐀𝐓İ𝐊 𝐌𝐄𝐒𝐀𝐉 𝐒İ𝐒𝐓𝐄𝐌İ\n⚡ 𝐇ı𝐙𝐋𝐈 • 𝐆Ü𝐕𝐄𝐍𝐋İ • 𝐏𝐑𝐎𝐅𝐄𝐒𝐘𝐎𝐍𝐄𝐋\n━━━━━━━━━━━━━━━━━━\n\n💎 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ & 𝐅𝐈𝐘𝐀𝐓𝐋𝐀𝐑\n\n📌 𝐆Ü𝐍𝐂𝐄𝐋 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ, 𝐊𝐀𝐌𝐏𝐀𝐍𝐘𝐀𝐋𝐀𝐑 𝐕𝐄 𝐅𝐈𝐘𝐀𝐓 𝐃𝐄𝐓𝐀𝐘𝐋𝐀𝐑𝐈:\n📢 @EliteBotMedia\n━━━━━━━━━━━━━━━━━━\n\n🌍 𝐁𝐎𝐓 𝐇𝐀𝐊𝐊𝐈𝐍𝐃𝐀 𝐃𝐄𝐓𝐀𝐘𝐋𝐈 𝐁İ𝐋𝐆İ\n\n📖 𝐓Ü𝐌 Ö𝐙𝐄𝐋𝐋İ𝐊𝐋𝐄𝐑, 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐌 𝐑𝐄𝐇𝐁𝐄𝐑İ 𝐕𝐄 𝐆Ü𝐍𝐂𝐄𝐋 𝐒Ü𝐑Ü𝐌𝐋𝐄𝐑:\n🔗 www.elitebot.com\n━━━━━━━━━━━━━━━━━━\n\n🛒 𝐒𝐀𝐓𝐈𝐍 𝐀𝐋𝐌𝐀 & 𝐈𝐋𝐄𝐓İŞİ𝐌\n\n👤 𝐒𝐀𝐓𝐈Ş 𝐘𝐄𝐓𝐊İ𝐋𝐈𝐒İ: @EliteNetworkk ✅\n💬 𝐃𝐄𝐒𝐓𝐄𝐊 𝐇𝐀𝐓𝐓𝐈: @EliteBotMedya\n📣 𝐑𝐄𝐒𝐌Î 𝐑𝐄𝐅 𝐊𝐀𝐍𝐀𝐋𝐈: @EliteBotMedia ✅\n━━━━━━━━━━━━━━━━━━\n\n⚠️ 𝐋Ü𝐓𝐅𝐄𝐍 Ö𝐃𝐄𝐌𝐄 𝐘𝐀𝐏𝐌𝐀𝐃𝐀𝐍 Ö𝐍𝐂𝐄 𝐒𝐀𝐃𝐄𝐂𝐄 𝐑𝐄𝐒𝐌Î 𝐇𝐄𝐒𝐀𝐏𝐋𝐀𝐑𝐈𝐌𝐈𝐙𝐈 𝐃𝐎Ğ𝐑𝐔𝐋𝐀𝐘𝐀𝐑𝐀𝐊 İŞ𝐋𝐄𝐌 𝐘𝐀𝐏𝐈𝐍𝐈𝐙.",
         sub_msg: "Please subscribe to the channels below:", sub_btn: "✅ Verify Subscriptions", checking: "⏳ Checking subscription...",
         confirmed: "✅ Confirmed!", not_subscribed: "❌ You have not subscribed to all channels yet! Please join the channels first and check again.",
         menu_unlic: "Please activate a license:", btn_act_lic: "🔑 Activate License",
@@ -298,7 +302,7 @@ const i18n = {
         auto_reply_disabled: "✅ Auto-reply disabled."
     },
     ru: {
-        about: "👑 𝐄𝐋𝐈𝐓𝐄 𝐎𝐓𝐎𝐌𝐄𝐒𝐀𝐉 𝐁𝐎𝐓𝐔\n\n🌐 𝐒𝐈𝐓𝐄: www.elitebot.com\n🛡️ 𝐑𝐄𝐒𝐌Î 𝐘Ö𝐍𝐄𝐓İ𝐂İ: @EliteNetworkk ✅\n👥 𝐀𝐊𝐓İ𝐅 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐂𝐈: 𝟏𝟎𝟎𝟎+\n━━━━━━━━━━━━━━━━━━\n\n🚀 𝐌𝐎𝐁İ𝐋 & 𝐁İ𝐋𝐆𝐈𝐒𝐀𝐘𝐀𝐑 𝐃𝐄𝐒𝐓𝐄𝐊𝐋İ\n🤖 𝐎𝐓𝐎𝐌𝐀𝐓İ𝐊 𝐌𝐄𝐒𝐀𝐉 𝐒İ𝐒𝐓𝐄𝐌İ\n⚡ 𝐇ı𝐙𝐋𝐈 • 𝐆Ü𝐕𝐄𝐍𝐋İ • 𝐏𝐑𝐎𝐅𝐄𝐒𝐘𝐎𝐍𝐄𝐋\n━━━━━━━━━━━━━━━━━━\n\n💎 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ & 𝐅İ𝐘𝐀𝐓𝐋𝐀𝐑\n\n📌 𝐆Ü𝐍𝐂𝐄𝐋 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ, 𝐊𝐀𝐌𝐏𝐀𝐍𝐘𝐀𝐋𝐀𝐑 𝐕𝐄 𝐅𝐈𝐘𝐀𝐓 𝐃𝐄𝐓𝐀𝐘𝐋𝐀𝐑𝐈:\n📢 @EliteBotMedia\n━━━━━━━━━━━━━━━━━━\n\n🌍 𝐁𝐎𝐓 𝐇𝐀𝐊𝐊𝐈𝐍𝐃𝐀 𝐃𝐄𝐓𝐀𝐘𝐋𝐈 𝐁İ𝐋𝐆İ\n\n📖 𝐓Ü𝐌 Ö𝐙𝐄𝐋𝐋İ𝐊𝐋𝐄𝐑, 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐌 𝐑𝐄𝐇𝐁𝐄𝐑İ 𝐕𝐄 𝐆Ü𝐍𝐂𝐄𝐋 𝐒Ü𝐑Ü𝐌𝐋𝐄𝐑:\n🔗 www.elitebot.com\n━━━━━━━━━━━━━━━━━━\n\n🛒 𝐒𝐀𝐓𝐈𝐍 𝐀𝐋𝐌𝐀 & 𝐈𝐋𝐄𝐓İŞİ𝐌\n\n👤 𝐒𝐀𝐓𝐈Ş 𝐘𝐄𝐓𝐊İ𝐋𝐈𝐒İ: @EliteNetworkk ✅\n💬 𝐃𝐄𝐒𝐓𝐄𝐊 𝐇𝐀𝐓𝐓𝐈: @EliteBotMedya\n📣 𝐑𝐄𝐒𝐌Î 𝐑𝐄𝐅 𝐊𝐀𝐍𝐀𝐋𝐈: @EliteBotMedia ✅\n━━━━━━━━━━━━━━━━━━\n\n⚠️ 𝐋Ü𝐓𝐅𝐄𝐍 Ö𝐃𝐄𝐌𝐄 𝐘𝐀𝐏𝐌𝐀𝐃𝐀𝐍 Ö𝐍𝐂𝐄 𝐒𝐀𝐃𝐄𝐂𝐄 𝐑𝐄𝐒𝐌Î 𝐇𝐄𝐒𝐀𝐏𝐋𝐀𝐑𝐈𝐌𝐈𝐙𝐈 𝐃𝐎Ğ𝐑𝐔𝐋𝐀𝐘𝐀𝐑𝐀𝐊 İŞ𝐋𝐄𝐌 𝐘𝐀𝐏𝐈𝐍𝐈𝐙.",
+        about: "👑 𝐄𝐋𝐈𝐓𝐄 𝐎𝐓𝐎𝐌𝐄𝐒𝐀𝐉 𝐁𝐎𝐓𝐔\n\n🌐 𝐒𝐈𝐓𝐄: www.elitebot.com\n🛡️ 𝐑𝐄𝐒𝐌Î 𝐘Ö𝐍𝐄𝐓İ𝐂İ: @EliteNetworkk ✅\n👥 𝐀𝐊𝐓İ𝐅 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐂𝐈: 𝟏𝟎𝟎𝟎+\n━━━━━━━━━━━━━━━━━━\n\n🚀 𝐌𝐎𝐁İ𝐋 & 𝐁İ𝐋𝐆𝐈𝐒𝐀𝐘𝐀𝐑 𝐃𝐄𝐒𝐓𝐄𝐊𝐋İ\n🤖 𝐎𝐓𝐎𝐌𝐀𝐓İ𝐊 𝐌𝐄𝐒𝐀𝐉 𝐒İ𝐒𝐓𝐄𝐌İ\n⚡ 𝐇ı𝐙𝐋𝐈 • 𝐆Ü𝐕𝐄𝐍𝐋İ • 𝐏𝐑𝐎𝐅𝐄𝐒𝐘𝐎𝐍𝐄𝐋\n━━━━━━━━━━━━━━━━━━\n\n💎 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ & 𝐅𝐈𝐘𝐀𝐓𝐋𝐀𝐑\n\n📌 𝐆Ü𝐍𝐂𝐄𝐋 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ, 𝐊𝐀𝐌𝐏𝐀𝐍𝐘𝐀𝐋𝐀𝐑 𝐕𝐄 𝐅𝐈𝐘𝐀𝐓 𝐃𝐄𝐓𝐀𝐘𝐋𝐀𝐑𝐈:\n📢 @EliteBotMedia\n━━━━━━━━━━━━━━━━━━\n\n🌍 𝐁𝐎𝐓 𝐇𝐀𝐊𝐊𝐈𝐍𝐃𝐀 𝐃𝐄𝐓𝐀𝐘𝐋𝐈 𝐁İ𝐋𝐆İ\n\n📖 𝐓Ü𝐌 Ö𝐙𝐄𝐋𝐋İ𝐊𝐋𝐄𝐑, 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐌 𝐑𝐄𝐇𝐁𝐄𝐑İ 𝐕𝐄 𝐆Ü𝐍𝐂𝐄𝐋 𝐒Ü𝐑Ü𝐌𝐋𝐄𝐑:\n🔗 www.elitebot.com\n━━━━━━━━━━━━━━━━━━\n\n🛒 𝐒𝐀𝐓𝐈𝐍 𝐀𝐋𝐌𝐀 & 𝐈𝐋𝐄𝐓İŞİ𝐌\n\n👤 𝐒𝐀𝐓𝐈Ş 𝐘𝐄𝐓𝐊İ𝐋𝐈𝐒İ: @EliteNetworkk ✅\n💬 𝐃𝐄𝐒𝐓𝐄𝐊 𝐇𝐀𝐓𝐓𝐈: @EliteBotMedya\n📣 𝐑𝐄𝐒𝐌Î 𝐑𝐄𝐅 𝐊𝐀𝐍𝐀𝐋𝐈: @EliteBotMedia ✅\n━━━━━━━━━━━━━━━━━━\n\n⚠️ 𝐋Ü𝐓𝐅𝐄𝐍 Ö𝐃𝐄𝐌𝐄 𝐘𝐀𝐏𝐌𝐀𝐃𝐀𝐍 Ö𝐍𝐂𝐄 𝐒𝐀𝐃𝐄𝐂𝐄 𝐑𝐄𝐒𝐌Î 𝐇𝐄𝐒𝐀𝐏𝐋𝐀𝐑𝐈𝐌𝐈𝐙𝐈 𝐃𝐎Ğ𝐑𝐔𝐋𝐀𝐘𝐀𝐑𝐀𝐊 İŞ𝐋𝐄𝐌 𝐘𝐀𝐏𝐈𝐍𝐈𝐙.",
         sub_msg: "Пожалуйста, подпишитесь на каналы ниже:", sub_btn: "✅ Подтвердить подписку", checking: "⏳ Проверка подписки...",
         confirmed: "✅ Подтверждено!", not_subscribed: "❌ Вы еще не подписались на все каналы! Пожалуйста, сначала подпишитесь и проверьте снова.",
         menu_unlic: "Пожалуйста, активируйте лицензию:", btn_act_lic: "🔑 Активировать лицензию",
@@ -401,7 +405,7 @@ const defaultAboutText = `👑 𝐄𝐋𝐈𝐓𝐄 𝐎𝐓𝐎𝐌𝐄𝐒𝐀
 👥 𝐀𝐊𝐓İ𝐅 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐂𝐈: 𝟏𝟎𝟎𝟎+
 ━━━━━━━━━━━━━━━━━━
 
-🚀 𝐌𝐎𝐁İ𝐋 & 𝐁İ𝐋𝐆İ𝐒𝐀𝐘𝐀𝐑 𝐃𝐄𝐒𝐓𝐄𝐊𝐋İ
+🚀 𝐌𝐎𝐁İ𝐋 & 𝐁İ𝐋𝐆𝐈𝐒𝐀𝐘𝐀𝐑 𝐃𝐄𝐒𝐓𝐄𝐊𝐋İ
 🤖 𝐎𝐓𝐎𝐌𝐀𝐓İ𝐊 𝐌𝐄𝐒𝐀𝐉 𝐒İ𝐒𝐓𝐄𝐌İ
 ⚡ 𝐇ı𝐙𝐋𝐈 • 𝐆Ü𝐕𝐄𝐍𝐋İ • 𝐏𝐑𝐎𝐅𝐄𝐒𝐘𝐎𝐍𝐄𝐋
 ━━━━━━━━━━━━━━━━━━
@@ -979,13 +983,6 @@ bot.on('callback_query', async (query) => {
       return showMainMenu(chatId, userLang);
     }
 
-    if (data === "delete_auto_reply") {
-      await setDB(`users/${chatId}/autoReplyMessage`, null);
-      await setDB(`users/${chatId}/autoReplyEnabled`, false);
-      bot.sendMessage(chatId, t('auto_reply_deleted', userLang)).then(m => setTimeout(() => bot.deleteMessage(chatId, m.message_id).catch(()=>{}), 3000));
-      return showMainMenu(chatId, userLang);
-    }
-
     if (data === "add_more_group") {
       await setDB(`users/${chatId}/state`, "AWAITING_GROUP");
       const keyboard = { inline_keyboard: [[{ text: t('cancel_btn', userLang), callback_data: "cancel_operation" }], [{ text: t('back_main', userLang), callback_data: "back_to_main" }]] };
@@ -1064,25 +1061,31 @@ async function sendScanPage(chatId, lang) {
 
 bot.on('message', async (msg) => {
   try {
-    if (!msg.text || msg.text.startsWith('/')) {
-      const chatId = msg.chat.id;
-      const user = await getDB(`users/${chatId}`);
-      const state = await getDB(`users/${chatId}/state`);
-      // Əgər user bot özü deyilsə və autoReplyEnabled true-dursa, cavab ver
-      if (user && user.autoReplyEnabled && user.autoReplyMessage && (!state || state === "IDLE" || state === "START")) {
-        // Botun öz mesajlarına cavab verməsin
-        const botInfo = await bot.getMe();
-        if (msg.from.id !== botInfo.id) {
-          bot.sendMessage(chatId, user.autoReplyMessage);
-        }
-      }
+    // Slash komandaları (məsələn /start) burada işlənmir
+    if (msg.text && msg.text.startsWith('/')) {
       return;
     }
 
     const chatId = msg.chat.id;
+    const user = await getDB(`users/${chatId}`);
+    const state = await getDB(`users/${chatId}/state`);
+    const botInfo = await bot.getMe();
+
+    // Əgər mesaj botun özündən gəlibsə, ignore et
+    if (msg.from.id === botInfo.id) {
+      return;
+    }
+
+    // Əgər userin avtocavabı aktivdirsə və heç bir prosesdə deyilsə, cavab ver
+    if (user && user.autoReplyEnabled && user.autoReplyMessage && (!state || state === "IDLE" || state === "START")) {
+      bot.sendMessage(chatId, user.autoReplyMessage);
+      return;
+    }
+
+    // Qalan mesajları state-lərə görə işlə
+    if (!msg.text) return;
     const text = msg.text.trim();
     const userLang = (await getDB(`users/${chatId}/lang`)) || "az";
-    const state = await getDB(`users/${chatId}/state`);
 
     if (text === t('cancel_btn', userLang)) {
       delete userSessions[chatId];
@@ -1253,15 +1256,6 @@ bot.on('message', async (msg) => {
       return sendOrUpdateScreen(chatId, t('bot_started', userLang, { phone: currentPhone, min: min }), { parse_mode: "Markdown" });
     }
 
-    // Avtomatik cavab (state IDLE olduqda)
-    const user = await getDB(`users/${chatId}`);
-    if (user && user.autoReplyEnabled && user.autoReplyMessage && (!state || state === "IDLE" || state === "START")) {
-      const botInfo = await bot.getMe();
-      if (msg.from.id !== botInfo.id) {
-        bot.sendMessage(chatId, user.autoReplyMessage);
-      }
-    }
-
   } catch (e) {
     console.error("Message handler xətası:", e);
   }
@@ -1331,12 +1325,17 @@ setInterval(async () => {
             if (sourceMessages && sourceMessages.length > 0) {
               const msgToForward = sourceMessages[0];
               // fromPeer düzgün təyin et
-              let fromPeer = msgToForward.peerId;
-              if (!fromPeer) fromPeer = msgToForward.inputPeer;
+              let fromPeer = msgToForward.peerId || msgToForward.inputPeer;
               if (!fromPeer) {
                 // əgər hələ də yoxdursa, mənbə 'me' ola bilər
-                if (source.type !== "custom") fromPeer = 'me';
-                else continue;
+                if (source.type === "custom") {
+                  const sourceEntity = await resolveTargetEntity(client, source.target);
+                  const msgs = await client.getMessages(sourceEntity, { limit: 1 });
+                  if (msgs && msgs.length > 0) {
+                    fromPeer = msgs[0].peerId || msgs[0].inputPeer;
+                  }
+                }
+                if (!fromPeer) fromPeer = 'me';
               }
 
               for (const g of groups) {
