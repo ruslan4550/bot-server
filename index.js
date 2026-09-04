@@ -1,4 +1,4 @@
-// index.js - TAM YENİ VƏ İŞLƏK VERSİYA
+// index_2.js - TAM YENİ VƏ İŞLƏK VERSİYA
 const TelegramBot = require('node-telegram-bot-api');
 const { TelegramClient, Api } = require('telegram');
 const { StringSession } = require('telegram/sessions');
@@ -58,7 +58,7 @@ async function setDB(path, data) {
 // ============ DİL FAYLLARI ============
 const langData = {
   az: {
-    about: "👑 𝐄𝐋𝐈𝐓𝐄 𝐎𝐓𝐎𝐌𝐄𝐒𝐀𝐉 𝐁𝐎𝐓𝐔\n\n🌐 𝐒𝐈𝐓𝐄: www.elitebot.com\n🛡️ 𝐑𝐄𝐒𝐌Î 𝐘Ö𝐍𝐄𝐓İ𝐂İ: @EliteNetworkk ✅\n👥 𝐀𝐊𝐓İ𝐅 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐂𝐈: 𝟏𝟎𝟎𝟎+\n━━━━━━━━━━━━━━━━━━\n\n🚀 𝐌𝐎𝐁İ𝐋 & 𝐁İ𝐋𝐆İ𝐒𝐀𝐘𝐀𝐑 𝐃𝐄𝐒𝐓𝐄𝐊𝐋İ\n🤖 𝐎𝐓𝐎𝐌𝐀𝐓İ𝐊 𝐌𝐄𝐒𝐀𝐉 𝐒İ𝐒𝐓𝐄𝐌İ\n⚡ 𝐇ı𝐙𝐋𝐈 • 𝐆Ü𝐕𝐄𝐍𝐋İ • 𝐏𝐑𝐎𝐅𝐄𝐒𝐘𝐎𝐍𝐄𝐋\n━━━━━━━━━━━━━━━━━━\n\n💎 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ & 𝐅İ𝐘𝐀𝐓𝐋𝐀𝐑\n\n📌 𝐆Ü𝐍𝐂𝐄𝐋 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ, 𝐊𝐀𝐌𝐏𝐀𝐍𝐘𝐀𝐋𝐀𝐑 𝐕𝐄 𝐅𝐈𝐘𝐀𝐓 𝐃𝐄𝐓𝐀𝐘𝐋𝐀𝐑𝐈:\n📢 @EliteBotMedia\n━━━━━━━━━━━━━━━━━━\n\n🌍 𝐁𝐎𝐓 𝐇𝐀𝐊𝐊𝐈𝐍𝐃𝐀 𝐃𝐄𝐓𝐀𝐘𝐋𝐈 𝐁İ𝐋𝐆İ\n\n📖 𝐓Ü𝐌 Ö𝐙𝐄𝐋𝐋İ𝐊𝐋𝐄𝐑, 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐌 𝐑𝐄𝐇𝐁𝐄𝐑İ 𝐕𝐄 𝐆Ü𝐍𝐂𝐄𝐋 𝐒Ü𝐑Ü𝐌𝐋𝐄𝐑:\n🔗 www.elitebot.com\n━━━━━━━━━━━━━━━━━━\n\n🛒 𝐒𝐀𝐓𝐈𝐍 𝐀𝐋𝐌𝐀 & 𝐈𝐋𝐄𝐓İŞİ𝐌\n\n👤 𝐒𝐀𝐓𝐈Ş 𝐘𝐄𝐓𝐊İ𝐋𝐈𝐒İ: @EliteNetworkk ✅\n💬 𝐃𝐄𝐒𝐓𝐄𝐊 𝐇𝐀𝐓𝐓𝐈: @EliteBotMedya\n📣 𝐑𝐄𝐒𝐌Î 𝐑𝐄𝐅 𝐊𝐀𝐍𝐀𝐋𝐈: @EliteBotMedia ✅\n━━━━━━━━━━━━━━━━━━\n\n⚠️ 𝐋Ü𝐓𝐅𝐄𝐍 Ö𝐃𝐄𝐌𝐄 𝐘𝐀𝐏𝐌𝐀𝐃𝐀𝐍 Ö𝐍𝐂𝐄 𝐒𝐀𝐃𝐄𝐂𝐄 𝐑𝐄𝐒𝐌Î 𝐇𝐄𝐒𝐀𝐏𝐋𝐀𝐑𝐈𝐌𝐈𝐙𝐈 𝐃𝐎Ğ𝐑𝐔𝐋𝐀𝐘𝐀𝐑𝐀𝐊 İŞ𝐋𝐄𝐌 𝐘𝐀𝐏𝐈𝐍𝐈𝐙.",
+    about: "🤖 *ELITE OTOMESAJ BOTU*\n\nXoş gəlmisiniz! Zəhmət olmasa, aşağıdakı menyudan əməliyyat seçin.",
     sub_msg: "Aşağıdakı kanallara abunə olun:",
     sub_btn: "✅ Abunəlikləri Təsdiqlə",
     checking: "⏳ Abunəlik yoxlanılır...",
@@ -141,7 +141,7 @@ const langData = {
     scan_confirm: "✅ Seçilmişləri əlavə et",
     scan_more: "⏭ Növbəti",
     scan_back: "⏮ Əvvəlki",
-    scan_done: "✅ {count} qrup əlavə edildi.",
+    scan_done: "✅ {count} qrup əlavə edildi və aktivləşdirildi.",
     no_groups_found: "❌ Heç bir qrup tapılmadı.",
     scan_page: "Səhifə {page}/{total}",
     new_interval_prompt: "⏱ Yeni interval (2-5):",
@@ -155,7 +155,7 @@ const langData = {
     auto_reply_disabled: "✅ Avtocavab dayandırıldı."
   },
   tr: {
-    about: "👑 𝐄𝐋𝐈𝐓𝐄 𝐎𝐓𝐎𝐌𝐄𝐒𝐀𝐉 𝐁𝐎𝐓𝐔\n\n🌐 𝐒𝐈𝐓𝐄: www.elitebot.com\n🛡️ 𝐑𝐄𝐒𝐌Î 𝐘Ö𝐍𝐄𝐓İ𝐂İ: @EliteNetworkk ✅\n👥 𝐀𝐊𝐓İ𝐅 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐂𝐈: 𝟏𝟎𝟎𝟎+\n━━━━━━━━━━━━━━━━━━\n\n🚀 𝐌𝐎𝐁İ𝐋 & 𝐁İ𝐋𝐆İ𝐒𝐀𝐘𝐀𝐑 𝐃𝐄𝐒𝐓𝐄𝐊𝐋İ\n🤖 𝐎𝐓𝐎𝐌𝐀𝐓İ𝐊 𝐌𝐄𝐒𝐀𝐉 𝐒İ𝐒𝐓𝐄𝐌İ\n⚡ 𝐇ı𝐙𝐋𝐈 • 𝐆Ü𝐕𝐄𝐍𝐋İ • 𝐏𝐑𝐎𝐅𝐄𝐒𝐘𝐎𝐍𝐄𝐋\n━━━━━━━━━━━━━━━━━━\n\n💎 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ & 𝐅𝐈𝐘𝐀𝐓𝐋𝐀𝐑\n\n📌 𝐆Ü𝐍𝐂𝐄𝐋 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ, 𝐊𝐀𝐌𝐏𝐀𝐍𝐘𝐀𝐋𝐀𝐑 𝐕𝐄 𝐅𝐈𝐘𝐀𝐓 𝐃𝐄𝐓𝐀𝐘𝐋𝐀𝐑𝐈:\n📢 @EliteBotMedia\n━━━━━━━━━━━━━━━━━━\n\n🌍 𝐁𝐎𝐓 𝐇𝐀𝐊𝐊𝐈𝐍𝐃𝐀 𝐃𝐄𝐓𝐀𝐘𝐋𝐈 𝐁İ𝐋𝐆İ\n\n📖 𝐓Ü𝐌 Ö𝐙𝐄𝐋𝐋İ𝐊𝐋𝐄𝐑, 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐌 𝐑𝐄𝐇𝐁𝐄𝐑İ 𝐕𝐄 𝐆Ü𝐍𝐂𝐄𝐋 𝐒Ü𝐑Ü𝐌𝐋𝐄𝐑:\n🔗 www.elitebot.com\n━━━━━━━━━━━━━━━━━━\n\n🛒 𝐒𝐀𝐓𝐈𝐍 𝐀𝐋𝐌𝐀 & 𝐈𝐋𝐄𝐓İŞİ𝐌\n\n👤 𝐒𝐀𝐓𝐈Ş 𝐘𝐄𝐓𝐊İ𝐋𝐈𝐒İ: @EliteNetworkk ✅\n💬 𝐃𝐄𝐒𝐓𝐄𝐊 𝐇𝐀𝐓𝐓𝐈: @EliteBotMedya\n📣 𝐑𝐄𝐒𝐌Î 𝐑𝐄𝐅 𝐊𝐀𝐍𝐀𝐋𝐈: @EliteBotMedia ✅\n━━━━━━━━━━━━━━━━━━\n\n⚠️ 𝐋Ü𝐓𝐅𝐄𝐍 Ö𝐃𝐄𝐌𝐄 𝐘𝐀𝐏𝐌𝐀𝐃𝐀𝐍 Ö𝐍𝐂𝐄 𝐒𝐀𝐃𝐄𝐂𝐄 𝐑𝐄𝐒𝐌Î 𝐇𝐄𝐒𝐀𝐏𝐋𝐀𝐑𝐈𝐌𝐈𝐙𝐈 𝐃𝐎Ğ𝐑𝐔𝐋𝐀𝐘𝐀𝐑𝐀𝐊 İŞ𝐋𝐄𝐌 𝐘𝐀𝐏𝐈𝐍𝐈𝐙.",
+    about: "🤖 *ELITE OTOMESAJ BOTU*\n\nHoş geldiniz! Lütfen aşağıdaki menüden işlem seçiniz.",
     sub_msg: "Aşağıdaki kanallara abone olun:",
     sub_btn: "✅ Abonelikleri Doğrula",
     checking: "⏳ Abonelik kontrol ediliyor...",
@@ -238,7 +238,7 @@ const langData = {
     scan_confirm: "✅ Seçilenleri ekle",
     scan_more: "⏭ Sonraki",
     scan_back: "⏮ Önceki",
-    scan_done: "✅ {count} grup eklendi.",
+    scan_done: "✅ {count} grup eklendi ve aktif edildi.",
     no_groups_found: "❌ Hiç grup bulunamadı.",
     scan_page: "Sayfa {page}/{total}",
     new_interval_prompt: "⏱ Yeni aralık (2-5):",
@@ -252,7 +252,7 @@ const langData = {
     auto_reply_disabled: "✅ Otomatik yanıt durduruldu."
   },
   en: {
-    about: "👑 𝐄𝐋𝐈𝐓𝐄 𝐎𝐓𝐎𝐌𝐄𝐒𝐀𝐉 𝐁𝐎𝐓𝐔\n\n🌐 𝐒𝐈𝐓𝐄: www.elitebot.com\n🛡️ 𝐑𝐄𝐒𝐌Î 𝐘Ö𝐍𝐄𝐓İ𝐂İ: @EliteNetworkk ✅\n👥 𝐀𝐊𝐓İ𝐅 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐂𝐈: 𝟏𝟎𝟎𝟎+\n━━━━━━━━━━━━━━━━━━\n\n🚀 𝐌𝐎𝐁İ𝐋 & 𝐁İ𝐋𝐆İ𝐒𝐀𝐘𝐀𝐑 𝐃𝐄𝐒𝐓𝐄𝐊𝐋İ\n🤖 𝐎𝐓𝐎𝐌𝐀𝐓İ𝐊 𝐌𝐄𝐒𝐀𝐉 𝐒İ𝐒𝐓𝐄𝐌İ\n⚡ 𝐇ı𝐙𝐋𝐈 • 𝐆Ü𝐕𝐄𝐍𝐋İ • 𝐏𝐑𝐎𝐅𝐄𝐒𝐘𝐎𝐍𝐄𝐋\n━━━━━━━━━━━━━━━━━━\n\n💎 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ & 𝐅𝐈𝐘𝐀𝐓𝐋𝐀𝐑\n\n📌 𝐆Ü𝐍𝐂𝐄𝐋 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ, 𝐊𝐀𝐌𝐏𝐀𝐍𝐘𝐀𝐋𝐀𝐑 𝐕𝐄 𝐅𝐈𝐘𝐀𝐓 𝐃𝐄𝐓𝐀𝐘𝐋𝐀𝐑𝐈:\n📢 @EliteBotMedia\n━━━━━━━━━━━━━━━━━━\n\n🌍 𝐁𝐎𝐓 𝐇𝐀𝐊𝐊𝐈𝐍𝐃𝐀 𝐃𝐄𝐓𝐀𝐘𝐋𝐈 𝐁İ𝐋𝐆İ\n\n📖 𝐓Ü𝐌 Ö𝐙𝐄𝐋𝐋İ𝐊𝐋𝐄𝐑, 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐌 𝐑𝐄𝐇𝐁𝐄𝐑İ 𝐕𝐄 𝐆Ü𝐍𝐂𝐄𝐋 𝐒Ü𝐑Ü𝐌𝐋𝐄𝐑:\n🔗 www.elitebot.com\n━━━━━━━━━━━━━━━━━━\n\n🛒 𝐒𝐀𝐓𝐈𝐍 𝐀𝐋𝐌𝐀 & 𝐈𝐋𝐄𝐓İŞİ𝐌\n\n👤 𝐒𝐀𝐓𝐈Ş 𝐘𝐄𝐓𝐊İ𝐋𝐈𝐒İ: @EliteNetworkk ✅\n💬 𝐃𝐄𝐒𝐓𝐄𝐊 𝐇𝐀𝐓𝐓𝐈: @EliteBotMedya\n📣 𝐑𝐄𝐒𝐌Î 𝐑𝐄𝐅 𝐊𝐀𝐍𝐀𝐋𝐈: @EliteBotMedia ✅\n━━━━━━━━━━━━━━━━━━\n\n⚠️ 𝐋Ü𝐓𝐅𝐄𝐍 Ö𝐃𝐄𝐌𝐄 𝐘𝐀𝐏𝐌𝐀𝐃𝐀𝐍 Ö𝐍𝐂𝐄 𝐒𝐀𝐃𝐄𝐂𝐄 𝐑𝐄𝐒𝐌Î 𝐇𝐄𝐒𝐀𝐏𝐋𝐀𝐑𝐈𝐌𝐈𝐙𝐈 𝐃𝐎Ğ𝐑𝐔𝐋𝐀𝐘𝐀𝐑𝐀𝐊 İŞ𝐋𝐄𝐌 𝐘𝐀𝐏𝐈𝐍𝐈𝐙.",
+    about: "🤖 *ELITE OTOMESAJ BOTU*\n\nWelcome! Please select an operation from the menu below.",
     sub_msg: "Please subscribe to the channels below:",
     sub_btn: "✅ Verify Subscriptions",
     checking: "⏳ Checking...",
@@ -335,7 +335,7 @@ const langData = {
     scan_confirm: "✅ Add selected",
     scan_more: "⏭ Next",
     scan_back: "⏮ Previous",
-    scan_done: "✅ {count} groups added.",
+    scan_done: "✅ {count} groups added and activated.",
     no_groups_found: "❌ No groups found.",
     scan_page: "Page {page}/{total}",
     new_interval_prompt: "⏱ New interval (2-5):",
@@ -349,7 +349,7 @@ const langData = {
     auto_reply_disabled: "✅ Auto-reply disabled."
   },
   ru: {
-    about: "👑 𝐄𝐋𝐈𝐓𝐄 𝐎𝐓𝐎𝐌𝐄𝐒𝐀𝐉 𝐁𝐎𝐓𝐔\n\n🌐 𝐒𝐈𝐓𝐄: www.elitebot.com\n🛡️ 𝐑𝐄𝐒𝐌Î 𝐘Ö𝐍𝐄𝐓İ𝐂İ: @EliteNetworkk ✅\n👥 𝐀𝐊𝐓İ𝐅 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐂𝐈: 𝟏𝟎𝟎𝟎+\n━━━━━━━━━━━━━━━━━━\n\n🚀 𝐌𝐎𝐁İ𝐋 & 𝐁İ𝐋𝐆İ𝐒𝐀𝐘𝐀𝐑 𝐃𝐄𝐒𝐓𝐄𝐊𝐋İ\n🤖 𝐎𝐓𝐎𝐌𝐀𝐓İ𝐊 𝐌𝐄𝐒𝐀𝐉 𝐒İ𝐒𝐓𝐄𝐌İ\n⚡ 𝐇ı𝐙𝐋𝐈 • 𝐆Ü𝐕𝐄𝐍𝐋İ • 𝐏𝐑𝐎𝐅𝐄𝐒𝐘𝐎𝐍𝐄𝐋\n━━━━━━━━━━━━━━━━━━\n\n💎 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ & 𝐅𝐈𝐘𝐀𝐓𝐋𝐀𝐑\n\n📌 𝐆Ü𝐍𝐂𝐄𝐋 𝐋İ𝐒𝐀𝐍𝐒 𝐏𝐀𝐊𝐄𝐓𝐋𝐄𝐑İ, 𝐊𝐀𝐌𝐏𝐀𝐍𝐘𝐀𝐋𝐀𝐑 𝐕𝐄 𝐅𝐈𝐘𝐀𝐓 𝐃𝐄𝐓𝐀𝐘𝐋𝐀𝐑𝐈:\n📢 @EliteBotMedia\n━━━━━━━━━━━━━━━━━━\n\n🌍 𝐁𝐎𝐓 𝐇𝐀𝐊𝐊𝐈𝐍𝐃𝐀 𝐃𝐄𝐓𝐀𝐘𝐋𝐈 𝐁İ𝐋𝐆İ\n\n📖 𝐓Ü𝐌 Ö𝐙𝐄𝐋𝐋İ𝐊𝐋𝐄𝐑, 𝐊𝐔𝐋𝐋𝐀𝐍𝐈𝐌 𝐑𝐄𝐇𝐁𝐄𝐑İ 𝐕𝐄 𝐆Ü𝐍𝐂𝐄𝐋 𝐒Ü𝐑Ü𝐌𝐋𝐄𝐑:\n🔗 www.elitebot.com\n━━━━━━━━━━━━━━━━━━\n\n🛒 𝐒𝐀𝐓𝐈𝐍 𝐀𝐋𝐌𝐀 & 𝐈𝐋𝐄𝐓İŞİ𝐌\n\n👤 𝐒𝐀𝐓𝐈Ş 𝐘𝐄𝐓𝐊İ𝐋𝐈𝐒İ: @EliteNetworkk ✅\n💬 𝐃𝐄𝐒𝐓𝐄𝐊 𝐇𝐀𝐓𝐓𝐈: @EliteBotMedya\n📣 𝐑𝐄𝐒𝐌Î 𝐑𝐄𝐅 𝐊𝐀𝐍𝐀𝐋𝐈: @EliteBotMedia ✅\n━━━━━━━━━━━━━━━━━━\n\n⚠️ 𝐋Ü𝐓𝐅𝐄𝐍 Ö𝐃𝐄𝐌𝐄 𝐘𝐀𝐏𝐌𝐀𝐃𝐀𝐍 Ö𝐍𝐂𝐄 𝐒𝐀𝐃𝐄𝐂𝐄 𝐑𝐄𝐒𝐌Î 𝐇𝐄𝐒𝐀𝐏𝐋𝐀𝐑𝐈𝐌𝐈𝐙𝐈 𝐃𝐎Ğ𝐑𝐔𝐋𝐀𝐘𝐀𝐑𝐀𝐊 İŞ𝐋𝐄𝐌 𝐘𝐀𝐏𝐈𝐍𝐈𝐙.",
+    about: "🤖 *ELITE OTOMESAJ BOTU*\n\nДобро пожаловать! Пожалуйста, выберите действие из меню ниже.",
     sub_msg: "Подпишитесь на каналы ниже:",
     sub_btn: "✅ Подтвердить подписку",
     checking: "⏳ Проверка...",
@@ -432,7 +432,7 @@ const langData = {
     scan_confirm: "✅ Добавить выбранные",
     scan_more: "⏭ Следующая",
     scan_back: "⏮ Предыдущая",
-    scan_done: "✅ {count} групп добавлено.",
+    scan_done: "✅ {count} групп добавлено и активировано.",
     no_groups_found: "❌ Групп не найдено.",
     scan_page: "Страница {page}/{total}",
     new_interval_prompt: "⏱ Новый интервал (2-5):",
@@ -526,7 +526,7 @@ async function showMainMenu(chatId) {
   }
 
   const aboutText = t('about', lang);
-  await sendOrUpdate(chatId, aboutText, { reply_markup: { inline_keyboard: keyboard } });
+  await sendOrUpdate(chatId, aboutText, { parse_mode: 'Markdown', reply_markup: { inline_keyboard: keyboard } });
 }
 
 async function isSubscribed(userId) {
@@ -544,7 +544,6 @@ async function isSubscribed(userId) {
   return true;
 }
 
-// XƏTALARI QARŞISINI ALAN YENİLƏNMİŞ resolveEntity FUNKSİYASI
 async function resolveEntity(client, raw) {
   let input = String(raw).trim();
   if (input.startsWith('chat:')) {
@@ -578,7 +577,7 @@ bot.onText(/\/start/, async (msg) => {
       [{ text: '🇬🇧 English', callback_data: 'lang_en' }, { text: '🇷🇺 Русский', callback_data: 'lang_ru' }]
     ]
   };
-  const sent = await bot.sendMessage(chatId, 'Dil seçin:', { reply_markup: keyboard });
+  const sent = await bot.sendMessage(chatId, 'Dil seçin / Select language:', { reply_markup: keyboard });
   mainMsgIds[chatId] = sent.message_id;
 });
 
@@ -589,7 +588,6 @@ bot.on('callback_query', async (query) => {
   const lang = user.lang || 'az';
   await bot.answerCallbackQuery(query.id);
 
-  // Dil seçimi
   if (data.startsWith('lang_')) {
     const newLang = data.split('_')[1];
     await setDB(`users/${chatId}/lang`, newLang);
@@ -634,7 +632,6 @@ bot.on('callback_query', async (query) => {
     return;
   }
 
-  // Lisenziya aktivləşdirmə
   if (data === 'enter_license') {
     await setDB(`users/${chatId}/state`, 'AWAITING_LICENSE');
     const keyboard = {
@@ -646,7 +643,6 @@ bot.on('callback_query', async (query) => {
     return;
   }
 
-  // Yeni nömrə əlavə et
   if (data === 'add_new_number') {
     const userData = await getDB(`users/${chatId}`);
     if (!userData?.activeLicense) {
@@ -673,7 +669,6 @@ bot.on('callback_query', async (query) => {
     return;
   }
 
-  // Hesablarım
   if (data === 'manage_numbers') {
     const userData = await getDB(`users/${chatId}`);
     if (!userData?.accounts || Object.keys(userData.accounts).length === 0) {
@@ -705,7 +700,6 @@ bot.on('callback_query', async (query) => {
     return;
   }
 
-  // Avtocavab menyusu
   if (data === 'auto_reply_menu') {
     const userData = await getDB(`users/${chatId}`) || {};
     const enabled = userData.autoReplyEnabled || false;
@@ -743,7 +737,6 @@ bot.on('callback_query', async (query) => {
     return;
   }
 
-  // Dayandır / Başlat
   if (data.startsWith('toggle_')) {
     const phone = data.replace('toggle_', '');
     const acc = await getDB(`users/${chatId}/accounts/${phone}`);
@@ -757,7 +750,6 @@ bot.on('callback_query', async (query) => {
     return;
   }
 
-  // Interval dəyiş
   if (data.startsWith('chint_')) {
     const phone = data.replace('chint_', '');
     await setDB(`users/${chatId}/state`, 'AWAITING_CHANGE_INTERVAL');
@@ -767,7 +759,6 @@ bot.on('callback_query', async (query) => {
     return;
   }
 
-  // Qrup skanı - BIGINT XƏTASI BURADA HƏLL OLUNDU (toString əlavə edildi)
   if (data.startsWith('scan_')) {
     const phone = data.replace('scan_', '');
     const acc = await getDB(`users/${chatId}/accounts/${phone}`);
@@ -782,7 +773,7 @@ bot.on('callback_query', async (query) => {
       await client.connect();
       const dialogs = await client.getDialogs({ limit: 200 });
       const groups = dialogs.filter(d => d.isGroup || d.isChannel).map(d => ({
-        id: (d.entity?.id ? d.entity.id.toString() : d.id.toString()), // JSON Error-un qarşısı alınır
+        id: (d.entity?.id ? d.entity.id.toString() : d.id.toString()),
         title: d.title || 'Bilinməyən',
         username: d.entity?.username || d.username || ''
       }));
@@ -833,25 +824,31 @@ bot.on('callback_query', async (query) => {
     });
     const existing = await getDB(`users/${chatId}/accounts/${phone}/targetGroups`) || [];
     const merged = [...new Set([...existing, ...selected])];
+    
     await setDB(`users/${chatId}/accounts/${phone}/targetGroups`, merged);
+    await setDB(`users/${chatId}/accounts/${phone}/status`, 'ACTIVE'); // Nömrəni həmişə aktiv edir
+    
+    // İnterval təyin edilməyibsə standart olaraq 2 dəqiqə edirik ki, dərhal işləsin
+    const acc = await getDB(`users/${chatId}/accounts/${phone}`);
+    if (!acc.intervalMinutes) {
+      await setDB(`users/${chatId}/accounts/${phone}/intervalMinutes`, 2);
+    }
+
     delete userSessions[chatId];
 
-    if (selected.length > 0) {
-      const acc = await getDB(`users/${chatId}/accounts/${phone}`);
-      if (acc?.telegramSession) {
-        let cl;
-        try {
-          cl = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 3 });
-          await cl.connect();
-          for (const g of selected) {
-            try {
-              const entityTarget = await resolveEntity(cl, g);
-              const entity = await cl.getEntity(entityTarget).catch(() => entityTarget);
-              if (entity) await cl.sendMessage(entity, { message: '✅ Bot bu qrupa əlavə edildi və aktivləşdirildi.' });
-            } catch (e) {}
-          }
-        } catch (e) {} finally { if (cl) try { await cl.disconnect(); } catch (e) {} }
-      }
+    if (selected.length > 0 && acc?.telegramSession) {
+      let cl;
+      try {
+        cl = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 3 });
+        await cl.connect();
+        for (const g of selected) {
+          try {
+            const entityTarget = await resolveEntity(cl, g);
+            const entity = await cl.getEntity(entityTarget).catch(() => entityTarget);
+            if (entity) await cl.sendMessage(entity, { message: '✅ Bot bu qrupa əlavə edildi və aktivləşdirildi.' });
+          } catch (e) {}
+        }
+      } catch (e) {} finally { if (cl) try { await cl.disconnect(); } catch (e) {} }
     }
     await sendOrUpdate(chatId, t('scan_done', lang, { count: selected.length }), { reply_markup: { inline_keyboard: [[{ text: t('back_main', lang), callback_data: 'back_to_main' }]] } });
     return;
@@ -877,7 +874,6 @@ bot.on('callback_query', async (query) => {
     return;
   }
 
-  // Qrupları idarə et
   if (data.startsWith('groups_')) {
     const phone = data.replace('groups_', '');
     const acc = await getDB(`users/${chatId}/accounts/${phone}`);
@@ -925,7 +921,6 @@ bot.on('callback_query', async (query) => {
     return;
   }
 
-  // Mənbə idarə et
   if (data.startsWith('source_')) {
     const phone = data.replace('source_', '');
     const acc = await getDB(`users/${chatId}/accounts/${phone}`);
@@ -964,7 +959,6 @@ bot.on('callback_query', async (query) => {
     return;
   }
 
-  // Silmə
   if (data.startsWith('delete_')) {
     const phone = data.replace('delete_', '');
     const kb = {
@@ -1075,7 +1069,6 @@ bot.on('message', async (msg) => {
 
     const text = msg.text.trim();
 
-    // Ləğv et
     if (text === t('cancel_btn', lang)) {
       delete userSessions[chatId];
       await setDB(`users/${chatId}/state`, 'IDLE');
@@ -1083,7 +1076,6 @@ bot.on('message', async (msg) => {
       return;
     }
 
-    // Lisenziya daxil et
     if (state === 'AWAITING_LICENSE') {
       if (!text.startsWith('ELITE-')) {
         await sendOrUpdate(chatId, t('invalid_lic', lang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', lang), callback_data: 'back_to_main' }]] } });
@@ -1110,7 +1102,6 @@ bot.on('message', async (msg) => {
       return;
     }
 
-    // Nömrə daxil et
     if (state === 'AWAITING_PHONE') {
       if (!text.startsWith('+')) {
         await sendOrUpdate(chatId, t('phone_format', lang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', lang), callback_data: 'back_to_main' }]] } });
@@ -1134,7 +1125,6 @@ bot.on('message', async (msg) => {
       return;
     }
 
-    // OTP daxil et
     if (state === 'AWAITING_OTP') {
       const session = userSessions[chatId];
       if (!session) {
@@ -1150,8 +1140,15 @@ bot.on('message', async (msg) => {
         }));
         const saved = session.client.session.save();
         const phoneKey = session.phone.replace('+', '');
+        
         await setDB(`users/${chatId}/accounts/${phoneKey}/telegramSession`, saved);
         await setDB(`users/${chatId}/accounts/${phoneKey}/targetGroups`, []);
+        
+        // Yeni qoşulan nömrəni dərhal aktiv edirik və baza konfiqurasiya veririk
+        await setDB(`users/${chatId}/accounts/${phoneKey}/status`, 'ACTIVE'); 
+        await setDB(`users/${chatId}/accounts/${phoneKey}/intervalMinutes`, 2);
+        await setDB(`users/${chatId}/accounts/${phoneKey}/messageSource`, { type: 'saved' });
+        
         const userData = await getDB(`users/${chatId}`);
         if (userData?.activeLicense) {
           await setDB(`licenses/${userData.activeLicense}/registeredPhones/${phoneKey}`, true);
@@ -1166,7 +1163,6 @@ bot.on('message', async (msg) => {
       return;
     }
 
-    // Qrup əlavə et
     if (state === 'AWAITING_GROUP') {
       const phone = await getDB(`users/${chatId}/currentPhoneSetup`);
       if (!phone) return showMainMenu(chatId);
@@ -1184,7 +1180,6 @@ bot.on('message', async (msg) => {
       return;
     }
 
-    // Xüsusi mənbə
     if (state === 'AWAITING_CUSTOM_SOURCE') {
       const phone = await getDB(`users/${chatId}/currentPhoneSetup`);
       if (!phone) return showMainMenu(chatId);
@@ -1214,7 +1209,6 @@ bot.on('message', async (msg) => {
       return;
     }
 
-    // Interval
     if (state === 'AWAITING_INTERVAL' || state === 'AWAITING_CHANGE_INTERVAL') {
       const min = parseInt(text);
       if (isNaN(min) || min < 2 || min > 5) {
@@ -1244,7 +1238,6 @@ bot.on('message', async (msg) => {
       return;
     }
 
-    // Avtomatik cavab mətni
     if (state === 'AWAITING_AUTO_REPLY') {
       await setDB(`users/${chatId}/autoReplyMessage`, text);
       await setDB(`users/${chatId}/autoReplyEnabled`, true);
@@ -1274,14 +1267,13 @@ setInterval(async () => {
         const interval = (acc.intervalMinutes || 2) * 60 * 1000;
         const timeToSendMessage = (Date.now() - (acc.lastSentAt || 0) >= interval) && groups.length > 0;
         
-        // Şəxsi avtocavab açıqdırsa yaxud qruplara mesaj vaxtı gəlibsə, bağlanırıq
         if (timeToSendMessage || (user.autoReplyEnabled && user.autoReplyMessage)) {
           let client;
           try {
             client = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 3 });
             await client.connect();
             
-            // 1. Qruplara Mesaj Göndərmə Hissəsi - ŞƏKİLLƏR, VİDEOLAR VƏ MƏTN DÜZƏLDİLDİ
+            // 1. Qruplara Mesaj Göndərmə Hissəsi
             if (timeToSendMessage) {
               const source = acc.messageSource || { type: 'saved' };
               let msgs;
@@ -1299,7 +1291,6 @@ setInterval(async () => {
                     const targetStr = await resolveEntity(client, g);
                     const target = await client.getEntity(targetStr).catch(() => targetStr);
                     if (target) {
-                      // Həm mətn, həm də media dəstəklənir (file: msg.media)
                       if (msg.message || msg.media) {
                          await client.sendMessage(target, { message: msg.message || '', file: msg.media });
                       }
@@ -1310,17 +1301,24 @@ setInterval(async () => {
               }
             }
 
-            // 2. Avtocavab Sistemi (Şəxsi Mesajlara Geri Dönüş) - YENİDƏN QURULDU VƏ İŞLƏK EDİLDİ
+            // 2. Avtocavab Sistemi (Offline/Online Geri Dönüş)
             if (user.autoReplyEnabled && user.autoReplyMessage) {
               try {
-                const pms = await client.getDialogs({ limit: 10 });
+                const pms = await client.getDialogs({ limit: 15 });
                 for (const pm of pms) {
+                  // Xətdə olmasan belə oxunmamış mesajları avtomatik görür
                   if (pm.isUser && pm.unreadCount > 0 && !pm.entity.bot) {
-                    await client.sendMessage(pm.entity, { message: user.autoReplyMessage });
-                    await client.markAsRead(pm.entity); // Spamın qarşısını alır
+                    try {
+                       await client.sendMessage(pm.entity, { message: user.autoReplyMessage });
+                       await client.markAsRead(pm.entity); // Təkrarlamanın (Spamın) qarşısını alır
+                    } catch(err) {
+                       console.error("Avtocavab mesaj göndərmə xətası:", err.message);
+                    }
                   }
                 }
-              } catch (e) {}
+              } catch (e) {
+                 console.error("Avtocavab dialog çəkmə xətası:", e.message);
+              }
             }
 
           } catch (e) {
