@@ -826,9 +826,8 @@ bot.on('callback_query', async (query) => {
     const merged = [...new Set([...existing, ...selected])];
     
     await setDB(`users/${chatId}/accounts/${phone}/targetGroups`, merged);
-    await setDB(`users/${chatId}/accounts/${phone}/status`, 'ACTIVE'); // Nömrəni həmişə aktiv edir
+    await setDB(`users/${chatId}/accounts/${phone}/status`, 'ACTIVE');
     
-    // İnterval təyin edilməyibsə standart olaraq 2 dəqiqə edirik ki, dərhal işləsin
     const acc = await getDB(`users/${chatId}/accounts/${phone}`);
     if (!acc.intervalMinutes) {
       await setDB(`users/${chatId}/accounts/${phone}/intervalMinutes`, 2);
@@ -888,7 +887,9 @@ bot.on('callback_query', async (query) => {
     else {
       groups.forEach((g, i) => {
         msg += `${i+1}. ${g}\n`;
-        kb.push([{ text: t('del_group_btn', lang, { group: g.substring(0, 20) }), callback_data: `delgroup_${phone}_${i}` }]);
+        // Emojilərin UTF-8 xətası verməməsi üçün Array.from istifadə olunur
+        const safeGroupName = Array.from(g || '').slice(0, 20).join('');
+        kb.push([{ text: t('del_group_btn', lang, { group: safeGroupName }), callback_data: `delgroup_${phone}_${i}` }]);
       });
     }
     kb.push([{ text: t('add_group_btn', lang), callback_data: `addgroup_${phone}` }]);
@@ -1040,12 +1041,16 @@ async function sendScanPage(chatId) {
   let text = t('select_groups', lang, { count: session.scanSelected.size }) + '\n\n';
   text += `📖 ${t('scan_page', lang, { page: page + 1, total })}`;
   const kb = { inline_keyboard: [] };
+  
   slice.forEach((g, i) => {
     const idx = start + i;
     const sel = session.scanSelected.has(idx);
     const emoji = sel ? '✅' : '⬜';
-    kb.inline_keyboard.push([{ text: `${emoji} ${g.title.substring(0, 25)}`, callback_data: `scanselect_${idx}` }]);
+    // XƏTA HƏLLİ: Emoji-lərin iki yerə bölünməsinin və UTF-8 xətasının qarşısını alır
+    const safeTitle = Array.from(g.title || 'Bilinməyən').slice(0, 22).join('');
+    kb.inline_keyboard.push([{ text: `${emoji} ${safeTitle}`, callback_data: `scanselect_${idx}` }]);
   });
+  
   const nav = [];
   if (page > 0) nav.push({ text: t('scan_back', lang), callback_data: 'scan_back' });
   if (page < total - 1) nav.push({ text: t('scan_more', lang), callback_data: 'scan_more' });
@@ -1144,7 +1149,6 @@ bot.on('message', async (msg) => {
         await setDB(`users/${chatId}/accounts/${phoneKey}/telegramSession`, saved);
         await setDB(`users/${chatId}/accounts/${phoneKey}/targetGroups`, []);
         
-        // Yeni qoşulan nömrəni dərhal aktiv edirik və baza konfiqurasiya veririk
         await setDB(`users/${chatId}/accounts/${phoneKey}/status`, 'ACTIVE'); 
         await setDB(`users/${chatId}/accounts/${phoneKey}/intervalMinutes`, 2);
         await setDB(`users/${chatId}/accounts/${phoneKey}/messageSource`, { type: 'saved' });
@@ -1267,6 +1271,7 @@ setInterval(async () => {
         const interval = (acc.intervalMinutes || 2) * 60 * 1000;
         const timeToSendMessage = (Date.now() - (acc.lastSentAt || 0) >= interval) && groups.length > 0;
         
+        // Əgər qrup göndərmə vaxtıdırsa VƏ YA avtocavab aktivdirsə sessiyanı aç
         if (timeToSendMessage || (user.autoReplyEnabled && user.autoReplyMessage)) {
           let client;
           try {
@@ -1301,16 +1306,23 @@ setInterval(async () => {
               }
             }
 
-            // 2. Avtocavab Sistemi (Offline/Online Geri Dönüş)
+            // 2. Avtocavab Sistemi (Offline/Online Geri Dönüş) XƏTA HƏLL EDİLDİ
             if (user.autoReplyEnabled && user.autoReplyMessage) {
               try {
                 const pms = await client.getDialogs({ limit: 15 });
                 for (const pm of pms) {
-                  // Xətdə olmasan belə oxunmamış mesajları avtomatik görür
-                  if (pm.isUser && pm.unreadCount > 0 && !pm.entity.bot) {
+                  // İnsan olub-olmaması (bot olmamalıdır) və unread olması yoxlanılır
+                  if (pm.isUser && pm.unreadCount > 0 && pm.entity && !pm.entity.bot) {
+                    // İstifadəçi öz-özünə yazanda cavab qaytarmasın
+                    if (pm.entity.isSelf) continue;
+
                     try {
                        await client.sendMessage(pm.entity, { message: user.autoReplyMessage });
-                       await client.markAsRead(pm.entity); // Təkrarlamanın (Spamın) qarşısını alır
+                       // Daha etibarlı ReadHistory API-si ilə statusu "oxunmuş" olaraq dəyişmək
+                       await client.invoke(new Api.messages.ReadHistory({
+                         peer: pm.entity,
+                         maxId: 0
+                       }));
                     } catch(err) {
                        console.error("Avtocavab mesaj göndərmə xətası:", err.message);
                     }
