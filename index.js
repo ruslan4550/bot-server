@@ -1,17 +1,21 @@
-// index_2.js - TAM YENİ VƏ İŞLƏK VERSİYA
+// index_2.js - RENDER ÜÇÜN TAM OPTİMİZƏ EDİLMİŞ SÜRƏTLİ VERSİYA
 const TelegramBot = require('node-telegram-bot-api');
 const { TelegramClient, Api } = require('telegram');
 const { StringSession } = require('telegram/sessions');
+const { Logger } = require('telegram/extensions');
 const fetch = require('node-fetch');
 const http = require('http');
+
+// GramJS-in terminalı doldurub Render-i yavaşlatmasının qarşısını alırıq
+Logger.setLevel('none');
 
 // ============ SERVER ============
 const PORT = process.env.PORT || 3000;
 http.createServer((req, res) => {
   res.writeHead(200);
-  res.end("Bot işləyir.");
+  res.end("Bot isleyir.");
 }).listen(PORT, () => {
-  console.log(`Server ${PORT} portunda işləyir.`);
+  console.log(`Server ${PORT} portunda isleyir.`);
 });
 
 // Render-da botun dayanmaması üçün hər 3 dəqiqədən bir özünə ping
@@ -25,13 +29,9 @@ const API_ID = 36726228;
 const API_HASH = "59b3c57e519c9cf2463b8725bc7c4f36";
 const FIREBASE_URL = "https://botadmin-53dc8-default-rtdb.europe-west1.firebasedatabase.app";
 
-const bot = new TelegramBot(BOT_TOKEN);
-bot.deleteWebHook().then(() => {
-  console.log("Webhook silindi, polling başladı...");
-  bot.startPolling({ restart: true });
-}).catch(() => {
-  bot.startPolling({ restart: true });
-});
+// Webhook silmək əvəzinə birbaşa polling ilə başladırıq ki, 409 xətası verməsin
+const bot = new TelegramBot(BOT_TOKEN, { polling: true });
+console.log("Bot işə düşdü və polling başladı...");
 
 // ============ DATABASE FUNKSİYALARI ============
 async function getDB(path) {
@@ -152,7 +152,8 @@ const langData = {
     auto_reply_toggle_on: "▶️ Başlat",
     auto_reply_toggle_off: "⏹ Dayandır",
     auto_reply_enabled: "✅ Avtocavab aktivləşdirildi.",
-    auto_reply_disabled: "✅ Avtocavab dayandırıldı."
+    auto_reply_disabled: "✅ Avtocavab dayandırıldı.",
+    admin_phone_change_prompt: "Nömrə yenilənməsi üçün təsdiq göndərildi."
   },
   tr: {
     about: "🤖 *ELITE OTOMESAJ BOTU*\n\nHoş geldiniz! Lütfen aşağıdaki menüden işlem seçiniz.",
@@ -249,7 +250,8 @@ const langData = {
     auto_reply_toggle_on: "▶️ Başlat",
     auto_reply_toggle_off: "⏹ Durdur",
     auto_reply_enabled: "✅ Otomatik yanıt etkinleştirildi.",
-    auto_reply_disabled: "✅ Otomatik yanıt durduruldu."
+    auto_reply_disabled: "✅ Otomatik yanıt durduruldu.",
+    admin_phone_change_prompt: "Numara güncellemesi için onay gönderildi."
   },
   en: {
     about: "🤖 *ELITE OTOMESAJ BOTU*\n\nWelcome! Please select an operation from the menu below.",
@@ -346,7 +348,8 @@ const langData = {
     auto_reply_toggle_on: "▶️ Start",
     auto_reply_toggle_off: "⏹ Stop",
     auto_reply_enabled: "✅ Auto-reply enabled.",
-    auto_reply_disabled: "✅ Auto-reply disabled."
+    auto_reply_disabled: "✅ Auto-reply disabled.",
+    admin_phone_change_prompt: "Number update confirmation sent."
   },
   ru: {
     about: "🤖 *ELITE OTOMESAJ BOTU*\n\nДобро пожаловать! Пожалуйста, выберите действие из меню ниже.",
@@ -443,7 +446,8 @@ const langData = {
     auto_reply_toggle_on: "▶️ Запустить",
     auto_reply_toggle_off: "⏹ Остановить",
     auto_reply_enabled: "✅ Автоответ включен.",
-    auto_reply_disabled: "✅ Автоответ выключен."
+    auto_reply_disabled: "✅ Автоответ выключен.",
+    admin_phone_change_prompt: "Подтверждение обновления номера отправлено."
   }
 };
 
@@ -759,9 +763,6 @@ bot.on('callback_query', async (query) => {
     return;
   }
 
-  // --- MƏNBƏ (SOURCE) VƏ SKAN DÜYMƏLƏRİNİN SIRA XƏTASI HƏLLİ ---
-  
-  // Dəqiq və tam klikləri birinci yoxlayırıq ki, aşağıdakı startsWith bloku ilə qarışmasınlar
   if (data === 'source_saved') {
     const phone = await getDB(`users/${chatId}/currentPhoneSetup`);
     if (phone) {
@@ -780,7 +781,6 @@ bot.on('callback_query', async (query) => {
     return;
   }
 
-  // Skan seçimləri, Təsdiqləmə, İrəli, Geri düymələri tam yoxlanılır
   if (data.startsWith('scanselect_')) {
     const idx = parseInt(data.split('_')[1]);
     const session = userSessions[chatId];
@@ -821,7 +821,7 @@ bot.on('callback_query', async (query) => {
     if (selected.length > 0 && acc?.telegramSession) {
       let cl;
       try {
-        cl = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 3 });
+        cl = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 1 });
         await cl.connect();
         for (const g of selected) {
           try {
@@ -856,7 +856,6 @@ bot.on('callback_query', async (query) => {
     return;
   }
 
-  // Yuxarıdakı həllərdən sonra artıq yalnız təmiz nömrə olanlar (scan_994...) bura düşəcək
   if (data.startsWith('scan_')) {
     const phone = data.replace('scan_', '');
     const acc = await getDB(`users/${chatId}/accounts/${phone}`);
@@ -867,7 +866,7 @@ bot.on('callback_query', async (query) => {
     const wait = await bot.sendMessage(chatId, t('scanning', lang));
     let client;
     try {
-      client = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 3 });
+      client = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 1 });
       await client.connect();
       const dialogs = await client.getDialogs({ limit: 200 });
       const groups = dialogs.filter(d => d.isGroup || d.isChannel).map(d => ({
@@ -910,7 +909,6 @@ bot.on('callback_query', async (query) => {
     else {
       groups.forEach((g, i) => {
         msg += `${i+1}. ${g}\n`;
-        // Emojilərin UTF-8 xətası verməməsi üçün Array.from istifadə olunur
         const safeGroupName = Array.from(g || '').slice(0, 20).join('');
         kb.push([{ text: t('del_group_btn', lang, { group: safeGroupName }), callback_data: `delgroup_${phone}_${i}` }]);
       });
@@ -945,7 +943,6 @@ bot.on('callback_query', async (query) => {
     return;
   }
 
-  // Yenə eyni məntiqlə source_ prefiksi ən sonda yoxlanılır ki, təsadüfi toqquşma olmasın
   if (data.startsWith('source_')) {
     const phone = data.replace('source_', '');
     const acc = await getDB(`users/${chatId}/accounts/${phone}`);
@@ -1053,7 +1050,6 @@ async function sendScanPage(chatId) {
     const idx = start + i;
     const sel = session.scanSelected.has(idx);
     const emoji = sel ? '✅' : '⬜';
-    // XƏTA HƏLLİ: Emoji-lərin iki yerə bölünməsinin və UTF-8 xətasının qarşısını alır
     const safeTitle = Array.from(g.title || 'Bilinməyən').slice(0, 22).join('');
     kb.inline_keyboard.push([{ text: `${emoji} ${safeTitle}`, callback_data: `scanselect_${idx}` }]);
   });
@@ -1121,7 +1117,7 @@ bot.on('message', async (msg) => {
       }
       const wait = await bot.sendMessage(chatId, t('otp_sent', lang));
       try {
-        const client = new TelegramClient(new StringSession(''), API_ID, API_HASH, { connectionRetries: 5 });
+        const client = new TelegramClient(new StringSession(''), API_ID, API_HASH, { connectionRetries: 3 });
         await client.connect();
         const { phoneCodeHash } = await client.sendCode({ apiId: API_ID, apiHash: API_HASH }, text);
         userSessions[chatId] = { client, phone: text, phoneCodeHash };
@@ -1201,7 +1197,7 @@ bot.on('message', async (msg) => {
       }
       let cl;
       try {
-        cl = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 3 });
+        cl = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 1 });
         await cl.connect();
         const entityTarget = await resolveEntity(cl, text);
         const entity = await cl.getEntity(entityTarget).catch(() => entityTarget);
@@ -1262,14 +1258,20 @@ bot.on('message', async (msg) => {
   }
 });
 
-// ============ MESAJ GÖNDƏRMƏ VƏ AVTOCAVAB INTERVALI ============
+
+// ============ PARALEL MESAJ GÖNDƏRMƏ VƏ AVTOCAVAB SİSTEMİ ============
+// Bütün hesablardakı əməliyyatlar eyni vaxtda icra ediləcək, beləcə heç bir donma olmayacaq.
 setInterval(async () => {
   try {
     const users = await getDB('users');
     if (!users) return;
+    
+    const tasks = []; // Paralel icra üçün tapşırıqlar siyahısı
+    
     for (const chatId in users) {
       const user = users[chatId];
       if (!user.accounts) continue;
+      
       for (const phone in user.accounts) {
         const acc = user.accounts[phone];
         if (acc.status !== 'ACTIVE' || !acc.telegramSession) continue;
@@ -1278,82 +1280,82 @@ setInterval(async () => {
         const interval = (acc.intervalMinutes || 2) * 60 * 1000;
         const timeToSendMessage = (Date.now() - (acc.lastSentAt || 0) >= interval) && groups.length > 0;
         
-        // Əgər qrup göndərmə vaxtıdırsa VƏ YA avtocavab aktivdirsə sessiyanı aç
         if (timeToSendMessage || (user.autoReplyEnabled && user.autoReplyMessage)) {
-          let client;
-          try {
-            client = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 3 });
-            await client.connect();
-            
-            // 1. Qruplara Mesaj Göndərmə Hissəsi
-            if (timeToSendMessage) {
-              const source = acc.messageSource || { type: 'saved' };
-              let msgs;
-              if (source.type === 'custom' && source.target) {
-                const entityTarget = await resolveEntity(client, source.target);
-                const entity = await client.getEntity(entityTarget).catch(() => entityTarget);
-                msgs = await client.getMessages(entity, { limit: 1 });
-              } else {
-                msgs = await client.getMessages('me', { limit: 1 });
-              }
-              if (msgs && msgs.length > 0) {
-                const msg = msgs[0];
-                for (const g of groups) {
-                  try {
-                    const targetStr = await resolveEntity(client, g);
-                    const target = await client.getEntity(targetStr).catch(() => targetStr);
-                    if (target) {
-                      if (msg.message || msg.media) {
-                         await client.sendMessage(target, { message: msg.message || '', file: msg.media });
-                      }
-                    }
-                  } catch (e) {}
-                }
-                await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, Date.now());
-              }
-            }
-
-            // 2. Avtocavab Sistemi (Offline/Online Geri Dönüş) - YENİDƏN DÜZƏLDİLDİ
-            if (user.autoReplyEnabled && user.autoReplyMessage) {
-              try {
-                // Limit qaldırıldı ki, çoxlu gözləyən mesaj olanda onları əldən verməsin
-                const pms = await client.getDialogs({ limit: 30 });
-                for (const pm of pms) {
-                  // İnsan olub-olmaması (bot olmamalıdır) və unread olması yoxlanılır
-                  if (pm.isUser && pm.unreadCount > 0 && pm.entity && !pm.entity.bot) {
-                    // İstifadəçi öz-özünə yazanda cavab qaytarmasın
-                    if (pm.entity.self || pm.entity.isSelf) continue;
-
-                    try {
-                       const inputPeer = await client.getInputEntity(pm.id);
-                       await client.sendMessage(inputPeer, { message: user.autoReplyMessage });
-                       // Daha etibarlı ReadHistory API-si ilə statusu "oxunmuş" olaraq dəyişmək
-                       await client.invoke(new Api.messages.ReadHistory({
-                         peer: inputPeer,
-                         maxId: 0
-                       }));
-                    } catch(err) {
-                       console.error("Avtocavab mesaj göndərmə xətası:", err.message);
-                    }
-                  }
-                }
-              } catch (e) {
-                 console.error("Avtocavab dialog çəkmə xətası:", e.message);
-              }
-            }
-
-          } catch (e) {
-            console.error('Göndərmə xətası:', e.message);
-          } finally {
-            if (client) try { await client.disconnect(); } catch (e) {}
-          }
+          tasks.push(processAccountTask(chatId, phone, user, acc, timeToSendMessage, groups));
         }
       }
     }
+    
+    // Bütün aktiv tapşırıqları ləngitmədən eyni anda icra edirik
+    await Promise.allSettled(tasks);
+    
   } catch (e) {
     console.error('Interval xətası:', e);
   }
 }, 30000);
+
+// Paralel icra üçün xüsusi funksiya
+async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, groups) {
+  let client;
+  try {
+    // Sürət üçün bağlantı təkrarını (retries) 1 edirik
+    client = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 1 });
+    await client.connect();
+    
+    // 1. Qruplara Mesaj Göndərmə
+    if (timeToSendMessage) {
+      const source = acc.messageSource || { type: 'saved' };
+      let msgs;
+      if (source.type === 'custom' && source.target) {
+        const entityTarget = await resolveEntity(client, source.target);
+        const entity = await client.getEntity(entityTarget).catch(() => entityTarget);
+        msgs = await client.getMessages(entity, { limit: 1 });
+      } else {
+        msgs = await client.getMessages('me', { limit: 1 });
+      }
+      if (msgs && msgs.length > 0) {
+        const msg = msgs[0];
+        for (const g of groups) {
+          try {
+            const targetStr = await resolveEntity(client, g);
+            const target = await client.getEntity(targetStr).catch(() => targetStr);
+            if (target) {
+              if (msg.message || msg.media) {
+                 await client.sendMessage(target, { message: msg.message || '', file: msg.media });
+              }
+            }
+          } catch (e) {}
+        }
+        await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, Date.now());
+      }
+    }
+
+    // 2. Avtocavab Sistemi
+    if (user.autoReplyEnabled && user.autoReplyMessage) {
+      try {
+        const pms = await client.getDialogs({ limit: 30 });
+        for (const pm of pms) {
+          if (pm.isUser && pm.unreadCount > 0 && pm.entity && !pm.entity.bot) {
+            if (pm.entity.self || pm.entity.isSelf) continue;
+            try {
+               const inputPeer = await client.getInputEntity(pm.id);
+               await client.sendMessage(inputPeer, { message: user.autoReplyMessage });
+               await client.invoke(new Api.messages.ReadHistory({
+                 peer: inputPeer,
+                 maxId: 0
+               }));
+            } catch(err) {}
+          }
+        }
+      } catch (e) {}
+    }
+
+  } catch (e) {
+    // Səssiz xəta yoxlaması, digər botların işini kəsməsin
+  } finally {
+    if (client) try { await client.disconnect(); } catch (e) {}
+  }
+}
 
 // ============ PENDING PHONE CHANGE ============
 setInterval(async () => {
@@ -1366,7 +1368,7 @@ setInterval(async () => {
         const newPhone = user.pendingPhoneChange.newPhone;
         const lang = user.lang || 'az';
         try {
-          const client = new TelegramClient(new StringSession(''), API_ID, API_HASH, { connectionRetries: 3 });
+          const client = new TelegramClient(new StringSession(''), API_ID, API_HASH, { connectionRetries: 1 });
           await client.connect();
           const { phoneCodeHash } = await client.sendCode({ apiId: API_ID, apiHash: API_HASH }, newPhone);
           userSessions[chatId] = { client, phone: newPhone, phoneCodeHash };
@@ -1386,5 +1388,3 @@ setInterval(async () => {
     console.error('pendingPhoneChange xətası:', e);
   }
 }, 15000);
-
-console.log('✅ EliteBot tam işə düşdü!');
