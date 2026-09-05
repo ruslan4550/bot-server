@@ -759,45 +759,28 @@ bot.on('callback_query', async (query) => {
     return;
   }
 
-  if (data.startsWith('scan_')) {
-    const phone = data.replace('scan_', '');
-    const acc = await getDB(`users/${chatId}/accounts/${phone}`);
-    if (!acc?.telegramSession) {
-      await sendOrUpdate(chatId, t('no_numbers', lang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', lang), callback_data: 'back_to_main' }]] } });
-      return;
-    }
-    const wait = await bot.sendMessage(chatId, t('scanning', lang));
-    let client;
-    try {
-      client = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 3 });
-      await client.connect();
-      const dialogs = await client.getDialogs({ limit: 200 });
-      const groups = dialogs.filter(d => d.isGroup || d.isChannel).map(d => ({
-        id: (d.entity?.id ? d.entity.id.toString() : d.id.toString()),
-        title: d.title || 'Bilinməyən',
-        username: d.entity?.username || d.username || ''
-      }));
-      await bot.deleteMessage(chatId, wait.message_id).catch(() => {});
-      if (groups.length === 0) {
-        await sendOrUpdate(chatId, t('no_groups_found', lang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', lang), callback_data: 'back_to_main' }]] } });
-        return;
-      }
-      userSessions[chatId] = {
-        scanGroups: groups,
-        scanSelected: new Set(),
-        scanPage: 0,
-        scanPhone: phone
-      };
-      await sendScanPage(chatId);
-    } catch (e) {
-      await bot.deleteMessage(chatId, wait.message_id).catch(() => {});
-      await sendOrUpdate(chatId, t('err', lang) + e.message, { reply_markup: { inline_keyboard: [[{ text: t('back_main', lang), callback_data: 'back_to_main' }]] } });
-    } finally {
-      if (client) try { await client.disconnect(); } catch (e) {}
+  // --- MƏNBƏ (SOURCE) VƏ SKAN DÜYMƏLƏRİNİN SIRA XƏTASI HƏLLİ ---
+  
+  // Dəqiq və tam klikləri birinci yoxlayırıq ki, aşağıdakı startsWith bloku ilə qarışmasınlar
+  if (data === 'source_saved') {
+    const phone = await getDB(`users/${chatId}/currentPhoneSetup`);
+    if (phone) {
+      await setDB(`users/${chatId}/accounts/${phone}/messageSource`, { type: 'saved' });
+      await setDB(`users/${chatId}/state`, 'AWAITING_INTERVAL');
+      const kb = { inline_keyboard: [[{ text: t('cancel_btn', lang), callback_data: 'cancel_operation' }]] };
+      await sendOrUpdate(chatId, t('ask_interval', lang), { reply_markup: kb });
     }
     return;
   }
 
+  if (data === 'source_custom') {
+    await setDB(`users/${chatId}/state`, 'AWAITING_CUSTOM_SOURCE');
+    const kb = { inline_keyboard: [[{ text: t('cancel_btn', lang), callback_data: 'cancel_operation' }]] };
+    await sendOrUpdate(chatId, t('enter_source', lang), { reply_markup: kb });
+    return;
+  }
+
+  // Skan seçimləri, Təsdiqləmə, İrəli, Geri düymələri tam yoxlanılır
   if (data.startsWith('scanselect_')) {
     const idx = parseInt(data.split('_')[1]);
     const session = userSessions[chatId];
@@ -873,6 +856,46 @@ bot.on('callback_query', async (query) => {
     return;
   }
 
+  // Yuxarıdakı həllərdən sonra artıq yalnız təmiz nömrə olanlar (scan_994...) bura düşəcək
+  if (data.startsWith('scan_')) {
+    const phone = data.replace('scan_', '');
+    const acc = await getDB(`users/${chatId}/accounts/${phone}`);
+    if (!acc?.telegramSession) {
+      await sendOrUpdate(chatId, t('no_numbers', lang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', lang), callback_data: 'back_to_main' }]] } });
+      return;
+    }
+    const wait = await bot.sendMessage(chatId, t('scanning', lang));
+    let client;
+    try {
+      client = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 3 });
+      await client.connect();
+      const dialogs = await client.getDialogs({ limit: 200 });
+      const groups = dialogs.filter(d => d.isGroup || d.isChannel).map(d => ({
+        id: (d.entity?.id ? d.entity.id.toString() : d.id.toString()),
+        title: d.title || 'Bilinməyən',
+        username: d.entity?.username || d.username || ''
+      }));
+      await bot.deleteMessage(chatId, wait.message_id).catch(() => {});
+      if (groups.length === 0) {
+        await sendOrUpdate(chatId, t('no_groups_found', lang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', lang), callback_data: 'back_to_main' }]] } });
+        return;
+      }
+      userSessions[chatId] = {
+        scanGroups: groups,
+        scanSelected: new Set(),
+        scanPage: 0,
+        scanPhone: phone
+      };
+      await sendScanPage(chatId);
+    } catch (e) {
+      await bot.deleteMessage(chatId, wait.message_id).catch(() => {});
+      await sendOrUpdate(chatId, t('err', lang) + e.message, { reply_markup: { inline_keyboard: [[{ text: t('back_main', lang), callback_data: 'back_to_main' }]] } });
+    } finally {
+      if (client) try { await client.disconnect(); } catch (e) {}
+    }
+    return;
+  }
+
   if (data.startsWith('groups_')) {
     const phone = data.replace('groups_', '');
     const acc = await getDB(`users/${chatId}/accounts/${phone}`);
@@ -922,6 +945,7 @@ bot.on('callback_query', async (query) => {
     return;
   }
 
+  // Yenə eyni məntiqlə source_ prefiksi ən sonda yoxlanılır ki, təsadüfi toqquşma olmasın
   if (data.startsWith('source_')) {
     const phone = data.replace('source_', '');
     const acc = await getDB(`users/${chatId}/accounts/${phone}`);
@@ -1006,23 +1030,6 @@ bot.on('callback_query', async (query) => {
     return;
   }
 
-  if (data === 'source_saved') {
-    const phone = await getDB(`users/${chatId}/currentPhoneSetup`);
-    if (phone) {
-      await setDB(`users/${chatId}/accounts/${phone}/messageSource`, { type: 'saved' });
-      await setDB(`users/${chatId}/state`, 'AWAITING_INTERVAL');
-      const kb = { inline_keyboard: [[{ text: t('cancel_btn', lang), callback_data: 'cancel_operation' }]] };
-      await sendOrUpdate(chatId, t('ask_interval', lang), { reply_markup: kb });
-    }
-    return;
-  }
-
-  if (data === 'source_custom') {
-    await setDB(`users/${chatId}/state`, 'AWAITING_CUSTOM_SOURCE');
-    const kb = { inline_keyboard: [[{ text: t('cancel_btn', lang), callback_data: 'cancel_operation' }]] };
-    await sendOrUpdate(chatId, t('enter_source', lang), { reply_markup: kb });
-    return;
-  }
 });
 
 async function sendScanPage(chatId) {
@@ -1306,21 +1313,23 @@ setInterval(async () => {
               }
             }
 
-            // 2. Avtocavab Sistemi (Offline/Online Geri Dönüş) XƏTA HƏLL EDİLDİ
+            // 2. Avtocavab Sistemi (Offline/Online Geri Dönüş) - YENİDƏN DÜZƏLDİLDİ
             if (user.autoReplyEnabled && user.autoReplyMessage) {
               try {
-                const pms = await client.getDialogs({ limit: 15 });
+                // Limit qaldırıldı ki, çoxlu gözləyən mesaj olanda onları əldən verməsin
+                const pms = await client.getDialogs({ limit: 30 });
                 for (const pm of pms) {
                   // İnsan olub-olmaması (bot olmamalıdır) və unread olması yoxlanılır
                   if (pm.isUser && pm.unreadCount > 0 && pm.entity && !pm.entity.bot) {
                     // İstifadəçi öz-özünə yazanda cavab qaytarmasın
-                    if (pm.entity.isSelf) continue;
+                    if (pm.entity.self || pm.entity.isSelf) continue;
 
                     try {
-                       await client.sendMessage(pm.entity, { message: user.autoReplyMessage });
+                       const inputPeer = await client.getInputEntity(pm.id);
+                       await client.sendMessage(inputPeer, { message: user.autoReplyMessage });
                        // Daha etibarlı ReadHistory API-si ilə statusu "oxunmuş" olaraq dəyişmək
                        await client.invoke(new Api.messages.ReadHistory({
-                         peer: pm.entity,
+                         peer: inputPeer,
                          maxId: 0
                        }));
                     } catch(err) {
