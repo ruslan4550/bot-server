@@ -14,13 +14,13 @@ const PORT = process.env.PORT || 3000;
 http.createServer((req, res) => {
   res.writeHead(200);
   res.end("Bot isleyir.");
-}).listen(PORT, () => {
+}).listen(PORT, '0.0.0.0', () => {
   console.log(`Server ${PORT} portunda isleyir.`);
 });
 
 // Render-da botun dayanmaması üçün hər 3 dəqiqədən bir özünə ping
 setInterval(() => {
-  fetch(`http://localhost:${PORT}`).catch(() => {});
+  fetch(`http://0.0.0.0:${PORT}`).catch(() => {});
 }, 180000);
 
 // ============ KONFİQ ============
@@ -29,9 +29,13 @@ const API_ID = 36726228;
 const API_HASH = "59b3c57e519c9cf2463b8725bc7c4f36";
 const FIREBASE_URL = "https://botadmin-53dc8-default-rtdb.europe-west1.firebasedatabase.app";
 
-// Webhook silmək əvəzinə birbaşa polling ilə başladırıq ki, 409 xətası verməsin
 const bot = new TelegramBot(BOT_TOKEN, { polling: true });
 console.log("Bot işə düşdü və polling başladı...");
+
+// İnternet qırılmalarında botun çökməsinin qarşısını alan xəta tutucu
+bot.on('polling_error', (error) => {
+  console.log('Polling xətası yarandı, amma bot işləməyə davam edir:', error.message);
+});
 
 // ============ DATABASE FUNKSİYALARI ============
 async function getDB(path) {
@@ -451,7 +455,6 @@ const langData = {
   }
 };
 
-// Dəyişənlərin düzgün əvəzlənməsi üçün funksiya yeniləndi
 function t(key, lang = 'az', params = {}) {
   let text = langData[lang]?.[key] || langData['az'][key] || key;
   if (params && typeof params === 'object') {
@@ -477,9 +480,9 @@ function t(key, lang = 'az', params = {}) {
 })();
 
 // ============ YARDIMÇI FUNKSİYALAR ============
-const userStates = {}; // { chatId: state }
-const userSessions = {}; // { chatId: { client, phone, hash } }
-const mainMsgIds = {}; // { chatId: messageId }
+const userStates = {}; 
+const userSessions = {}; 
+const mainMsgIds = {}; 
 
 async function sendOrUpdate(chatId, text, options = {}) {
   try {
@@ -557,7 +560,6 @@ async function isSubscribed(userId) {
 
 async function resolveEntity(client, raw) {
   let input = String(raw).trim();
-  // Qrup ID-si formatı üçün yeni düzəliş
   if (input.startsWith('chat:')) {
     let idStr = input.split(' - ')[0].slice(5);
     return idStr; 
@@ -810,7 +812,6 @@ bot.on('callback_query', async (query) => {
     }
     const phone = session.scanPhone;
     
-    // Qrupları seçərkən ID və Ad birlikdə qeyd edilir
     const selected = Array.from(session.scanSelected).map(i => {
       const g = session.scanGroups[i];
       return g.username ? `@${g.username}` : `chat:${g.id} - ${g.title}`;
@@ -829,7 +830,6 @@ bot.on('callback_query', async (query) => {
 
     delete userSessions[chatId];
     
-    // Qruplara mesaj atma bloku ləğv edildi ki, bot spam kimi görünməsin
     await sendOrUpdate(chatId, t('scan_done', lang, { count: selected.length }), { reply_markup: { inline_keyboard: [[{ text: t('back_main', lang), callback_data: 'back_to_main' }]] } });
     return;
   }
@@ -907,7 +907,6 @@ bot.on('callback_query', async (query) => {
     else {
       groups.forEach((g, i) => {
         let display = g;
-        // Əgər format "chat:ID - Ad" kimidirsə adını səliqəli göstəririk
         if (g.startsWith('chat:')) {
           const parts = g.split(' - ');
           display = parts.length > 1 ? parts.slice(1).join(' - ') : parts[0];
@@ -1289,7 +1288,6 @@ setInterval(async () => {
       }
     }
     
-    // Promise.allSettled sistemi dondurmaz
     await Promise.allSettled(tasks);
     
   } catch (e) {
@@ -1303,7 +1301,6 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
     client = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 1 });
     await client.connect();
     
-    // 1. Qruplara Mesaj Göndərmə
     if (timeToSendMessage) {
       const source = acc.messageSource || { type: 'saved' };
       let msgs;
@@ -1324,7 +1321,6 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
             if (target) {
               if (msg.message || msg.media) {
                  await client.sendMessage(target, { message: msg.message || '', file: msg.media });
-                 // İnsan kimi davranmaq və spam yeməmək üçün qruplar arası kiçik gecikmə
                  await new Promise(r => setTimeout(r, 1000 + Math.random() * 2000));
               }
             }
@@ -1334,16 +1330,14 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
       }
     }
 
-    // 2. Avtocavab Sistemi (Yeniləndi - Onlayn və oxunmuş olsa da cavab verəcək)
     if (user.autoReplyEnabled && user.autoReplyMessage) {
-      if (!global.repliedMsgs) global.repliedMsgs = {}; // Yaddaşda saxlanılan son cavablar
+      if (!global.repliedMsgs) global.repliedMsgs = {}; 
       
       try {
         const pms = await client.getDialogs({ limit: 15 });
         for (const pm of pms) {
           if (pm.isUser && pm.entity && !pm.entity.bot && !pm.entity.isSelf && !pm.entity.self) {
              const history = await client.getMessages(pm.entity, { limit: 1 });
-             // Əgər sonuncu mesajı qarşı tərəf yazıbsa
              if (history && history.length > 0 && !history[0].out) {
                 const lastMsgId = history[0].id;
                 const memKey = `${phone}_${pm.id}`;
@@ -1352,7 +1346,6 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
                    try {
                      const inputPeer = await client.getInputEntity(pm.id);
                      
-                     // Spam olmamaq üçün "Yazır..." (typing) simulyasiyası
                      await client.invoke(new Api.messages.SetTyping({
                          peer: inputPeer,
                          action: new Api.SendMessageTypingAction()
@@ -1365,7 +1358,6 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
                        maxId: 0
                      }));
                      
-                     // Bu mesaja cavab verdiyimizi qeyd edirik
                      global.repliedMsgs[memKey] = lastMsgId;
                    } catch (err) {}
                 }
