@@ -451,8 +451,15 @@ const langData = {
   }
 };
 
-function t(key, lang = 'az') {
-  return langData[lang]?.[key] || langData['az'][key] || key;
+// Dəyişənlərin düzgün əvəzlənməsi üçün funksiya yeniləndi
+function t(key, lang = 'az', params = {}) {
+  let text = langData[lang]?.[key] || langData['az'][key] || key;
+  if (params && typeof params === 'object') {
+    for (const [k, v] of Object.entries(params)) {
+      text = text.replace(new RegExp(`\\{${k}\\}`, 'g'), String(v));
+    }
+  }
+  return text;
 }
 
 // ============ DEFAULT SETTINGS ============
@@ -550,8 +557,9 @@ async function isSubscribed(userId) {
 
 async function resolveEntity(client, raw) {
   let input = String(raw).trim();
+  // Qrup ID-si formatı üçün yeni düzəliş
   if (input.startsWith('chat:')) {
-    let idStr = input.slice(5);
+    let idStr = input.split(' - ')[0].slice(5);
     return idStr; 
   }
   input = input.replace(/^https?:\/\/(t\.me|telegram\.me)\//i, '').replace(/^@/, '');
@@ -801,10 +809,13 @@ bot.on('callback_query', async (query) => {
       return;
     }
     const phone = session.scanPhone;
+    
+    // Qrupları seçərkən ID və Ad birlikdə qeyd edilir
     const selected = Array.from(session.scanSelected).map(i => {
       const g = session.scanGroups[i];
-      return g.username ? `@${g.username}` : `chat:${g.id}`;
+      return g.username ? `@${g.username}` : `chat:${g.id} - ${g.title}`;
     });
+    
     const existing = await getDB(`users/${chatId}/accounts/${phone}/targetGroups`) || [];
     const merged = [...new Set([...existing, ...selected])];
     
@@ -817,21 +828,8 @@ bot.on('callback_query', async (query) => {
     }
 
     delete userSessions[chatId];
-
-    if (selected.length > 0 && acc?.telegramSession) {
-      let cl;
-      try {
-        cl = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 1 });
-        await cl.connect();
-        for (const g of selected) {
-          try {
-            const entityTarget = await resolveEntity(cl, g);
-            const entity = await cl.getEntity(entityTarget).catch(() => entityTarget);
-            if (entity) await cl.sendMessage(entity, { message: '✅ Bot bu qrupa əlavə edildi və aktivləşdirildi.' });
-          } catch (e) {}
-        }
-      } catch (e) {} finally { if (cl) try { await cl.disconnect(); } catch (e) {} }
-    }
+    
+    // Qruplara mesaj atma bloku ləğv edildi ki, bot spam kimi görünməsin
     await sendOrUpdate(chatId, t('scan_done', lang, { count: selected.length }), { reply_markup: { inline_keyboard: [[{ text: t('back_main', lang), callback_data: 'back_to_main' }]] } });
     return;
   }
@@ -908,8 +906,14 @@ bot.on('callback_query', async (query) => {
     if (groups.length === 0) msg += t('no_groups', lang);
     else {
       groups.forEach((g, i) => {
-        msg += `${i+1}. ${g}\n`;
-        const safeGroupName = Array.from(g || '').slice(0, 20).join('');
+        let display = g;
+        // Əgər format "chat:ID - Ad" kimidirsə adını səliqəli göstəririk
+        if (g.startsWith('chat:')) {
+          const parts = g.split(' - ');
+          display = parts.length > 1 ? parts.slice(1).join(' - ') : parts[0];
+        }
+        msg += `${i+1}. ${display}\n`;
+        const safeGroupName = Array.from(display || '').slice(0, 20).join('');
         kb.push([{ text: t('del_group_btn', lang, { group: safeGroupName }), callback_data: `delgroup_${phone}_${i}` }]);
       });
     }
@@ -1260,13 +1264,12 @@ bot.on('message', async (msg) => {
 
 
 // ============ PARALEL MESAJ GÖNDƏRMƏ VƏ AVTOCAVAB SİSTEMİ ============
-// Bütün hesablardakı əməliyyatlar eyni vaxtda icra ediləcək, beləcə heç bir donma olmayacaq.
 setInterval(async () => {
   try {
     const users = await getDB('users');
     if (!users) return;
     
-    const tasks = []; // Paralel icra üçün tapşırıqlar siyahısı
+    const tasks = []; 
     
     for (const chatId in users) {
       const user = users[chatId];
@@ -1286,7 +1289,7 @@ setInterval(async () => {
       }
     }
     
-    // Bütün aktiv tapşırıqları ləngitmədən eyni anda icra edirik
+    // Promise.allSettled sistemi dondurmaz
     await Promise.allSettled(tasks);
     
   } catch (e) {
@@ -1294,11 +1297,9 @@ setInterval(async () => {
   }
 }, 30000);
 
-// Paralel icra üçün xüsusi funksiya
 async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, groups) {
   let client;
   try {
-    // Sürət üçün bağlantı təkrarını (retries) 1 edirik
     client = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 1 });
     await client.connect();
     
@@ -1309,10 +1310,11 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
       if (source.type === 'custom' && source.target) {
         const entityTarget = await resolveEntity(client, source.target);
         const entity = await client.getEntity(entityTarget).catch(() => entityTarget);
-        msgs = await client.getMessages(entity, { limit: 1 });
+        if(entity) msgs = await client.getMessages(entity, { limit: 1 });
       } else {
         msgs = await client.getMessages('me', { limit: 1 });
       }
+      
       if (msgs && msgs.length > 0) {
         const msg = msgs[0];
         for (const g of groups) {
@@ -1322,6 +1324,8 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
             if (target) {
               if (msg.message || msg.media) {
                  await client.sendMessage(target, { message: msg.message || '', file: msg.media });
+                 // İnsan kimi davranmaq və spam yeməmək üçün qruplar arası kiçik gecikmə
+                 await new Promise(r => setTimeout(r, 1000 + Math.random() * 2000));
               }
             }
           } catch (e) {}
@@ -1330,28 +1334,48 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
       }
     }
 
-    // 2. Avtocavab Sistemi
+    // 2. Avtocavab Sistemi (Yeniləndi - Onlayn və oxunmuş olsa da cavab verəcək)
     if (user.autoReplyEnabled && user.autoReplyMessage) {
+      if (!global.repliedMsgs) global.repliedMsgs = {}; // Yaddaşda saxlanılan son cavablar
+      
       try {
-        const pms = await client.getDialogs({ limit: 30 });
+        const pms = await client.getDialogs({ limit: 15 });
         for (const pm of pms) {
-          if (pm.isUser && pm.unreadCount > 0 && pm.entity && !pm.entity.bot) {
-            if (pm.entity.self || pm.entity.isSelf) continue;
-            try {
-               const inputPeer = await client.getInputEntity(pm.id);
-               await client.sendMessage(inputPeer, { message: user.autoReplyMessage });
-               await client.invoke(new Api.messages.ReadHistory({
-                 peer: inputPeer,
-                 maxId: 0
-               }));
-            } catch(err) {}
+          if (pm.isUser && pm.entity && !pm.entity.bot && !pm.entity.isSelf && !pm.entity.self) {
+             const history = await client.getMessages(pm.entity, { limit: 1 });
+             // Əgər sonuncu mesajı qarşı tərəf yazıbsa
+             if (history && history.length > 0 && !history[0].out) {
+                const lastMsgId = history[0].id;
+                const memKey = `${phone}_${pm.id}`;
+                
+                if (global.repliedMsgs[memKey] !== lastMsgId) {
+                   try {
+                     const inputPeer = await client.getInputEntity(pm.id);
+                     
+                     // Spam olmamaq üçün "Yazır..." (typing) simulyasiyası
+                     await client.invoke(new Api.messages.SetTyping({
+                         peer: inputPeer,
+                         action: new Api.SendMessageTypingAction()
+                     }));
+                     await new Promise(res => setTimeout(res, 2000 + Math.random() * 2000));
+                     
+                     await client.sendMessage(inputPeer, { message: user.autoReplyMessage });
+                     await client.invoke(new Api.messages.ReadHistory({
+                       peer: inputPeer,
+                       maxId: 0
+                     }));
+                     
+                     // Bu mesaja cavab verdiyimizi qeyd edirik
+                     global.repliedMsgs[memKey] = lastMsgId;
+                   } catch (err) {}
+                }
+             }
           }
         }
       } catch (e) {}
     }
 
   } catch (e) {
-    // Səssiz xəta yoxlaması, digər botların işini kəsməsin
   } finally {
     if (client) try { await client.disconnect(); } catch (e) {}
   }
