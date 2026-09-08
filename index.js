@@ -6,6 +6,15 @@ const { Logger } = require('telegram/extensions');
 const fetch = require('node-fetch');
 const http = require('http');
 
+// Uncaught exception və unhandled rejection qoruyucuları (Çökmənin qarşısını almaq üçün)
+process.on('uncaughtException', (err) => {
+  console.error('Kritik Xəta (Uncaught Exception):', err.message);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Tutulmayan Xəta (Unhandled Rejection):', reason);
+});
+
 // GramJS-in terminalı doldurub Render-i yavaşlatmasının qarşısını alırıq
 Logger.setLevel('none');
 
@@ -896,16 +905,24 @@ bot.on('callback_query', async (query) => {
   if (data.startsWith('groups_')) {
     const phone = data.replace('groups_', '');
     const acc = await getDB(`users/${chatId}/accounts/${phone}`);
+    
     if (!acc) {
       await sendOrUpdate(chatId, t('no_numbers', lang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', lang), callback_data: 'back_to_main' }]] } });
       return;
     }
+    
     const groups = acc.targetGroups || [];
     let msg = `📱 *+${phone}* üçün hədəf qruplar:\n\n`;
     const kb = [];
-    if (groups.length === 0) msg += t('no_groups', lang);
-    else {
-      groups.forEach((g, i) => {
+    
+    if (groups.length === 0) {
+      msg += t('no_groups', lang);
+    } else {
+      const displayGroups = groups.slice(0, 30);
+      if (groups.length > 30) {
+          msg += `⚠️ Çox sayda qrup var. Yalnız ilk 30 qrup göstərilir.\n\n`;
+      }
+      displayGroups.forEach((g, i) => {
         let display = g;
         if (g.startsWith('chat:')) {
           const parts = g.split(' - ');
@@ -916,10 +933,17 @@ bot.on('callback_query', async (query) => {
         kb.push([{ text: t('del_group_btn', lang, { group: safeGroupName }), callback_data: `delgroup_${phone}_${i}` }]);
       });
     }
+    
     kb.push([{ text: t('add_group_btn', lang), callback_data: `addgroup_${phone}` }]);
     kb.push([{ text: t('back_btn', lang), callback_data: 'manage_numbers' }]);
     kb.push([{ text: t('back_main', lang), callback_data: 'back_to_main' }]);
-    await sendOrUpdate(chatId, msg, { parse_mode: 'Markdown', reply_markup: { inline_keyboard: kb } });
+    
+    try {
+        await sendOrUpdate(chatId, msg, { parse_mode: 'Markdown', reply_markup: { inline_keyboard: kb } });
+    } catch (error) {
+        console.error("Qrupları göstərəndə xəta:", error.message);
+        bot.sendMessage(chatId, "❌ Qruplar çox olduğu üçün siyahını tam göstərmək mümkün olmadı, lakin bot fəaliyyətinə davam edir.");
+    }
     return;
   }
 
