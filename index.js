@@ -1,4 +1,4 @@
-// index_2.js - RENDER ÜÇÜN TAM OPTİMİZƏ EDİLMİŞ SÜRƏTLİ VERSİYA
+// index.js - RENDER ÜÇÜN TAM OPTİMİZƏ EDİLMİŞ SÜRƏTLİ VERSİYA
 const TelegramBot = require('node-telegram-bot-api');
 const { TelegramClient, Api } = require('telegram');
 const { StringSession } = require('telegram/sessions');
@@ -718,6 +718,25 @@ bot.on('callback_query', async (query) => {
         { text: t('delete_btn', lang), callback_data: `delete_${phone}` }
       ]);
     }
+
+    // LİSENZİYA MƏLUMATLARI (AŞAĞIDA GÖSTƏRİLİR)
+    if (userData?.activeLicense) {
+      const lic = await getDB(`licenses/${userData.activeLicense}`);
+      let expText = "Müddətsiz";
+      const expiry = lic?.expiresAt || lic?.expireDate;
+      if (expiry) {
+         const diff = new Date(expiry).getTime() - Date.now();
+         const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+         if (days > 0) {
+             const expDate = new Date(expiry).toLocaleDateString('az-AZ');
+             expText = `${expDate} (Qalan gün: ${days})`;
+         } else {
+             expText = "Müddəti bitib";
+         }
+      }
+      msg += `🔑 *Lisenziya:* ${userData.activeLicense}\n⏳ *Bitiş tarixi:* ${expText}\n`;
+    }
+
     kb.push([{ text: t('back_main', lang), callback_data: 'back_to_main' }]);
     await sendOrUpdate(chatId, msg, { parse_mode: 'Markdown', reply_markup: { inline_keyboard: kb } });
     return;
@@ -1327,31 +1346,40 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
     
     if (timeToSendMessage) {
       const source = acc.messageSource || { type: 'saved' };
-      let msgs;
+      
+      // Mənbə obyekti bircə dəfə tapılır
+      let sourceEntity = 'me';
       if (source.type === 'custom' && source.target) {
         const entityTarget = await resolveEntity(client, source.target);
-        const entity = await client.getEntity(entityTarget).catch(() => entityTarget);
-        if(entity) msgs = await client.getMessages(entity, { limit: 1 });
-      } else {
-        msgs = await client.getMessages('me', { limit: 1 });
+        sourceEntity = await client.getEntity(entityTarget).catch(() => entityTarget);
       }
       
-      if (msgs && msgs.length > 0) {
-        const msg = msgs[0];
-        for (const g of groups) {
-          try {
+      // DÖVR İÇƏRİSİNDƏ MESAJI ÇƏKMƏ - XƏTA 2-ni tamamilə həll edir.
+      // GramJS-in bəzən 1-ci qrupa atıb, medianı consum edərək digərlərinə atmaması (və ya media reference itirməsi) 
+      // problemini həll etmək üçün mesajı hər hədəf üçün yeniləyirik. API yükü minimumdur çünki bu intervalda işləyir.
+      for (const g of groups) {
+        try {
+          const msgs = await client.getMessages(sourceEntity, { limit: 1 });
+          if (msgs && msgs.length > 0) {
+            const msg = msgs[0];
             const targetStr = await resolveEntity(client, g);
-            const target = await client.getEntity(targetStr).catch(() => targetStr);
+            // Numeric id-lərin xətasız getməsi üçün sətiri lazımdırsa BigInt formatına çeviririk:
+            const peer = (typeof targetStr === 'string' && /^-?\d+$/.test(targetStr)) ? BigInt(targetStr) : targetStr;
+            const target = await client.getEntity(peer).catch(() => peer);
+            
             if (target) {
               if (msg.message || msg.media) {
                  await client.sendMessage(target, { message: msg.message || '', file: msg.media });
-                 await new Promise(r => setTimeout(r, 1000 + Math.random() * 2000));
+                 await new Promise(r => setTimeout(r, 1500 + Math.random() * 2000));
               }
             }
-          } catch (e) {}
+          }
+        } catch (e) {
+           console.log(`Qrupa göndərilərkən xəta:`, e.message);
         }
-        await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, Date.now());
       }
+      
+      await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, Date.now());
     }
 
     if (user.autoReplyEnabled && user.autoReplyMessage) {
@@ -1392,6 +1420,7 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
     }
 
   } catch (e) {
+     console.error('Proses task xətası:', e.message);
   } finally {
     if (client) try { await client.disconnect(); } catch (e) {}
   }
