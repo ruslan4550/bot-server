@@ -575,7 +575,7 @@ async function showMainMenu(chatId) {
 
 async function isSubscribed(userId) {
   const settings = await getDB('settings');
-  const channels = [settings?.channel1_id, settings?.channel2_id].filter(Boolean);
+  const channels = [settings?.channel2_id].filter(Boolean);
   if (channels.length === 0) return true;
   for (const ch of channels) {
     try {
@@ -586,6 +586,11 @@ async function isSubscribed(userId) {
     }
   }
   return true;
+}
+
+function escapeMarkdown(text) {
+  if (text === undefined || text === null) return '';
+  return String(text).replace(/([_*`\[\]])/g, '\\$1');
 }
 
 async function resolveEntity(client, raw) {
@@ -653,12 +658,10 @@ bot.on('callback_query', async (query) => {
     // MƏCBURİ KANALLAR BURA ƏLAVƏ EDİLDİ
     const keyboard = {
       inline_keyboard: [
-        [{ text: t('ch1_btn', newLang), url: settings.channel1 || 'https://t.me/EliteBotDestek' }],
         [{ text: t('ch2_btn', newLang), url: settings.channel2 || 'https://t.me/EliteBotMedia' }],
         [{ text: '📢 Məcburi Kanal 3', url: 'https://t.me/+1MsfqoAHmaQ1ZTli' }],
         [{ text: '📢 Məcburi Kanal 4', url: 'https://t.me/+v0grkns0s6o5Njky' }],
-        [{ text: t('sub_btn', newLang), callback_data: 'check_sub' }],
-        [{ text: t('back_main', newLang), callback_data: 'back_to_main' }]
+        [{ text: t('sub_btn', newLang), callback_data: 'check_sub' }]
       ]
     };
     
@@ -989,7 +992,7 @@ bot.on('callback_query', async (query) => {
           const parts = g.split(' - ');
           display = parts.length > 1 ? parts.slice(1).join(' - ') : parts[0];
         }
-        msg += `${i+1}. ${display}\n`;
+        msg += `${i+1}. ${escapeMarkdown(display)}\n`;
         const safeGroupName = Array.from(display || '').slice(0, 20).join('');
         kb.push([{ text: t('del_group_btn', lang, { group: safeGroupName }), callback_data: `delgroup_${phone}_${i}` }]);
       });
@@ -1002,7 +1005,12 @@ bot.on('callback_query', async (query) => {
     try {
         await sendOrUpdate(chatId, msg, { parse_mode: 'Markdown', reply_markup: { inline_keyboard: kb } });
     } catch (error) {
-        bot.sendMessage(chatId, "❌ Qruplar çox olduğu üçün siyahını tam göstərmək mümkün olmadı, lakin bot fəaliyyətinə davam edir.");
+        try {
+            delete mainMsgIds[chatId];
+            await sendOrUpdate(chatId, msg.replace(/[_*`\[\]]/g, ''), { reply_markup: { inline_keyboard: kb } });
+        } catch (error2) {
+            console.error('Qrup siyahisi gosterme xetasi:', error2.message);
+        }
     }
     return;
   }
@@ -1388,6 +1396,9 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
   try {
     client = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 1 });
     await client.connect();
+    // Entity cache-i isitmek ucun dialoglari yukleyirik - username olmayan (private) qruplarin
+    // ID-si ile duzgun teyin olunmasi ve hamisina mesaj getmesi ucun vacibdir
+    await client.getDialogs({ limit: 200 }).catch(() => {});
     
     if (timeToSendMessage) {
       const source = acc.messageSource || { type: 'saved' };
