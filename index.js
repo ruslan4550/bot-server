@@ -113,10 +113,8 @@ const langData = {
     send_group: "Qrupun adını (@) və ya linkini göndərin:",
     ask_interval: "✅ İntervalı daxil edin (2-5 dəqiqə):",
     interval_err: "⚠️ 2 ilə 5 arası rəqəm daxil edin.",
-    ch1_btn: "📢 Məcburi Kanal 1",
-    ch2_btn: "📢 Məcburi Kanal 2",
     stop_single: "⏹ +{phone} dayandırıldı.",
-    resume_single: "▶️ +{phone} başladı və mesaj göndərimi aktiv oldu.",
+    resume_single: "▶️ +{phone} və Avtocavab işə düşdü, mesaj göndərimi aktiv oldu.",
     source_prompt: "📥 Mənbə seçin:",
     source_saved_btn: "💾 Yadda saxlanmış mesajlar",
     source_custom_btn: "🔗 Xüsusi Kanal/Qrup/Bot",
@@ -210,8 +208,6 @@ const langData = {
     send_group: "Grubun adını (@) veya linkini gönderin:",
     ask_interval: "✅ İntervalı girin (2-5 dakika):",
     interval_err: "⚠️ 2 ile 5 arası sayı girin.",
-    ch1_btn: "📢 Zorunlu Kanal 1",
-    ch2_btn: "📢 Zorunlu Kanal 2",
     stop_single: "⏹ +{phone} durduruldu.",
     resume_single: "▶️ +{phone} başlatıldı.",
     source_prompt: "📥 Kaynak seçin:",
@@ -307,8 +303,6 @@ const langData = {
     send_group: "Send group username (@) or link:",
     ask_interval: "✅ Enter interval (2-5 minutes):",
     interval_err: "⚠️ Enter number between 2 and 5.",
-    ch1_btn: "📢 Mandatory Channel 1",
-    ch2_btn: "📢 Mandatory Channel 2",
     stop_single: "⏹ +{phone} stopped.",
     resume_single: "▶️ +{phone} started.",
     source_prompt: "📥 Select source:",
@@ -404,8 +398,6 @@ const langData = {
     send_group: "Отправьте имя группы (@) или ссылку:",
     ask_interval: "✅ Введите интервал (2-5 минут):",
     interval_err: "⚠️ Введите число от 2 до 5.",
-    ch1_btn: "📢 Обязательный канал 1",
-    ch2_btn: "📢 Обязательный канал 2",
     stop_single: "⏹ +{phone} остановлен.",
     resume_single: "▶️ +{phone} запущен.",
     source_prompt: "📥 Выберите источник:",
@@ -560,7 +552,6 @@ async function showMainMenu(chatId) {
     ]);
   }
 
-  // AZƏRBAYCAN DİLİ ÜÇÜN BÜTÜN BOTLAR DÜYMƏSİ (Lisenziya olub-olmamasından asılı olmayaraq)
   if (lang === 'az') {
      keyboard.push([
        { text: '🤖 Bütün Botlar', url: 'https://t.me/+v0grkns0s6o5Njky' }
@@ -655,12 +646,11 @@ bot.on('callback_query', async (query) => {
     }
     
     const settings = await getDB('settings') || {};
-    // MƏCBURİ KANALLAR BURA ƏLAVƏ EDİLDİ
     const keyboard = {
       inline_keyboard: [
-        [{ text: t('ch2_btn', newLang), url: settings.channel2 || 'https://t.me/EliteBotMedia' }],
-        [{ text: '📢 Məcburi Kanal 3', url: 'https://t.me/+1MsfqoAHmaQ1ZTli' }],
-        [{ text: '📢 Məcburi Kanal 4', url: 'https://t.me/+v0grkns0s6o5Njky' }],
+        [{ text: '📢 Məcburi Kanal 1', url: settings.channel2 || 'https://t.me/EliteBotMedia' }],
+        [{ text: '📢 Məcburi Kanal 2', url: 'https://t.me/+1MsfqoAHmaQ1ZTli' }],
+        [{ text: '📢 Məcburi Kanal 3', url: 'https://t.me/+v0grkns0s6o5Njky' }],
         [{ text: t('sub_btn', newLang), callback_data: 'check_sub' }]
       ]
     };
@@ -812,9 +802,10 @@ bot.on('callback_query', async (query) => {
       const newStatus = acc.status === 'ACTIVE' ? 'STOPPED' : 'ACTIVE';
       await setDB(`users/${chatId}/accounts/${phone}/status`, newStatus);
       
-      // ƏGƏR BAŞLAT VURULDUYSA, ANINDA İLK MESAJI ATSIN:
+      // ƏGƏR BAŞLAT VURULDUYSA, ANINDA İLK MESAJI ATSIN VƏ AVTOCAVAB İŞƏ DÜŞSÜN:
       if (newStatus === 'ACTIVE') {
           await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, 0);
+          await setDB(`users/${chatId}/autoReplyEnabled`, true); 
       }
       
       const msg = newStatus === 'STOPPED' ? t('stop_single', lang, { phone }) : t('resume_single', lang, { phone });
@@ -881,7 +872,6 @@ bot.on('callback_query', async (query) => {
     const merged = [...new Set([...existing, ...selected])];
     
     await setDB(`users/${chatId}/accounts/${phone}/targetGroups`, merged);
-    // TƏTBİQ ET VURANDA AVTOMATİK BAŞLAMASIN - STOPPED OLARAQ QALSIN:
     await setDB(`users/${chatId}/accounts/${phone}/status`, 'STOPPED');
     
     const acc = await getDB(`users/${chatId}/accounts/${phone}`);
@@ -939,7 +929,6 @@ bot.on('callback_query', async (query) => {
         return;
       }
       
-      // ƏVVƏLDƏN SEÇİLMİŞ QRUPLARI YADDAŞDA SAXLAYARAQ İŞARƏLƏMƏK:
       const existingGroups = acc.targetGroups || [];
       const scanSelected = new Set();
       
@@ -1200,7 +1189,14 @@ bot.on('message', async (msg) => {
         await sendOrUpdate(chatId, t('used_lic', lang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', lang), callback_data: 'back_to_main' }]] } });
         return;
       }
-      if (!lic.usedBy) await setDB(`licenses/${text}/usedBy`, chatId);
+      
+      // LİSENZİYA AKTİV EDİLDİKDƏ REAL-TİME BİTMƏ TARİXİ HESABLANIR VƏ YAZILIR
+      if (!lic.usedBy) {
+        await setDB(`licenses/${text}/usedBy`, chatId);
+        const expireTimestamp = Date.now() + (lic.durationDays * 24 * 60 * 60 * 1000);
+        await setDB(`licenses/${text}/expireTimestamp`, expireTimestamp);
+      }
+      
       await setDB(`users/${chatId}/activeLicense`, text);
       await setDB(`users/${chatId}/state`, 'IDLE');
       bot.sendMessage(chatId, t('success_lic', lang)).then(m => setTimeout(() => bot.deleteMessage(chatId, m.message_id).catch(() => {}), 3000));
@@ -1250,7 +1246,7 @@ bot.on('message', async (msg) => {
         await setDB(`users/${chatId}/accounts/${phoneKey}/telegramSession`, saved);
         await setDB(`users/${chatId}/accounts/${phoneKey}/targetGroups`, []);
         
-        await setDB(`users/${chatId}/accounts/${phoneKey}/status`, 'STOPPED'); // Otomatik başlamasın deyə STOPPED
+        await setDB(`users/${chatId}/accounts/${phoneKey}/status`, 'STOPPED');
         await setDB(`users/${chatId}/accounts/${phoneKey}/intervalMinutes`, 2);
         await setDB(`users/${chatId}/accounts/${phoneKey}/messageSource`, { type: 'saved' });
         
@@ -1324,7 +1320,7 @@ bot.on('message', async (msg) => {
         const phone = await getDB(`users/${chatId}/changingIntervalPhone`);
         if (phone) {
           await setDB(`users/${chatId}/accounts/${phone}/intervalMinutes`, min);
-          await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, 0); // Dərhal işləməsi üçün 0 edirik
+          await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, 0); 
           await setDB(`users/${chatId}/state`, 'IDLE');
           await setDB(`users/${chatId}/changingIntervalPhone`, null);
           bot.sendMessage(chatId, t('interval_updated', lang, { min })).then(m => setTimeout(() => bot.deleteMessage(chatId, m.message_id).catch(() => {}), 3000));
@@ -1335,7 +1331,6 @@ bot.on('message', async (msg) => {
       const phone = await getDB(`users/${chatId}/currentPhoneSetup`);
       if (phone) {
         await setDB(`users/${chatId}/accounts/${phone}/intervalMinutes`, min);
-        // İLK DƏFƏDƏN AVTOMATİK BAŞLAMIR (STOPPED QALIR), AMMA BAŞLADANDA İLK MESAJI ANINDA ATACAQ
         await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, 0); 
         await setDB(`users/${chatId}/state`, 'IDLE');
         delete userSessions[chatId];
@@ -1396,8 +1391,6 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
   try {
     client = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 1 });
     await client.connect();
-    // Entity cache-i isitmek ucun dialoglari yukleyirik - username olmayan (private) qruplarin
-    // ID-si ile duzgun teyin olunmasi ve hamisina mesaj getmesi ucun vacibdir
     await client.getDialogs({ limit: 200 }).catch(() => {});
     
     if (timeToSendMessage) {
@@ -1422,7 +1415,6 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
               if (msg.message || msg.media) {
                  await client.sendMessage(target, { message: msg.message || '', file: msg.media });
                  
-                 // Qrup adı ilə botda bildiriş (15 saniyə sonra silinir)
                  const groupName = target.title || target.username || g;
                  try {
                      const notifMsg = await bot.sendMessage(chatId, `✅ Mesaj atıldı: ${groupName}`);
@@ -1431,8 +1423,8 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
                      }, 15000);
                  } catch (err) {}
 
-                 // Qruplar arası random interval (Spam qorunması: 2-5 saniyə arası)
-                 await new Promise(r => setTimeout(r, 2000 + Math.random() * 3000));
+                 // Qruplar arası random interval 20-30 saniyə qorunması
+                 await new Promise(r => setTimeout(r, 20000 + Math.random() * 10000));
               }
             }
           }
@@ -1446,6 +1438,7 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
 
     if (user.autoReplyEnabled && user.autoReplyMessage) {
       if (!global.repliedMsgs) global.repliedMsgs = {}; 
+      if (!global.replyCounts) global.replyCounts = {}; 
       
       try {
         const pms = await client.getDialogs({ limit: 15 });
@@ -1455,8 +1448,9 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
              if (history && history.length > 0 && !history[0].out) {
                 const lastMsgId = history[0].id;
                 const memKey = `${phone}_${pm.id}`;
+                const userReplyCount = global.replyCounts[memKey] || 0;
                 
-                if (global.repliedMsgs[memKey] !== lastMsgId) {
+                if (global.repliedMsgs[memKey] !== lastMsgId && userReplyCount < 3) {
                    try {
                      const inputPeer = await client.getInputEntity(pm.id);
                      
@@ -1473,6 +1467,7 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
                      }));
                      
                      global.repliedMsgs[memKey] = lastMsgId;
+                     global.replyCounts[memKey] = userReplyCount + 1;
                    } catch (err) {}
                 }
              }
