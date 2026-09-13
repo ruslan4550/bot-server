@@ -21,7 +21,6 @@ Logger.setLevel('none');
 
 // ============ GLOBAL DƏYİŞƏNLƏR ============
 global.repliedMsgs = {};
-global.autoReplyCount = {};
 global.runningAccounts = new Set();
 const activeTgClients = {};
 const connectingClients = {};
@@ -210,43 +209,38 @@ async function getClient(phone, sessionString, chatId) {
       const client = new TelegramClient(new StringSession(sessionString), API_ID, API_HASH, { connectionRetries: 5 });
       await client.connect();
 
-      // ANINDA VƏ YALNIZ ŞƏXSİ MESAJLARA AVTOCAVAB ÜÇÜN EVENT LISTENER
+      // ANINDA VƏ YALNIZ ŞƏXSİ MESAJLARA AVTOCAVAB ÜÇÜN EVENT LISTENER (MÜTLƏQ GÖNDƏRİM ÜÇÜN DƏYİŞDİRİLDİ)
       client.addEventHandler(async (event) => {
         try {
           const msg = event.message;
           
-          // 1. Şərt: Mesaj boş deyil, gələn mesajdır və mütləq PeerUser (şəxsi chat) olmalıdır. 
-          // Qruplar, kanallar və botlar qətiyyən avtocavab almayacaq.
           if (msg && !msg.out && msg.peerId && msg.peerId.className === 'PeerUser') {
-            
             const senderId = msg.peerId.userId ? msg.peerId.userId.toString() : null;
-            // 2. Şərt: Telegram-ın rəsmi bildirişlərinə (777000) cavab verməsin
             if (!senderId || senderId === '777000') return;
 
             const updatedUser = await getDB(`users/${chatId}`);
             
             if (updatedUser && updatedUser.autoReplyEnabled && updatedUser.autoReplyMessage) {
               const memKey = `${phone}_${senderId}`;
-              const sentCount = global.autoReplyCount[memKey] || 0;
               
-              if (global.repliedMsgs[memKey] !== msg.id && sentCount < 3) {
+              // Şərtləri qaldırdıq, hər yeni mesaja mütləq cavab verəcək
+              if (global.repliedMsgs[memKey] !== msg.id) {
                 global.repliedMsgs[memKey] = msg.id;
-                global.autoReplyCount[memKey] = sentCount + 1;
 
-                const inputPeer = await client.getInputEntity(msg.peerId);
-
-                // GECİKMƏ (DELAY) VƏ YAZIR (TYPING) LƏĞV EDİLDİ - ANINDA YERİNDƏCƏ MESAJ ATIR
-                await client.sendMessage(inputPeer, { message: updatedUser.autoReplyMessage });
+                // Anında yerindəcə mesaj atır
+                await client.sendMessage(senderId, { message: updatedUser.autoReplyMessage });
                 
-                await client.invoke(new Api.messages.ReadHistory({
-                  peer: inputPeer,
-                  maxId: msg.id
-                }));
+                try {
+                  await client.invoke(new Api.messages.ReadHistory({
+                    peer: senderId,
+                    maxId: msg.id
+                  }));
+                } catch (readErr) {}
               }
             }
           }
         } catch (err) {
-          // xəta logu aktiv edilə bilər
+          // Xəta olduqda sistemi çökdürmə
         }
       }, new NewMessage({ incoming: true }));
 
@@ -267,7 +261,6 @@ const userSessions = {};
 const mainMsgIds = {}; 
 
 async function sendOrUpdate(chatId, text, options = {}) {
-  // Mesajların "alt-alta yığılmaması" üçün mükəmməl funksiya
   if (mainMsgIds[chatId]) {
     try {
       await bot.editMessageText(text, {
@@ -1225,7 +1218,9 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
                    setTimeout(() => { bot.deleteMessage(chatId, notifMsg.message_id).catch(() => {}); }, 15000);
                } catch (err) {}
 
-               await new Promise(r => setTimeout(r, 20000 + Math.random() * 10000));
+               // 20-30 saniyə (20000 - 30000 ms) arasında random gözləmə
+               const randomDelay = Math.floor(Math.random() * 11000) + 20000;
+               await new Promise(r => setTimeout(r, randomDelay));
             }
           }
         } catch (e) {
