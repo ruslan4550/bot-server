@@ -3,7 +3,6 @@ const TelegramBot = require('node-telegram-bot-api');
 const { TelegramClient, Api } = require('telegram');
 const { StringSession } = require('telegram/sessions');
 const { Logger } = require('telegram/extensions');
-const { NewMessage } = require('telegram/events');
 const fetch = require('node-fetch');
 const http = require('http');
 
@@ -18,11 +17,6 @@ process.on('unhandledRejection', (reason, promise) => {
 
 // GramJS-in terminalı doldurub Render-i yavaşlatmasının qarşısını alırıq
 Logger.setLevel('none');
-
-// ============ GLOBAL DƏYİŞƏNLƏR ============
-global.runningAccounts = new Set();
-const activeTgClients = {};
-const connectingClients = {};
 
 // ============ SERVER ============
 const PORT = process.env.PORT || 3000;
@@ -47,6 +41,7 @@ const FIREBASE_URL = "https://botadmin-53dc8-default-rtdb.europe-west1.firebased
 const bot = new TelegramBot(BOT_TOKEN, { polling: true });
 console.log("Bot işə düşdü və polling başladı...");
 
+// İnternet qırılmalarında botun çökməsinin qarşısını alan xəta tutucu
 bot.on('polling_error', (error) => {
   console.log('Polling xətası yarandı, amma bot işləməyə davam edir:', error.message);
 });
@@ -171,6 +166,297 @@ const langData = {
     auto_reply_enabled: "✅ Avtocavab aktivləşdirildi.",
     auto_reply_disabled: "✅ Avtocavab dayandırıldı.",
     admin_phone_change_prompt: "Nömrə yenilənməsi üçün təsdiq göndərildi."
+  },
+  tr: {
+    about: "🤖 *ELITE OTOMESAJ BOTU*\n\nHoş geldiniz! Lütfen aşağıdaki menüden işlem seçiniz.",
+    sub_msg: "Aşağıdaki kanallara abone olun:",
+    sub_btn: "✅ Abonelikleri Doğrula",
+    checking: "⏳ Abonelik kontrol ediliyor...",
+    confirmed: "✅ Doğrulandı!",
+    not_subscribed: "❌ Henüz tüm kanallara abone olmadınız!",
+    btn_act_lic: "🔑 Lisans Etkinleştir",
+    btn_buy_lic: "🛒 Lisans Satın Al / Destek",
+    btn_price: "📋 Fiyat Listesi",
+    btn_web: "🌐 Web Sitemiz",
+    menu_lic: "✅ Lisans Aktif! Ana Menü:",
+    btn_add_num: "➕ Yeni Numara Ekle",
+    btn_manage: "⚙️ Hesaplarım",
+    enter_lic: "Lisans kodunu girin (ELITE-12345):",
+    invalid_lic: "❌ Geçersiz kod formatı.",
+    not_found_lic: "❌ Lisans bulunamadı.",
+    blocked_lic: "❌ Bu lisans engellenmiş.",
+    used_lic: "❌ Bu lisans başka kullanıcı tarafından kullanılıyor.",
+    success_lic: "✅ Lisans etkinleştirildi!",
+    no_lic: "❌ Aktif lisansınız yok.",
+    limit_reached: "❌ Lisans limitine ulaştınız (Maks: {max}).",
+    enter_phone: "📱 Telegram numaranızı girin (+90501234567):",
+    no_numbers: "⚠️ Henüz numara eklenmedi.",
+    my_accounts: "⚙️ *Aktif Hesaplarınız:*\n\n",
+    stopped: "🔴 Durduruldu",
+    active: "🟢 Aktif",
+    stop_btn: "⏹ Durdur",
+    resume_btn: "▶️ Başlat",
+    back_main: "🔙 Ana Menü",
+    phone_format: "⚠️ Numara '+' ile başlamalıdır!",
+    otp_sent: "⏳ OTP kodu gönderiliyor...",
+    otp_info: "📩 Güvenlik kodunu girin (boşlukla):",
+    err: "❌ Hata: ",
+    sess_lost: "⚠️ Oturum kayboldu. Yeniden başlayın.",
+    login_success: "✅ {phone} hesabına giriş yapıldı!\n\nŞimdi grubun kullanıcı adını (@) veya linkini gönderin:",
+    otp_err: "❌ OTP yanlış. Hata: ",
+    group_added: "✅ Grup eklendi. (Toplam {count} grup)",
+    add_more: "➕ Başka grup ekle",
+    finish_btn: "✅ Bitir ve Devam Et",
+    send_group: "Grubun adını (@) veya linkini gönderin:",
+    ask_interval: "✅ İntervalı girin (2-5 dakika):",
+    interval_err: "⚠️ 2 ile 5 arası sayı girin.",
+    ch1_btn: "📢 Zorunlu Kanal 1",
+    ch2_btn: "📢 Zorunlu Kanal 2",
+    stop_single: "⏹ +{phone} durduruldu.",
+    resume_single: "▶️ +{phone} başlatıldı.",
+    source_prompt: "📥 Kaynak seçin:",
+    source_saved_btn: "💾 Kaydedilen mesajlar",
+    source_custom_btn: "🔗 Özel Kanal/Grup/Bot",
+    enter_source: "📢 Kaynak kanalının adını (@) veya linkini gönderin:",
+    invalid_source: "❌ Kaynağa erişilemedi.",
+    source_set_saved: "✅ Kaynak: Kaydedilen mesajlar.",
+    source_set_custom: "✅ Kaynak: {target}",
+    cancel_btn: "❌ İptal Et",
+    groups_btn: "📋 Grupları Yönet",
+    source_btn: "📥 Kaynağı Yönet",
+    delete_btn: "🗑 Numarayı Sil",
+    back_btn: "🔙 Geri",
+    del_group_btn: "❌ Sil: {group}",
+    del_source_btn: "❌ Kaynağı sil",
+    no_groups: "❌ Hiç grup yok.",
+    confirm_delete_num: "❗️ +{phone} silinsin mi?",
+    confirm_delete_num_yes: "✅ Evet, sil",
+    confirm_delete_num_no: "❌ Hayır",
+    num_deleted: "✅ +{phone} silindi.",
+    group_deleted: "✅ Grup silindi.",
+    source_deleted: "✅ Kaynak silindi.",
+    add_group_btn: "➕ Yeni Grup Ekle",
+    change_source_btn: "🔄 Kaynağı Değiştir",
+    change_interval_btn: "⏱ Aralığı Değiştir",
+    auto_reply_btn: "📩 Otomatik Yanıt",
+    set_auto_reply: "📩 Otomatik yanıt metnini girin:",
+    auto_reply_set: "✅ Otomatik yanıt etkinleştirildi.",
+    auto_reply_deleted: "✅ Otomatik yanıt silindi.",
+    scan_btn: "🔍 Grup Taraması",
+    scanning: "⏳ Taranıyor...",
+    select_groups: "📋 Gruplardan seçin. Seçilen: {count}",
+    scan_select: "✅ Seç",
+    scan_unselect: "❌ Kaldır",
+    scan_confirm: "✅ Seçilenleri ekle",
+    scan_more: "⏭ Sonraki",
+    scan_back: "⏮ Önceki",
+    scan_done: "✅ {count} grup eklendi. Kontrol panelinden başlatın.",
+    no_groups_found: "❌ Hiç grup bulunamadı.",
+    scan_page: "Sayfa {page}/{total}",
+    new_interval_prompt: "⏱ Yeni aralık (2-5):",
+    interval_updated: "✅ Aralık {min} dakikaya değiştirildi.",
+    session_expired: "⚠️ Oturum süresi doldu. Yeniden tarayın.",
+    auto_reply_on: "🟢 Otomatik yanıt aktif",
+    auto_reply_off: "🔴 Otomatik yanıt durduruldu",
+    auto_reply_toggle_on: "▶️ Başlat",
+    auto_reply_toggle_off: "⏹ Durdur",
+    auto_reply_enabled: "✅ Otomatik yanıt etkinleştirildi.",
+    auto_reply_disabled: "✅ Otomatik yanıt durduruldu.",
+    admin_phone_change_prompt: "Numara güncellemesi için onay gönderildi."
+  },
+  en: {
+    about: "🤖 *ELITE OTOMESAJ BOTU*\n\nWelcome! Please select an operation from the menu below.",
+    sub_msg: "Please subscribe to the channels below:",
+    sub_btn: "✅ Verify Subscriptions",
+    checking: "⏳ Checking...",
+    confirmed: "✅ Confirmed!",
+    not_subscribed: "❌ You haven't subscribed to all channels yet!",
+    btn_act_lic: "🔑 Activate License",
+    btn_buy_lic: "🛒 Buy License / Support",
+    btn_price: "📋 Price List",
+    btn_web: "🌐 Our Website",
+    menu_lic: "✅ License Active! Main Menu:",
+    btn_add_num: "➕ Add New Number",
+    btn_manage: "⚙️ My Accounts",
+    enter_lic: "Enter license code (ELITE-12345):",
+    invalid_lic: "❌ Invalid format.",
+    not_found_lic: "❌ License not found.",
+    blocked_lic: "❌ This license is blocked.",
+    used_lic: "❌ This license is already used.",
+    success_lic: "✅ License activated!",
+    no_lic: "❌ No active license.",
+    limit_reached: "❌ License limit reached (Max: {max}).",
+    enter_phone: "📱 Enter your Telegram number (+994501234567):",
+    no_numbers: "⚠️ No numbers added yet.",
+    my_accounts: "⚙️ *Your Active Accounts:*\n\n",
+    stopped: "🔴 Stopped",
+    active: "🟢 Active",
+    stop_btn: "⏹ Stop",
+    resume_btn: "▶️ Start",
+    back_main: "🔙 Main Menu",
+    phone_format: "⚠️ Number must start with '+'!",
+    otp_sent: "⏳ Sending OTP...",
+    otp_info: "📩 Enter security code (with spaces):",
+    err: "❌ Error: ",
+    sess_lost: "⚠️ Session lost. Restart.",
+    login_success: "✅ Logged in to {phone}!\n\nNow send the group username (@) or link:",
+    otp_err: "❌ OTP incorrect. Error: ",
+    group_added: "✅ Group added. (Total {count} groups)",
+    add_more: "➕ Add another group",
+    finish_btn: "✅ Finish and Continue",
+    send_group: "Send group username (@) or link:",
+    ask_interval: "✅ Enter interval (2-5 minutes):",
+    interval_err: "⚠️ Enter number between 2 and 5.",
+    ch1_btn: "📢 Mandatory Channel 1",
+    ch2_btn: "📢 Mandatory Channel 2",
+    stop_single: "⏹ +{phone} stopped.",
+    resume_single: "▶️ +{phone} started.",
+    source_prompt: "📥 Select source:",
+    source_saved_btn: "💾 Saved messages",
+    source_custom_btn: "🔗 Custom Channel/Group/Bot",
+    enter_source: "📢 Send source username (@) or link:",
+    invalid_source: "❌ Cannot access source.",
+    source_set_saved: "✅ Source: Saved messages.",
+    source_set_custom: "✅ Source: {target}",
+    cancel_btn: "❌ Cancel",
+    groups_btn: "📋 Manage Groups",
+    source_btn: "📥 Manage Source",
+    delete_btn: "🗑 Delete Number",
+    back_btn: "🔙 Back",
+    del_group_btn: "❌ Delete: {group}",
+    del_source_btn: "❌ Delete source",
+    no_groups: "❌ No groups.",
+    confirm_delete_num: "❗️ Delete +{phone}?",
+    confirm_delete_num_yes: "✅ Yes, delete",
+    confirm_delete_num_no: "❌ No",
+    num_deleted: "✅ +{phone} deleted.",
+    group_deleted: "✅ Group deleted.",
+    source_deleted: "✅ Source deleted.",
+    add_group_btn: "➕ Add New Group",
+    change_source_btn: "🔄 Change Source",
+    change_interval_btn: "⏱ Change Interval",
+    auto_reply_btn: "📩 Auto Reply",
+    set_auto_reply: "📩 Enter auto-reply message:",
+    auto_reply_set: "✅ Auto-reply activated.",
+    auto_reply_deleted: "✅ Auto-reply deleted.",
+    scan_btn: "🔍 Group Scan",
+    scanning: "⏳ Scanning...",
+    select_groups: "📋 Select groups. Selected: {count}",
+    scan_select: "✅ Select",
+    scan_unselect: "❌ Remove",
+    scan_confirm: "✅ Add selected",
+    scan_more: "⏭ Next",
+    scan_back: "⏮ Previous",
+    scan_done: "✅ {count} groups added. Start from panel.",
+    no_groups_found: "❌ No groups found.",
+    scan_page: "Page {page}/{total}",
+    new_interval_prompt: "⏱ New interval (2-5):",
+    interval_updated: "✅ Interval changed to {min} minutes.",
+    session_expired: "⚠️ Session expired. Scan again.",
+    auto_reply_on: "🟢 Auto-reply active",
+    auto_reply_off: "🔴 Auto-reply stopped",
+    auto_reply_toggle_on: "▶️ Start",
+    auto_reply_toggle_off: "⏹ Stop",
+    auto_reply_enabled: "✅ Auto-reply enabled.",
+    auto_reply_disabled: "✅ Auto-reply disabled.",
+    admin_phone_change_prompt: "Number update confirmation sent."
+  },
+  ru: {
+    about: "🤖 *ELITE OTOMESAJ BOTU*\n\nДобро пожаловать! Пожалуйста, выберите действие из меню ниже.",
+    sub_msg: "Подпишитесь на каналы ниже:",
+    sub_btn: "✅ Подтвердить подписку",
+    checking: "⏳ Проверка...",
+    confirmed: "✅ Подтверждено!",
+    not_subscribed: "❌ Вы еще не подписались на все каналы!",
+    btn_act_lic: "🔑 Активировать лицензию",
+    btn_buy_lic: "🛒 Купить лицензию / Поддержка",
+    btn_price: "📋 Прайс-лист",
+    btn_web: "🌐 Наш сайт",
+    menu_lic: "✅ Лицензия активна! Главное меню:",
+    btn_add_num: "➕ Добавить новый номер",
+    btn_manage: "⚙️ Мои аккаунты",
+    enter_lic: "Введите код лицензии (ELITE-12345):",
+    invalid_lic: "❌ Неверный формат.",
+    not_found_lic: "❌ Лицензия не найдена.",
+    blocked_lic: "❌ Лицензия заблокирована.",
+    used_lic: "❌ Лицензия уже используется.",
+    success_lic: "✅ Лицензия активирована!",
+    no_lic: "❌ Нет активной лицензии.",
+    limit_reached: "❌ Достигнут лимит (Макс: {max}).",
+    enter_phone: "📱 Введите номер Telegram (+994501234567):",
+    no_numbers: "⚠️ Номера не добавлены.",
+    my_accounts: "⚙️ *Ваши активные аккаунты:*\n\n",
+    stopped: "🔴 Остановлено",
+    active: "🟢 Активно",
+    stop_btn: "⏹ Остановить",
+    resume_btn: "▶️ Запустить",
+    back_main: "🔙 Главное меню",
+    phone_format: "⚠️ Номер должен начинаться с '+'!",
+    otp_sent: "⏳ Отправка OTP...",
+    otp_info: "📩 Введите код безопасности (с пробелами):",
+    err: "❌ Ошибка: ",
+    sess_lost: "⚠️ Сессия потеряна. Перезапустите.",
+    login_success: "✅ Вход в {phone} выполнен!\n\nТеперь отправьте имя группы (@) или ссылку:",
+    otp_err: "❌ OTP неверен. Ошибка: ",
+    group_added: "✅ Группа добавлена. (Всего {count} групп)",
+    add_more: "➕ Добавить другую группу",
+    finish_btn: "✅ Завершить и продолжить",
+    send_group: "Отправьте имя группы (@) или ссылку:",
+    ask_interval: "✅ Введите интервал (2-5 минут):",
+    interval_err: "⚠️ Введите число от 2 до 5.",
+    ch1_btn: "📢 Обязательный канал 1",
+    ch2_btn: "📢 Обязательный канал 2",
+    stop_single: "⏹ +{phone} остановлен.",
+    resume_single: "▶️ +{phone} запущен.",
+    source_prompt: "📥 Выберите источник:",
+    source_saved_btn: "💾 Сохраненные сообщения",
+    source_custom_btn: "🔗 Пользовательский канал/Группа/Бот",
+    enter_source: "📢 Отправьте имя канала (@) или ссылку:",
+    invalid_source: "❌ Не удалось получить доступ.",
+    source_set_saved: "✅ Источник: Сохраненные сообщения.",
+    source_set_custom: "✅ Источник: {target}",
+    cancel_btn: "❌ Отмена",
+    groups_btn: "📋 Управление группами",
+    source_btn: "📥 Управление источником",
+    delete_btn: "🗑 Удалить номер",
+    back_btn: "🔙 Назад",
+    del_group_btn: "❌ Удалить: {group}",
+    del_source_btn: "❌ Удалить источник",
+    no_groups: "❌ Нет групп.",
+    confirm_delete_num: "❗️ Удалить +{phone}?",
+    confirm_delete_num_yes: "✅ Да, удалить",
+    confirm_delete_num_no: "❌ Нет",
+    num_deleted: "✅ +{phone} удален.",
+    group_deleted: "✅ Группа удалена.",
+    source_deleted: "✅ Источник удален.",
+    add_group_btn: "➕ Добавить новую группу",
+    change_source_btn: "🔄 Изменить источник",
+    change_interval_btn: "⏱ Изменить интервал",
+    auto_reply_btn: "📩 Автоответ",
+    set_auto_reply: "📩 Введите текст автоответа:",
+    auto_reply_set: "✅ Автоответ активирован.",
+    auto_reply_deleted: "✅ Автоответ удален.",
+    scan_btn: "🔍 Сканирование групп",
+    scanning: "⏳ Сканирование...",
+    select_groups: "📋 Выберите группы. Выбрано: {count}",
+    scan_select: "✅ Выбрать",
+    scan_unselect: "❌ Удалить",
+    scan_confirm: "✅ Добавить выбранные",
+    scan_more: "⏭ Следующая",
+    scan_back: "⏮ Предыдущая",
+    scan_done: "✅ {count} групп добавлено. Запустите из панели.",
+    no_groups_found: "❌ Групп не найдено.",
+    scan_page: "Страница {page}/{total}",
+    new_interval_prompt: "⏱ Новый интервал (2-5):",
+    interval_updated: "✅ Интервал изменен на {min} минут.",
+    session_expired: "⚠️ Сессия истекла. Отсканируйте заново.",
+    auto_reply_on: "🟢 Автоответ активен",
+    auto_reply_off: "🔴 Автоответ остановлен",
+    auto_reply_toggle_on: "▶️ Запустить",
+    auto_reply_toggle_off: "⏹ Остановить",
+    auto_reply_enabled: "✅ Автоответ включен.",
+    auto_reply_disabled: "✅ Автоответ выключен.",
+    admin_phone_change_prompt: "Подтверждение обновления номера отправлено."
   }
 };
 
@@ -198,81 +484,22 @@ function t(key, lang = 'az', params = {}) {
   }
 })();
 
-// ============ YARDIMÇI FUNKSİYALAR (TELEGRAM CLIENT MENECCERİ) ============
-async function getClient(phone, sessionString, chatId) {
-  if (activeTgClients[phone]) return activeTgClients[phone];
-  if (connectingClients[phone]) return connectingClients[phone];
-
-  connectingClients[phone] = new Promise(async (resolve, reject) => {
-    try {
-      const client = new TelegramClient(new StringSession(sessionString), API_ID, API_HASH, { connectionRetries: 5 });
-      await client.connect();
-
-      // MÜTLƏQ AVTOCAVAB: Hər gələn mesaja limitsiz cavab verir
-      client.addEventHandler(async (event) => {
-        try {
-          const msg = event.message;
-          const isPrivate = msg.isPrivate || (msg.peerId && msg.peerId.className === 'PeerUser');
-          
-          if (msg && !msg.out && isPrivate) {
-            const senderId = msg.senderId ? msg.senderId.toString() : (msg.peerId?.userId ? msg.peerId.userId.toString() : null);
-            if (!senderId || senderId === '777000') return;
-
-            const updatedUser = await getDB(`users/${chatId}`);
-            
-            if (updatedUser && updatedUser.autoReplyEnabled && updatedUser.autoReplyMessage) {
-              const targetPeer = msg.chatId || senderId;
-              
-              try {
-                // Heç bir limit, yaddaş və şərt yoxdur! Gələn hər mesaja anında cavab verəcək
-                await client.sendMessage(targetPeer, { message: updatedUser.autoReplyMessage });
-                
-                try {
-                  await client.invoke(new Api.messages.ReadHistory({
-                    peer: targetPeer,
-                    maxId: msg.id
-                  }));
-                } catch (readErr) {}
-              } catch (sendErr) {
-                console.error("AutoReply error:", sendErr.message);
-              }
-            }
-          }
-        } catch (err) {
-          console.error("EventHandler error:", err.message);
-        }
-      }, new NewMessage({ incoming: true }));
-
-      activeTgClients[phone] = client;
-      resolve(client);
-    } catch (err) {
-      reject(err);
-    } finally {
-      delete connectingClients[phone];
-    }
-  });
-
-  return connectingClients[phone];
-}
-
+// ============ YARDIMÇI FUNKSİYALAR ============
 const userStates = {}; 
 const userSessions = {}; 
 const mainMsgIds = {}; 
 
 async function sendOrUpdate(chatId, text, options = {}) {
-  if (mainMsgIds[chatId]) {
-    try {
+  try {
+    if (mainMsgIds[chatId]) {
       await bot.editMessageText(text, {
         chat_id: chatId,
         message_id: mainMsgIds[chatId],
         ...options
       });
-      return; 
-    } catch (e) {
-      if (e.message.includes('message is not modified')) return;
-      try { await bot.deleteMessage(chatId, mainMsgIds[chatId]); } catch (err) {}
+      return;
     }
-  }
+  } catch (e) {}
   const sent = await bot.sendMessage(chatId, text, options);
   mainMsgIds[chatId] = sent.message_id;
 }
@@ -287,6 +514,8 @@ async function showMainMenu(chatId) {
     const lic = await getDB(`licenses/${user.activeLicense}`);
     if (lic) {
        let expiry = lic.expireTimestamp || lic.expiresAt || lic.expireDate;
+       // ÖZÜNÜ DÜZƏLDƏN MEXANİZM: əgər lisenziya artıq istifadə olunub, amma bitmə tarixi
+       // heç vaxt yazılmayıbsa (köhnə aktivləşdirmələr), indi durationDays-ə əsasən yazırıq
        if (!expiry && lic.durationDays) {
            expiry = Date.now() + (parseInt(lic.durationDays) * 24 * 60 * 60 * 1000);
            await setDB(`licenses/${user.activeLicense}/expireTimestamp`, expiry);
@@ -341,6 +570,7 @@ async function showMainMenu(chatId) {
     ]);
   }
 
+  // AZƏRBAYCAN DİLİ ÜÇÜN BÜTÜN BOTLAR DÜYMƏSİ (Lisenziya olub-olmamasından asılı olmayaraq)
   if (lang === 'az') {
      keyboard.push([
        { text: '🤖 Bütün Botlar', url: 'https://t.me/+v0grkns0s6o5Njky' }
@@ -397,12 +627,6 @@ async function resolveEntity(client, raw) {
 // ============ BOT KOMANDALARI ============
 bot.onText(/\/start/, async (msg) => {
   const chatId = msg.chat.id;
-  try { await bot.deleteMessage(chatId, msg.message_id); } catch(e) {}
-  
-  if (mainMsgIds[chatId]) {
-     try { await bot.deleteMessage(chatId, mainMsgIds[chatId]); } catch(e) {}
-  }
-  
   mainMsgIds[chatId] = undefined;
   await setDB(`users/${chatId}/state`, 'START');
 
@@ -441,6 +665,7 @@ bot.on('callback_query', async (query) => {
     }
     
     const settings = await getDB('settings') || {};
+    // MƏCBURİ KANALLAR BURA ƏLAVƏ EDİLDİ
     const keyboard = {
       inline_keyboard: [
         [{ text: t('ch1_btn', newLang), url: settings.channel2 || 'https://t.me/EliteBotMedia' }],
@@ -464,7 +689,9 @@ bot.on('callback_query', async (query) => {
   if (data === 'enter_license') {
     await setDB(`users/${chatId}/state`, 'AWAITING_LICENSE');
     const keyboard = {
-      inline_keyboard: [[{ text: t('cancel_btn', lang), callback_data: 'cancel_operation' }]]
+      inline_keyboard: [
+        [{ text: t('cancel_btn', lang), callback_data: 'cancel_operation' }]
+      ]
     };
     await sendOrUpdate(chatId, t('enter_lic', lang), { reply_markup: keyboard });
     return;
@@ -490,7 +717,11 @@ bot.on('callback_query', async (query) => {
       return;
     }
     await setDB(`users/${chatId}/state`, 'AWAITING_PHONE');
-    const keyboard = { inline_keyboard: [[{ text: t('cancel_btn', lang), callback_data: 'cancel_operation' }]] };
+    const keyboard = {
+      inline_keyboard: [
+        [{ text: t('cancel_btn', lang), callback_data: 'cancel_operation' }]
+      ]
+    };
     await sendOrUpdate(chatId, t('enter_phone', lang), { reply_markup: keyboard });
     return;
   }
@@ -522,6 +753,7 @@ bot.on('callback_query', async (query) => {
       ]);
     }
 
+    // LİSENZİYA MƏLUMATLARI 
     if (userData?.activeLicense) {
       const lic = await getDB(`licenses/${userData.activeLicense}`);
       let expText = "Müddətsiz";
@@ -576,15 +808,13 @@ bot.on('callback_query', async (query) => {
 
   if (data === 'auto_reply_enable') {
     await setDB(`users/${chatId}/autoReplyEnabled`, true);
-    bot.sendMessage(chatId, t('auto_reply_enabled', lang)).then(m => setTimeout(() => bot.deleteMessage(chatId, m.message_id).catch(() => {}), 3000));
-    await bot.emit('callback_query', { message: query.message, data: 'auto_reply_menu', id: query.id, from: query.from });
+    await sendOrUpdate(chatId, t('auto_reply_enabled', lang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', lang), callback_data: 'back_to_main' }]] } });
     return;
   }
 
   if (data === 'auto_reply_disable') {
     await setDB(`users/${chatId}/autoReplyEnabled`, false);
-    bot.sendMessage(chatId, t('auto_reply_disabled', lang)).then(m => setTimeout(() => bot.deleteMessage(chatId, m.message_id).catch(() => {}), 3000));
-    await bot.emit('callback_query', { message: query.message, data: 'auto_reply_menu', id: query.id, from: query.from });
+    await sendOrUpdate(chatId, t('auto_reply_disabled', lang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', lang), callback_data: 'back_to_main' }]] } });
     return;
   }
 
@@ -618,6 +848,7 @@ bot.on('callback_query', async (query) => {
       const newStatus = acc.status === 'ACTIVE' ? 'STOPPED' : 'ACTIVE';
       await setDB(`users/${chatId}/accounts/${phone}/status`, newStatus);
       
+      // ƏGƏR BAŞLAT VURULDUYSA, ANINDA İLK MESAJI ATSIN:
       if (newStatus === 'ACTIVE') {
           await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, 0);
       }
@@ -686,6 +917,7 @@ bot.on('callback_query', async (query) => {
     const merged = [...new Set([...existing, ...selected])];
     
     await setDB(`users/${chatId}/accounts/${phone}/targetGroups`, merged);
+    // TƏTBİQ ET VURANDA AVTOMATİK BAŞLAMASIN - STOPPED OLARAQ QALSIN:
     await setDB(`users/${chatId}/accounts/${phone}/status`, 'STOPPED');
     
     const acc = await getDB(`users/${chatId}/accounts/${phone}`);
@@ -700,14 +932,20 @@ bot.on('callback_query', async (query) => {
   }
 
   if (data === 'scan_more') {
-    if (!userSessions[chatId]) return;
+    if (!userSessions[chatId]) {
+      await sendOrUpdate(chatId, t('session_expired', lang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', lang), callback_data: 'back_to_main' }]] } });
+      return;
+    }
     userSessions[chatId].scanPage++;
     await sendScanPage(chatId);
     return;
   }
 
   if (data === 'scan_back') {
-    if (!userSessions[chatId]) return;
+    if (!userSessions[chatId]) {
+      await sendOrUpdate(chatId, t('session_expired', lang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', lang), callback_data: 'back_to_main' }]] } });
+      return;
+    }
     userSessions[chatId].scanPage--;
     await sendScanPage(chatId);
     return;
@@ -723,7 +961,8 @@ bot.on('callback_query', async (query) => {
     const wait = await bot.sendMessage(chatId, t('scanning', lang));
     let client;
     try {
-      client = await getClient(phone, acc.telegramSession, chatId);
+      client = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 1 });
+      await client.connect();
       const dialogs = await client.getDialogs({ limit: 200 });
       const groups = dialogs.filter(d => d.isGroup || d.isChannel).map(d => ({
         id: (d.entity?.id ? d.entity.id.toString() : d.id.toString()),
@@ -736,18 +975,29 @@ bot.on('callback_query', async (query) => {
         return;
       }
       
+      // ƏVVƏLDƏN SEÇİLMİŞ QRUPLARI YADDAŞDA SAXLAYARAQ İŞARƏLƏMƏK:
       const existingGroups = acc.targetGroups || [];
       const scanSelected = new Set();
+      
       groups.forEach((g, index) => {
         const gStr = g.username ? `@${g.username}` : `chat:${g.id} - ${g.title}`;
-        if (existingGroups.includes(gStr)) scanSelected.add(index);
+        if (existingGroups.includes(gStr)) {
+            scanSelected.add(index);
+        }
       });
 
-      userSessions[chatId] = { scanGroups: groups, scanSelected: scanSelected, scanPage: 0, scanPhone: phone };
+      userSessions[chatId] = {
+        scanGroups: groups,
+        scanSelected: scanSelected,
+        scanPage: 0,
+        scanPhone: phone
+      };
       await sendScanPage(chatId);
     } catch (e) {
       await bot.deleteMessage(chatId, wait.message_id).catch(() => {});
       await sendOrUpdate(chatId, t('err', lang) + e.message, { reply_markup: { inline_keyboard: [[{ text: t('back_main', lang), callback_data: 'back_to_main' }]] } });
+    } finally {
+      if (client) try { await client.disconnect(); } catch (e) {}
     }
     return;
   }
@@ -756,7 +1006,10 @@ bot.on('callback_query', async (query) => {
     const phone = data.replace('groups_', '');
     const acc = await getDB(`users/${chatId}/accounts/${phone}`);
     
-    if (!acc) return sendOrUpdate(chatId, t('no_numbers', lang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', lang), callback_data: 'back_to_main' }]] } });
+    if (!acc) {
+      await sendOrUpdate(chatId, t('no_numbers', lang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', lang), callback_data: 'back_to_main' }]] } });
+      return;
+    }
     
     const groups = acc.targetGroups || [];
     let msg = `📱 *+${phone}* üçün hədəf qruplar:\n\n`;
@@ -766,7 +1019,9 @@ bot.on('callback_query', async (query) => {
       msg += t('no_groups', lang);
     } else {
       const displayGroups = groups.slice(0, 30);
-      if (groups.length > 30) msg += `⚠️ Çox sayda qrup var. Yalnız ilk 30 qrup göstərilir.\n\n`;
+      if (groups.length > 30) {
+          msg += `⚠️ Çox sayda qrup var. Yalnız ilk 30 qrup göstərilir.\n\n`;
+      }
       displayGroups.forEach((g, i) => {
         let display = g;
         if (g.startsWith('chat:')) {
@@ -789,7 +1044,9 @@ bot.on('callback_query', async (query) => {
         try {
             delete mainMsgIds[chatId];
             await sendOrUpdate(chatId, msg.replace(/[_*`\[\]]/g, ''), { reply_markup: { inline_keyboard: kb } });
-        } catch (error2) {}
+        } catch (error2) {
+            console.error('Qrup siyahisi gosterme xetasi:', error2.message);
+        }
     }
     return;
   }
@@ -820,7 +1077,10 @@ bot.on('callback_query', async (query) => {
   if (data.startsWith('source_')) {
     const phone = data.replace('source_', '');
     const acc = await getDB(`users/${chatId}/accounts/${phone}`);
-    if (!acc) return sendOrUpdate(chatId, t('no_numbers', lang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', lang), callback_data: 'back_to_main' }]] } });
+    if (!acc) {
+      await sendOrUpdate(chatId, t('no_numbers', lang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', lang), callback_data: 'back_to_main' }]] } });
+      return;
+    }
     const src = acc.messageSource;
     let msg = `📥 *+${phone}* mesaj mənbəyi:\n\n`;
     if (!src || src.type === 'saved') msg += '💾 Yadda saxlanmış mesajlar';
@@ -942,9 +1202,6 @@ bot.on('message', async (msg) => {
     const botInfo = await bot.getMe();
     if (msg.from.id === botInfo.id) return;
 
-    // KÖHNƏ MESAJLARIN YIĞILMASININ QARŞISINI ALIRIQ
-    try { await bot.deleteMessage(chatId, msg.message_id); } catch(e) {}
-
     const user = await getDB(`users/${chatId}`) || {};
     const lang = user.lang || 'az';
     const state = await getDB(`users/${chatId}/state`) || 'IDLE';
@@ -980,6 +1237,8 @@ bot.on('message', async (msg) => {
         return;
       }
       if (!lic.usedBy) await setDB(`licenses/${text}/usedBy`, chatId);
+      // LİSENZİYA İLK DƏFƏ AKTİVLƏŞƏNDƏ BİTMƏ TARİXİNİ TƏYİN EDİRİK (əvvəllər bu heç vaxt yazılmırdı,
+      // ona görə "qalan gün" heç vaxt görünmürdü):
       const hasExpiry = lic.expireTimestamp || lic.expiresAt || lic.expireDate;
       if (!hasExpiry && lic.durationDays) {
         const newExpireTimestamp = Date.now() + (parseInt(lic.durationDays) * 24 * 60 * 60 * 1000);
@@ -1031,12 +1290,10 @@ bot.on('message', async (msg) => {
         const saved = session.client.session.save();
         const phoneKey = session.phone.replace('+', '');
         
-        try { await session.client.disconnect(); } catch (err) {} 
-        
         await setDB(`users/${chatId}/accounts/${phoneKey}/telegramSession`, saved);
         await setDB(`users/${chatId}/accounts/${phoneKey}/targetGroups`, []);
         
-        await setDB(`users/${chatId}/accounts/${phoneKey}/status`, 'STOPPED'); 
+        await setDB(`users/${chatId}/accounts/${phoneKey}/status`, 'STOPPED'); // Otomatik başlamasın deyə STOPPED
         await setDB(`users/${chatId}/accounts/${phoneKey}/intervalMinutes`, 2);
         await setDB(`users/${chatId}/accounts/${phoneKey}/messageSource`, { type: 'saved' });
         
@@ -1081,13 +1338,17 @@ bot.on('message', async (msg) => {
       }
       let cl;
       try {
-        cl = await getClient(phone, acc.telegramSession, chatId);
+        cl = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 1 });
+        await cl.connect();
         const entityTarget = await resolveEntity(cl, text);
         const entity = await cl.getEntity(entityTarget).catch(() => entityTarget);
         await cl.getMessages(entity, { limit: 1 });
       } catch (e) {
+        if (cl) try { await cl.disconnect(); } catch (e2) {}
         await sendOrUpdate(chatId, t('invalid_source', lang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', lang), callback_data: 'back_to_main' }]] } });
         return;
+      } finally {
+        if (cl) try { await cl.disconnect(); } catch (e) {}
       }
       await setDB(`users/${chatId}/accounts/${phone}/messageSource`, { type: 'custom', target: text });
       await setDB(`users/${chatId}/state`, 'AWAITING_INTERVAL');
@@ -1106,7 +1367,7 @@ bot.on('message', async (msg) => {
         const phone = await getDB(`users/${chatId}/changingIntervalPhone`);
         if (phone) {
           await setDB(`users/${chatId}/accounts/${phone}/intervalMinutes`, min);
-          await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, 0); 
+          await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, 0); // Dərhal işləməsi üçün 0 edirik
           await setDB(`users/${chatId}/state`, 'IDLE');
           await setDB(`users/${chatId}/changingIntervalPhone`, null);
           bot.sendMessage(chatId, t('interval_updated', lang, { min })).then(m => setTimeout(() => bot.deleteMessage(chatId, m.message_id).catch(() => {}), 3000));
@@ -1117,6 +1378,7 @@ bot.on('message', async (msg) => {
       const phone = await getDB(`users/${chatId}/currentPhoneSetup`);
       if (phone) {
         await setDB(`users/${chatId}/accounts/${phone}/intervalMinutes`, min);
+        // İLK DƏFƏDƏN AVTOMATİK BAŞLAMIR (STOPPED QALIR), AMMA BAŞLADANDA İLK MESAJI ANINDA ATACAQ
         await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, 0); 
         await setDB(`users/${chatId}/state`, 'IDLE');
         delete userSessions[chatId];
@@ -1139,7 +1401,8 @@ bot.on('message', async (msg) => {
 });
 
 
-// ============ PARALEL MESAJ GÖNDƏRMƏ SİSTEMİ ============
+// ============ PARALEL MESAJ GÖNDƏRMƏ VƏ AVTOCAVAB SİSTEMİ ============
+if (!global.runningAccounts) global.runningAccounts = new Set();
 
 setInterval(async () => {
   try {
@@ -1156,17 +1419,17 @@ setInterval(async () => {
         const acc = user.accounts[phone];
         if (!acc.telegramSession) continue;
 
+        // Bu hesab üçün əvvəlki tapşırıq hələ bitməyibsə, yenisini başlatma
+        // (bu, qruplar arası gözləmə vaxtının pozulub mesajların tez-tez getməsinin qarşısını alır)
         const taskKey = `${chatId}_${phone}`;
         if (global.runningAccounts.has(taskKey)) continue;
 
         const groups = acc.targetGroups || [];
         const interval = (acc.intervalMinutes || 2) * 60 * 1000;
         const timeToSendMessage = acc.status === 'ACTIVE' && (Date.now() - (acc.lastSentAt || 0) >= interval) && groups.length > 0;
-        
         const shouldAutoReply = user.autoReplyEnabled && user.autoReplyMessage;
-        const needsInit = shouldAutoReply && !activeTgClients[phone];
 
-        if (timeToSendMessage || needsInit) {
+        if (timeToSendMessage || shouldAutoReply) {
           global.runningAccounts.add(taskKey);
           tasks.push(
             processAccountTask(chatId, phone, user, acc, timeToSendMessage, groups)
@@ -1185,8 +1448,12 @@ setInterval(async () => {
 }, 30000);
 
 async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, groups) {
+  let client;
   try {
-    const client = await getClient(phone, acc.telegramSession, chatId);
+    client = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 1 });
+    await client.connect();
+    // Entity cache-i isitmek ucun dialoglari yukleyirik - username olmayan (private) qruplarin
+    // ID-si ile duzgun teyin olunmasi ve hamisina mesaj getmesi ucun vacibdir
     await client.getDialogs({ limit: 200 }).catch(() => {});
     
     if (timeToSendMessage) {
@@ -1207,35 +1474,77 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
             const peer = (typeof targetStr === 'string' && /^-?\d+$/.test(targetStr)) ? BigInt(targetStr) : targetStr;
             const target = await client.getEntity(peer).catch(() => peer);
             
-            if (target && (msg.message || msg.media)) {
-               await client.sendMessage(target, { message: msg.message || '', file: msg.media });
-               
-               const groupName = target.title || target.username || g;
-               bot.sendMessage(chatId, `✅ Mesaj atıldı: ${groupName}`).then(m => {
-                   setTimeout(() => bot.deleteMessage(chatId, m.message_id).catch(() => {}), 15000);
-               }).catch(() => {});
+            if (target) {
+              if (msg.message || msg.media) {
+                 await client.sendMessage(target, { message: msg.message || '', file: msg.media });
+                 
+                 // Qrup adı ilə botda bildiriş (15 saniyə sonra silinir)
+                 const groupName = target.title || target.username || g;
+                 try {
+                     const notifMsg = await bot.sendMessage(chatId, `✅ Mesaj atıldı: ${groupName}`);
+                     setTimeout(() => {
+                         bot.deleteMessage(chatId, notifMsg.message_id).catch(() => {});
+                     }, 15000);
+                 } catch (err) {}
 
-               // 20-30 saniyə (20000 - 30000 ms) arasında random gözləmə (həmişə işləyəcək)
-               const randomDelay = Math.floor(Math.random() * 11000) + 20000;
-               await new Promise(r => setTimeout(r, randomDelay));
+                 // Qruplar arası random interval (Spam qorunması: 20-30 saniyə arası)
+                 await new Promise(r => setTimeout(r, 20000 + Math.random() * 10000));
+              }
             }
           }
         } catch (e) {
-           // MÜHÜM YENİLİK: Əgər hansısa qrupda limitə (FloodWait) və ya xətaya düşsə, bu qrup atlanacaq və istifadəçiyə bildirəcək, digər qruplara keçəcək!
-           bot.sendMessage(chatId, `❌ Qrupa göndərilmədi (${g}): ${e.message}`).then(m => {
-               setTimeout(() => bot.deleteMessage(chatId, m.message_id).catch(() => {}), 15000);
-           }).catch(() => {});
+           console.log(`Qrupa göndərilərkən xəta:`, e.message);
         }
       }
       
       await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, Date.now());
     }
 
+    if (user.autoReplyEnabled && user.autoReplyMessage) {
+      if (!global.repliedMsgs) global.repliedMsgs = {}; 
+      if (!global.autoReplyCount) global.autoReplyCount = {};
+      
+      try {
+        const pms = await client.getDialogs({ limit: 15 });
+        for (const pm of pms) {
+          if (pm.isUser && pm.entity && !pm.entity.bot && !pm.entity.isSelf && !pm.entity.self) {
+             const history = await client.getMessages(pm.entity, { limit: 1 });
+             if (history && history.length > 0 && !history[0].out) {
+                const lastMsgId = history[0].id;
+                const memKey = `${phone}_${pm.id}`;
+                
+                // Bir istifadəçiyə avtocavab MAKSIMUM 3 dəfə göndərilsin, 3-dən artıq göndərilməsin
+                const sentCount = global.autoReplyCount[memKey] || 0;
+                if (global.repliedMsgs[memKey] !== lastMsgId && sentCount < 3) {
+                   try {
+                     const inputPeer = await client.getInputEntity(pm.id);
+                     
+                     await client.invoke(new Api.messages.SetTyping({
+                         peer: inputPeer,
+                         action: new Api.SendMessageTypingAction()
+                     }));
+                     await new Promise(res => setTimeout(res, 2000 + Math.random() * 2000));
+                     
+                     await client.sendMessage(inputPeer, { message: user.autoReplyMessage });
+                     await client.invoke(new Api.messages.ReadHistory({
+                       peer: inputPeer,
+                       maxId: 0
+                     }));
+                     
+                     global.repliedMsgs[memKey] = lastMsgId;
+                     global.autoReplyCount[memKey] = sentCount + 1;
+                   } catch (err) {}
+                }
+             }
+          }
+        }
+      } catch (e) {}
+    }
+
   } catch (e) {
      console.error('Proses task xətası:', e.message);
-     if (e.message.includes('socket') || e.message.includes('connect')) {
-         delete activeTgClients[phone];
-     }
+  } finally {
+    if (client) try { await client.disconnect(); } catch (e) {}
   }
 }
 
