@@ -20,7 +20,6 @@ process.on('unhandledRejection', (reason, promise) => {
 Logger.setLevel('none');
 
 // ============ GLOBAL DƏYİŞƏNLƏR ============
-global.repliedMsgs = {};
 global.runningAccounts = new Set();
 const activeTgClients = {};
 const connectingClients = {};
@@ -209,38 +208,38 @@ async function getClient(phone, sessionString, chatId) {
       const client = new TelegramClient(new StringSession(sessionString), API_ID, API_HASH, { connectionRetries: 5 });
       await client.connect();
 
-      // ANINDA VƏ YALNIZ ŞƏXSİ MESAJLARA AVTOCAVAB ÜÇÜN EVENT LISTENER (MÜTLƏQ GÖNDƏRİM ÜÇÜN DƏYİŞDİRİLDİ)
+      // MÜTLƏQ AVTOCAVAB: Hər gələn mesaja limitsiz cavab verir
       client.addEventHandler(async (event) => {
         try {
           const msg = event.message;
+          const isPrivate = msg.isPrivate || (msg.peerId && msg.peerId.className === 'PeerUser');
           
-          if (msg && !msg.out && msg.peerId && msg.peerId.className === 'PeerUser') {
-            const senderId = msg.peerId.userId ? msg.peerId.userId.toString() : null;
+          if (msg && !msg.out && isPrivate) {
+            const senderId = msg.senderId ? msg.senderId.toString() : (msg.peerId?.userId ? msg.peerId.userId.toString() : null);
             if (!senderId || senderId === '777000') return;
 
             const updatedUser = await getDB(`users/${chatId}`);
             
             if (updatedUser && updatedUser.autoReplyEnabled && updatedUser.autoReplyMessage) {
-              const memKey = `${phone}_${senderId}`;
+              const targetPeer = msg.chatId || senderId;
               
-              // Şərtləri qaldırdıq, hər yeni mesaja mütləq cavab verəcək
-              if (global.repliedMsgs[memKey] !== msg.id) {
-                global.repliedMsgs[memKey] = msg.id;
-
-                // Anında yerindəcə mesaj atır
-                await client.sendMessage(senderId, { message: updatedUser.autoReplyMessage });
+              try {
+                // Heç bir limit, yaddaş və şərt yoxdur! Gələn hər mesaja anında cavab verəcək
+                await client.sendMessage(targetPeer, { message: updatedUser.autoReplyMessage });
                 
                 try {
                   await client.invoke(new Api.messages.ReadHistory({
-                    peer: senderId,
+                    peer: targetPeer,
                     maxId: msg.id
                   }));
                 } catch (readErr) {}
+              } catch (sendErr) {
+                console.error("AutoReply error:", sendErr.message);
               }
             }
           }
         } catch (err) {
-          // Xəta olduqda sistemi çökdürmə
+          console.error("EventHandler error:", err.message);
         }
       }, new NewMessage({ incoming: true }));
 
@@ -1164,7 +1163,6 @@ setInterval(async () => {
         const interval = (acc.intervalMinutes || 2) * 60 * 1000;
         const timeToSendMessage = acc.status === 'ACTIVE' && (Date.now() - (acc.lastSentAt || 0) >= interval) && groups.length > 0;
         
-        // Avtocavab dinləyicisini isitmək üçün əgər istifadəçi onu aktiv edibsə və hələ client qurulmayıbsa işə salırıq.
         const shouldAutoReply = user.autoReplyEnabled && user.autoReplyMessage;
         const needsInit = shouldAutoReply && !activeTgClients[phone];
 
@@ -1213,18 +1211,20 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
                await client.sendMessage(target, { message: msg.message || '', file: msg.media });
                
                const groupName = target.title || target.username || g;
-               try {
-                   const notifMsg = await bot.sendMessage(chatId, `✅ Mesaj atıldı: ${groupName}`);
-                   setTimeout(() => { bot.deleteMessage(chatId, notifMsg.message_id).catch(() => {}); }, 15000);
-               } catch (err) {}
+               bot.sendMessage(chatId, `✅ Mesaj atıldı: ${groupName}`).then(m => {
+                   setTimeout(() => bot.deleteMessage(chatId, m.message_id).catch(() => {}), 15000);
+               }).catch(() => {});
 
-               // 20-30 saniyə (20000 - 30000 ms) arasında random gözləmə
+               // 20-30 saniyə (20000 - 30000 ms) arasında random gözləmə (həmişə işləyəcək)
                const randomDelay = Math.floor(Math.random() * 11000) + 20000;
                await new Promise(r => setTimeout(r, randomDelay));
             }
           }
         } catch (e) {
-           console.log(`Qrupa göndərilərkən xəta:`, e.message);
+           // MÜHÜM YENİLİK: Əgər hansısa qrupda limitə (FloodWait) və ya xətaya düşsə, bu qrup atlanacaq və istifadəçiyə bildirəcək, digər qruplara keçəcək!
+           bot.sendMessage(chatId, `❌ Qrupa göndərilmədi (${g}): ${e.message}`).then(m => {
+               setTimeout(() => bot.deleteMessage(chatId, m.message_id).catch(() => {}), 15000);
+           }).catch(() => {});
         }
       }
       
