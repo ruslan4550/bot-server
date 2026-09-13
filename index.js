@@ -513,7 +513,13 @@ async function showMainMenu(chatId) {
   if (user?.activeLicense) {
     const lic = await getDB(`licenses/${user.activeLicense}`);
     if (lic) {
-       const expiry = lic.expireTimestamp || lic.expiresAt || lic.expireDate;
+       let expiry = lic.expireTimestamp || lic.expiresAt || lic.expireDate;
+       // ÖZÜNÜ DÜZƏLDƏN MEXANİZM: əgər lisenziya artıq istifadə olunub, amma bitmə tarixi
+       // heç vaxt yazılmayıbsa (köhnə aktivləşdirmələr), indi durationDays-ə əsasən yazırıq
+       if (!expiry && lic.durationDays) {
+           expiry = Date.now() + (parseInt(lic.durationDays) * 24 * 60 * 60 * 1000);
+           await setDB(`licenses/${user.activeLicense}/expireTimestamp`, expiry);
+       }
        let time = null;
        if (expiry) time = typeof expiry === 'number' ? expiry : new Date(expiry).getTime();
        if (!time || time > Date.now()) {
@@ -557,7 +563,7 @@ async function showMainMenu(chatId) {
       { text: t('btn_web', lang), url: 'https://EliteBot.com' }
     ]);
     keyboard.push([
-      { text: '🚀 Tam Botu Başlat', callback_data: 'start_full_bot' }
+      { text: user?.fullBotActive ? '⏹ Tam Botu Dayandır' : '🚀 Tam Botu Başlat', callback_data: 'start_full_bot' }
     ]);
     keyboard.push([
       { text: '💬 WhatsApp Dəstək', url: 'https://wa.me/19048477074' }
@@ -664,7 +670,6 @@ bot.on('callback_query', async (query) => {
       inline_keyboard: [
         [{ text: t('ch1_btn', newLang), url: settings.channel2 || 'https://t.me/EliteBotMedia' }],
         [{ text: '📢 Məcburi Kanal 2', url: 'https://t.me/+1MsfqoAHmaQ1ZTli' }],
-        [{ text: '📢 Məcburi Kanal 3', url: 'https://t.me/+v0grkns0s6o5Njky' }],
         [{ text: t('sub_btn', newLang), callback_data: 'check_sub' }]
       ]
     };
@@ -752,7 +757,11 @@ bot.on('callback_query', async (query) => {
     if (userData?.activeLicense) {
       const lic = await getDB(`licenses/${userData.activeLicense}`);
       let expText = "Müddətsiz";
-      const expiry = lic?.expireTimestamp || lic?.expiresAt || lic?.expireDate;
+      let expiry = lic?.expireTimestamp || lic?.expiresAt || lic?.expireDate;
+      if (!expiry && lic?.durationDays) {
+          expiry = Date.now() + (parseInt(lic.durationDays) * 24 * 60 * 60 * 1000);
+          await setDB(`licenses/${userData.activeLicense}/expireTimestamp`, expiry);
+      }
       if (expiry) {
          const time = typeof expiry === 'number' ? expiry : new Date(expiry).getTime();
          const diff = time - Date.now();
@@ -811,16 +820,23 @@ bot.on('callback_query', async (query) => {
 
   if (data === 'start_full_bot') {
     const userData = await getDB(`users/${chatId}`) || {};
-    // Avtocavabı aktivləşdir
-    await setDB(`users/${chatId}/autoReplyEnabled`, true);
-    // Bütün hesabları aktivləşdir ki, qruplara mesaj atma funksiyası da işə düşsün
+    const isCurrentlyActive = userData.fullBotActive || false;
+    const newState = !isCurrentlyActive;
+
+    await setDB(`users/${chatId}/fullBotActive`, newState);
+    await setDB(`users/${chatId}/autoReplyEnabled`, newState);
+
     if (userData.accounts) {
       for (const phone in userData.accounts) {
-        await setDB(`users/${chatId}/accounts/${phone}/status`, 'ACTIVE');
-        await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, 0);
+        await setDB(`users/${chatId}/accounts/${phone}/status`, newState ? 'ACTIVE' : 'STOPPED');
+        if (newState) await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, 0);
       }
     }
-    bot.sendMessage(chatId, '🚀 Tam bot başladıldı! Həm avtomatik cavab, həm də qruplara mesaj atma funksiyası aktivləşdirildi.').then(m => setTimeout(() => bot.deleteMessage(chatId, m.message_id).catch(() => {}), 5000));
+
+    const msgText = newState
+      ? '🚀 Tam bot başladıldı! Həm avtomatik cavab, həm də qruplara mesaj atma funksiyası aktivləşdirildi.'
+      : '⏹ Tam bot dayandırıldı! Həm avtomatik cavab, həm də qruplara mesaj atma funksiyası dayandırıldı.';
+    bot.sendMessage(chatId, msgText).then(m => setTimeout(() => bot.deleteMessage(chatId, m.message_id).catch(() => {}), 5000));
     await showMainMenu(chatId);
     return;
   }
@@ -1386,6 +1402,8 @@ bot.on('message', async (msg) => {
 
 
 // ============ PARALEL MESAJ GÖNDƏRMƏ VƏ AVTOCAVAB SİSTEMİ ============
+if (!global.runningAccounts) global.runningAccounts = new Set();
+
 setInterval(async () => {
   try {
     const users = await getDB('users');
@@ -1399,14 +1417,25 @@ setInterval(async () => {
       
       for (const phone in user.accounts) {
         const acc = user.accounts[phone];
-        if (acc.status !== 'ACTIVE' || !acc.telegramSession) continue;
-        
+        if (!acc.telegramSession) continue;
+
+        // Bu hesab üçün əvvəlki tapşırıq hələ bitməyibsə, yenisini başlatma
+        // (bu, qruplar arası gözləmə vaxtının pozulub mesajların tez-tez getməsinin qarşısını alır)
+        const taskKey = `${chatId}_${phone}`;
+        if (global.runningAccounts.has(taskKey)) continue;
+
         const groups = acc.targetGroups || [];
         const interval = (acc.intervalMinutes || 2) * 60 * 1000;
-        const timeToSendMessage = (Date.now() - (acc.lastSentAt || 0) >= interval) && groups.length > 0;
-        
-        if (timeToSendMessage || (user.autoReplyEnabled && user.autoReplyMessage)) {
-          tasks.push(processAccountTask(chatId, phone, user, acc, timeToSendMessage, groups));
+        const timeToSendMessage = acc.status === 'ACTIVE' && (Date.now() - (acc.lastSentAt || 0) >= interval) && groups.length > 0;
+        const shouldAutoReply = user.autoReplyEnabled && user.autoReplyMessage;
+
+        if (timeToSendMessage || shouldAutoReply) {
+          global.runningAccounts.add(taskKey);
+          tasks.push(
+            processAccountTask(chatId, phone, user, acc, timeToSendMessage, groups)
+              .catch(e => console.error('Task xətası:', e.message))
+              .finally(() => global.runningAccounts.delete(taskKey))
+          );
         }
       }
     }
