@@ -175,8 +175,6 @@ const langData = {
     admin_phone_change_prompt: "Nömrə yenilənməsi üçün təsdiq göndərildi."
   }
 };
-// Mövcutluq xatirinə digər dilləri kopyalaya bilərsiniz (tr, en, ru var idi yuxarıda)
-// Lakin əsas az dilini tam saxladıq ki, yığcam olsun (siz original faylda qalanını kopyalaya bilərsiniz).
 
 function t(key, lang = 'az', params = {}) {
   let text = langData[lang]?.[key] || langData['az'][key] || key;
@@ -212,17 +210,23 @@ async function getClient(phone, sessionString, chatId) {
       const client = new TelegramClient(new StringSession(sessionString), API_ID, API_HASH, { connectionRetries: 5 });
       await client.connect();
 
-      // ANINDA AVTOCAVAB ÜÇÜN EVENT LISTENER (MAX 3 DƏFƏ)
+      // ANINDA VƏ YALNIZ ŞƏXSİ MESAJLARA AVTOCAVAB ÜÇÜN EVENT LISTENER
       client.addEventHandler(async (event) => {
         try {
           const msg = event.message;
-          if (msg && msg.isPrivate && !msg.out) {
+          
+          // 1. Şərt: Mesaj boş deyil, gələn mesajdır və mütləq PeerUser (şəxsi chat) olmalıdır. 
+          // Qruplar, kanallar və botlar qətiyyən avtocavab almayacaq.
+          if (msg && !msg.out && msg.peerId && msg.peerId.className === 'PeerUser') {
+            
+            const senderId = msg.peerId.userId ? msg.peerId.userId.toString() : null;
+            // 2. Şərt: Telegram-ın rəsmi bildirişlərinə (777000) cavab verməsin
+            if (!senderId || senderId === '777000') return;
+
             const updatedUser = await getDB(`users/${chatId}`);
             
             if (updatedUser && updatedUser.autoReplyEnabled && updatedUser.autoReplyMessage) {
-              const senderId = msg.peerId.userId.toString();
               const memKey = `${phone}_${senderId}`;
-
               const sentCount = global.autoReplyCount[memKey] || 0;
               
               if (global.repliedMsgs[memKey] !== msg.id && sentCount < 3) {
@@ -231,13 +235,9 @@ async function getClient(phone, sessionString, chatId) {
 
                 const inputPeer = await client.getInputEntity(msg.peerId);
 
-                await client.invoke(new Api.messages.SetTyping({
-                  peer: inputPeer,
-                  action: new Api.SendMessageTypingAction()
-                }));
-                await new Promise(res => setTimeout(res, 2000 + Math.random() * 2000));
-
+                // GECİKMƏ (DELAY) VƏ YAZIR (TYPING) LƏĞV EDİLDİ - ANINDA YERİNDƏCƏ MESAJ ATIR
                 await client.sendMessage(inputPeer, { message: updatedUser.autoReplyMessage });
+                
                 await client.invoke(new Api.messages.ReadHistory({
                   peer: inputPeer,
                   maxId: msg.id
@@ -405,7 +405,7 @@ async function resolveEntity(client, raw) {
 // ============ BOT KOMANDALARI ============
 bot.onText(/\/start/, async (msg) => {
   const chatId = msg.chat.id;
-  try { await bot.deleteMessage(chatId, msg.message_id); } catch(e) {} // istifadəçinin atdığı mesaj silinir
+  try { await bot.deleteMessage(chatId, msg.message_id); } catch(e) {}
   
   if (mainMsgIds[chatId]) {
      try { await bot.deleteMessage(chatId, mainMsgIds[chatId]); } catch(e) {}
@@ -1238,7 +1238,6 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
 
   } catch (e) {
      console.error('Proses task xətası:', e.message);
-     // Connection xətası olduqda keşdən silirik ki, növbəti dəfə təzədən qoşulsun.
      if (e.message.includes('socket') || e.message.includes('connect')) {
          delete activeTgClients[phone];
      }
