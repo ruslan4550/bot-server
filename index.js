@@ -549,6 +549,9 @@ async function showMainMenu(chatId) {
     keyboard.push([
       { text: '💬 WhatsApp Dəstək', url: 'https://wa.me/19048477074' }
     ]);
+    keyboard.push([
+      { text: '📩 Dəstək (Telegram)', url: 'https://t.me/EliteBotSupport' }
+    ]);
   } else {
     keyboard.push([
       { text: t('btn_add_num', lang), callback_data: 'add_new_number' },
@@ -568,6 +571,9 @@ async function showMainMenu(chatId) {
     keyboard.push([
       { text: '💬 WhatsApp Dəstək', url: 'https://wa.me/19048477074' }
     ]);
+    keyboard.push([
+      { text: '📩 Dəstək (Telegram)', url: 'https://t.me/EliteBotSupport' }
+    ]);
   }
 
   // AZƏRBAYCAN DİLİ ÜÇÜN BÜTÜN BOTLAR DÜYMƏSİ (Lisenziya olub-olmamasından asılı olmayaraq)
@@ -585,7 +591,11 @@ async function showMainMenu(chatId) {
 
 async function isSubscribed(userId) {
   const settings = await getDB('settings');
-  const channels = [settings?.channel2_id].filter(Boolean);
+  // DİQQƏT: "Məcburi Kanal 2" (https://t.me/+1MsfqoAHmaQ1ZTli) invite-link ilə olduğu üçün
+  // onun ədədi chat ID-sini Firebase-də settings/channel3_id olaraq yazmasanız, bu kanal üçün
+  // üzvlük yoxlanıla bilməz. ID-ni almaq üçün: botu həmin kanalda admin edib, kanaldan bir mesajı
+  // botunuza (və ya @JsonDumpBot kimi bir bota) ötürüb chat id-ni tapa bilərsiniz.
+  const channels = [settings?.channel2_id, settings?.channel3_id].filter(Boolean);
   if (channels.length === 0) return true;
   for (const ch of channels) {
     try {
@@ -1382,7 +1392,7 @@ bot.on('message', async (msg) => {
         await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, 0); 
         await setDB(`users/${chatId}/state`, 'IDLE');
         delete userSessions[chatId];
-        await sendOrUpdate(chatId, `✅ İnterval təyin edildi: ${min} dəqiqə.\n\nİndi idarə panelindən hesabınıza daxil olaraq "▶️ Başlat" vuraraq işə sala bilərsiniz.`, { parse_mode: 'Markdown' });
+        await sendOrUpdate(chatId, `✅ İnterval təyin edildi: ${min} dəqiqə.\n\nİndi idarə panelindən hesabınıza daxil olaraq "▶️ Başlat" vuraraq işə sala bilərsiniz.`, { parse_mode: 'Markdown', reply_markup: { inline_keyboard: [[{ text: t('back_main', lang), callback_data: 'back_to_main' }]] } });
       }
       return;
     }
@@ -1431,8 +1441,10 @@ setInterval(async () => {
 
         if (timeToSendMessage || shouldAutoReply) {
           global.runningAccounts.add(taskKey);
+          // Qrup sayına görə kifayət qədər vaxt ver, amma heç vaxt əbədi asılı qalmasın
+          const taskTimeoutMs = Math.max(180000, groups.length * 40000 + 60000);
           tasks.push(
-            processAccountTask(chatId, phone, user, acc, timeToSendMessage, groups)
+            withTimeout(processAccountTask(chatId, phone, user, acc, timeToSendMessage, groups), taskTimeoutMs, `Hesab ${phone}`)
               .catch(e => console.error('Task xətası:', e.message))
               .finally(() => global.runningAccounts.delete(taskKey))
           );
@@ -1446,6 +1458,14 @@ setInterval(async () => {
     console.error('Interval xətası:', e);
   }
 }, 30000);
+
+function withTimeout(promise, ms, label) {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`${label} vaxtı bitdi (timeout)`)), ms);
+  });
+  return Promise.race([Promise.resolve(promise), timeout]).finally(() => clearTimeout(timer));
+}
 
 async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, groups) {
   let client;
@@ -1476,7 +1496,7 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
             
             if (target) {
               if (msg.message || msg.media) {
-                 await client.sendMessage(target, { message: msg.message || '', file: msg.media });
+                 await client.sendMessage(target, { message: msg.message || '', file: msg.media, formattingEntities: msg.entities || undefined });
                  
                  // Qrup adı ilə botda bildiriş (15 saniyə sonra silinir)
                  const groupName = target.title || target.username || g;
@@ -1505,7 +1525,7 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
       if (!global.autoReplyCount) global.autoReplyCount = {};
       
       try {
-        const pms = await client.getDialogs({ limit: 15 });
+        const pms = await client.getDialogs({ limit: 200 });
         for (const pm of pms) {
           if (pm.isUser && pm.entity && !pm.entity.bot && !pm.entity.isSelf && !pm.entity.self) {
              const history = await client.getMessages(pm.entity, { limit: 1 });
@@ -1544,7 +1564,9 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
   } catch (e) {
      console.error('Proses task xətası:', e.message);
   } finally {
-    if (client) try { await client.disconnect(); } catch (e) {}
+    if (client) {
+      try { await withTimeout(client.disconnect(), 10000, 'Disconnect'); } catch (e) {}
+    }
   }
 }
 
