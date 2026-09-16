@@ -37,6 +37,11 @@ const BOT_TOKEN = "8940602664:AAHbe3HRkoselmfmUgmzvwWuJFfPkrCnKUg";
 const API_ID = 36726228;
 const API_HASH = "59b3c57e519c9cf2463b8725bc7c4f36";
 const FIREBASE_URL = "https://botadmin-53dc8-default-rtdb.europe-west1.firebasedatabase.app";
+const SUPPORT_URL = "https://t.me/EliteBotSupport";
+const ALL_BOTS_URL = "https://t.me/+1MsfqoAHmaQ1ZTli";
+const DEFAULT_TOURS_BEFORE_PAUSE = 5;
+const DEFAULT_PAUSE_MINUTES = 30;
+const DEFAULT_AUTOREPLY_COOLDOWN_DAYS = 4;
 
 const bot = new TelegramBot(BOT_TOKEN, { polling: true });
 console.log("Bot işə düşdü və polling başladı...");
@@ -165,7 +170,15 @@ const langData = {
     auto_reply_toggle_off: "⏹ Dayandır",
     auto_reply_enabled: "✅ Avtocavab aktivləşdirildi.",
     auto_reply_disabled: "✅ Avtocavab dayandırıldı.",
-    admin_phone_change_prompt: "Nömrə yenilənməsi üçün təsdiq göndərildi."
+    admin_phone_change_prompt: "Nömrə yenilənməsi üçün təsdiq göndərildi.",
+    btn_all_bots: "🤖 Bütün Botlar",
+    btn_renew_lic: "🔑 Lisenziyanı yenilə / Aktivləşdir",
+    lic_expired_msg: "⛔ Lisenziya müddəti bitdi. Bot avtomatik dayandırıldı.\n\nYeniləmək üçün dəstəyə yazın və ya yeni kod aktivləşdirin.",
+    pause_started: "⏳ {tours} tur tamamlandı. {min} dəqiqəlik fasilə başladı. Fasilədən sonra avtomatik davam edəcək.",
+    err_group_restrict: "⚠️ Qrupda məhdudiyyət ({kind}): {group}\nHesab: +{phone}\n{detail}",
+    err_account_flood: "⚠️ Flood/spam limiti: +{phone}\nTelegram müvəqqəti məhdudiyyət qoyub.\n{detail}",
+    err_account_logout: "⚠️ Hesab çıxış etdi: +{phone}\nSessiya bitib. Yenidən nömrə əlavə edin.\n{detail}",
+    err_account_other: "⚠️ Ciddi xəta (+{phone}): {detail}"
   },
   tr: {
     about: "🤖 *ELITE OTOMESAJ BOTU*\n\nHoş geldiniz! Lütfen aşağıdaki menüden işlem seçiniz.",
@@ -262,7 +275,15 @@ const langData = {
     auto_reply_toggle_off: "⏹ Durdur",
     auto_reply_enabled: "✅ Otomatik yanıt etkinleştirildi.",
     auto_reply_disabled: "✅ Otomatik yanıt durduruldu.",
-    admin_phone_change_prompt: "Numara güncellemesi için onay gönderildi."
+    admin_phone_change_prompt: "Numara güncellemesi için onay gönderildi.",
+    btn_all_bots: "🤖 Tüm Botlar",
+    btn_renew_lic: "🔑 Lisansı Yenile / Etkinleştir",
+    lic_expired_msg: "⛔ Lisans süresi doldu. Bot otomatik durduruldu.\n\nYenilemek için destek ile iletişime geçin veya yeni kod etkinleştirin.",
+    pause_started: "⏳ {tours} tur tamamlandı. {min} dakikalık mola başladı. Moladan sonra otomatik devam edecek.",
+    err_group_restrict: "⚠️ Grupta kısıtlama ({kind}): {group}\nHesap: +{phone}\n{detail}",
+    err_account_flood: "⚠️ Flood/spam limiti: +{phone}\nTelegram geçici kısıtlama koydu.\n{detail}",
+    err_account_logout: "⚠️ Hesap çıkış yaptı: +{phone}\nOturum sona erdi. Numarayı yeniden ekleyin.\n{detail}",
+    err_account_other: "⚠️ Ciddi hata (+{phone}): {detail}"
   },
   en: {
     about: "🤖 *ELITE OTOMESAJ BOTU*\n\nWelcome! Please select an operation from the menu below.",
@@ -359,7 +380,15 @@ const langData = {
     auto_reply_toggle_off: "⏹ Stop",
     auto_reply_enabled: "✅ Auto-reply enabled.",
     auto_reply_disabled: "✅ Auto-reply disabled.",
-    admin_phone_change_prompt: "Number update confirmation sent."
+    admin_phone_change_prompt: "Number update confirmation sent.",
+    btn_all_bots: "🤖 All Bots",
+    btn_renew_lic: "🔑 Renew / Activate License",
+    lic_expired_msg: "⛔ Your license has expired. The bot was stopped automatically.\n\nContact support to renew or activate a new code.",
+    pause_started: "⏳ {tours} rounds completed. {min}-minute pause started. It will resume automatically after the pause.",
+    err_group_restrict: "⚠️ Group restriction ({kind}): {group}\nAccount: +{phone}\n{detail}",
+    err_account_flood: "⚠️ Flood/spam limit: +{phone}\nTelegram applied a temporary restriction.\n{detail}",
+    err_account_logout: "⚠️ Account signed out: +{phone}\nSession expired. Please add the number again.\n{detail}",
+    err_account_other: "⚠️ Serious error (+{phone}): {detail}"
   },
   ru: {
     about: "🤖 *ELITE OTOMESAJ BOTU*\n\nДобро пожаловать! Пожалуйста, выберите действие из меню ниже.",
@@ -456,7 +485,15 @@ const langData = {
     auto_reply_toggle_off: "⏹ Остановить",
     auto_reply_enabled: "✅ Автоответ включен.",
     auto_reply_disabled: "✅ Автоответ выключен.",
-    admin_phone_change_prompt: "Подтверждение обновления номера отправлено."
+    admin_phone_change_prompt: "Подтверждение обновления номера отправлено.",
+    btn_all_bots: "🤖 Все боты",
+    btn_renew_lic: "🔑 Обновить / Активировать лицензию",
+    lic_expired_msg: "⛔ Срок лицензии истёк. Бот остановлен автоматически.\n\nНапишите в поддержку или активируйте новый код.",
+    pause_started: "⏳ Завершено {tours} кругов. Пауза {min} мин. После паузы работа продолжится автоматически.",
+    err_group_restrict: "⚠️ Ограничение в группе ({kind}): {group}\nАккаунт: +{phone}\n{detail}",
+    err_account_flood: "⚠️ Лимит flood/spam: +{phone}\nTelegram временно ограничил отправку.\n{detail}",
+    err_account_logout: "⚠️ Аккаунт вышел: +{phone}\nСессия истекла. Добавьте номер заново.\n{detail}",
+    err_account_other: "⚠️ Серьёзная ошибка (+{phone}): {detail}"
   }
 };
 
@@ -472,22 +509,198 @@ function t(key, lang = 'az', params = {}) {
 
 // ============ DEFAULT SETTINGS ============
 (async function initSettings() {
-  const settings = await getDB('settings');
-  if (!settings) {
-    await setDB('settings', {
-      channel1: "https://t.me/EliteBotDestek",
-      channel2: "https://t.me/EliteBotMedia",
-      channel1_id: "@EliteBotDestek",
-      channel2_id: "@EliteBotMedia",
-      webUrl: "https://EliteBot.com"
-    });
-  }
+  const settings = await getDB('settings') || {};
+  const defaults = {
+    channel1: "https://t.me/EliteBotDestek",
+    channel2: "https://t.me/EliteBotMedia",
+    channel1_id: "@EliteBotDestek",
+    channel2_id: "@EliteBotMedia",
+    webUrl: "https://EliteBot.com",
+    support: SUPPORT_URL,
+    allBotsUrl: ALL_BOTS_URL,
+    autoReplyCooldownDays: DEFAULT_AUTOREPLY_COOLDOWN_DAYS,
+    toursBeforePause: DEFAULT_TOURS_BEFORE_PAUSE,
+    pauseMinutes: DEFAULT_PAUSE_MINUTES
+  };
+  const merged = { ...defaults, ...settings };
+  const needsWrite =
+    !settings ||
+    settings.autoReplyCooldownDays == null ||
+    settings.toursBeforePause == null ||
+    settings.pauseMinutes == null ||
+    !settings.support ||
+    !settings.allBotsUrl;
+  if (needsWrite) await setDB('settings', merged);
 })();
 
 // ============ YARDIMÇI FUNKSİYALAR ============
 const userStates = {}; 
 const userSessions = {}; 
 const mainMsgIds = {}; 
+
+if (!global.abortFlags) global.abortFlags = {};
+if (!global.runningAccounts) global.runningAccounts = new Set();
+if (!global.errorNotifiedAt) global.errorNotifiedAt = {};
+if (!global.expiredNotified) global.expiredNotified = {};
+if (!global.pauseNotified) global.pauseNotified = {};
+
+function accTaskKey(chatId, phone) {
+  return `${chatId}_${phone}`;
+}
+
+function requestAbort(chatId, phone) {
+  global.abortFlags[accTaskKey(chatId, phone)] = true;
+}
+
+function requestAbortAll(chatId, accounts) {
+  if (!accounts) return;
+  for (const phone of Object.keys(accounts)) requestAbort(chatId, phone);
+}
+
+function isAborted(chatId, phone) {
+  return !!global.abortFlags[accTaskKey(chatId, phone)];
+}
+
+function clearAbort(chatId, phone) {
+  delete global.abortFlags[accTaskKey(chatId, phone)];
+}
+
+async function interruptibleSleep(ms, abortFn) {
+  const step = 400;
+  let elapsed = 0;
+  while (elapsed < ms) {
+    if (abortFn && abortFn()) return false;
+    const chunk = Math.min(step, ms - elapsed);
+    await new Promise(r => setTimeout(r, chunk));
+    elapsed += chunk;
+  }
+  return true;
+}
+
+function classifySendError(err) {
+  const m = String(err?.errorMessage || err?.message || err || '').toUpperCase();
+  if (/AUTH_KEY_UNREGISTERED|SESSION_REVOKED|USER_DEACTIVATED|SESSION_EXPIRED|AUTH_KEY_INVALID|PHONE_NUMBER_BANNED|USER_DEACTIVATED_BAN/.test(m)) {
+    return 'logout';
+  }
+  if (/PEER_FLOOD|FLOOD_WAIT/.test(m)) return 'flood';
+  if (/CHAT_WRITE_FORBIDDEN|CHAT_ADMIN_REQUIRED|USER_BANNED|BANNED_IN_CHANNEL|CHAT_RESTRICTED|USER_RESTRICTED|CHAT_SEND_|YOU_BLOCKED_USER|CHAT_FORBIDDEN/.test(m)) {
+    return 'restrict';
+  }
+  return 'other';
+}
+
+function restrictKind(err) {
+  const m = String(err?.errorMessage || err?.message || err || '').toUpperCase();
+  if (/USER_BANNED|BANNED_IN_CHANNEL|CHAT_FORBIDDEN/.test(m)) return 'Ban';
+  if (/CHAT_RESTRICTED|USER_RESTRICTED|CHAT_ADMIN_REQUIRED/.test(m)) return 'Restrict';
+  if (/CHAT_WRITE_FORBIDDEN|CHAT_SEND_/.test(m)) return 'Mute / yazma qadağanı';
+  return 'Restrict';
+}
+
+function shouldNotifyError(key, cooldownMs = 8 * 60 * 1000) {
+  const last = global.errorNotifiedAt[key] || 0;
+  if (Date.now() - last < cooldownMs) return false;
+  global.errorNotifiedAt[key] = Date.now();
+  return true;
+}
+
+async function notifyUser(chatId, text) {
+  try {
+    await bot.sendMessage(chatId, text);
+  } catch (e) {}
+}
+
+function getLicenseExpiryMs(lic) {
+  if (!lic) return null;
+  const expiry = lic.expireTimestamp || lic.expiresAt || lic.expireDate;
+  if (!expiry) return null;
+  return typeof expiry === 'number' ? expiry : new Date(expiry).getTime();
+}
+
+function isLicenseCurrentlyValid(lic) {
+  if (!lic || lic.active === false) return false;
+  const time = getLicenseExpiryMs(lic);
+  if (time && time < Date.now()) return false;
+  return true;
+}
+
+async function saveUserProfile(chatId, fromUser) {
+  if (!fromUser) return;
+  const profile = {
+    id: fromUser.id || chatId,
+    username: fromUser.username || '',
+    firstName: fromUser.first_name || '',
+    lastName: fromUser.last_name || '',
+    languageCode: fromUser.language_code || ''
+  };
+  await setDB(`users/${chatId}/profile`, profile);
+  return profile;
+}
+
+async function syncLicenseUserInfo(chatId, licenseCode, fromUser) {
+  if (!licenseCode) return;
+  const user = await getDB(`users/${chatId}`) || {};
+  const phones = user.accounts
+    ? Object.keys(user.accounts).map(p => (String(p).startsWith('+') ? String(p) : `+${p}`))
+    : [];
+  const info = {
+    id: chatId,
+    username: fromUser?.username || user.profile?.username || '',
+    firstName: fromUser?.first_name || user.profile?.firstName || '',
+    lastName: fromUser?.last_name || user.profile?.lastName || '',
+    phones,
+    updatedAt: new Date().toISOString()
+  };
+  await setDB(`licenses/${licenseCode}/usedByInfo`, info);
+}
+
+async function stopAllAccountsForLicense(chatId, user) {
+  requestAbortAll(chatId, user?.accounts);
+  if (user?.accounts) {
+    for (const phone of Object.keys(user.accounts)) {
+      await setDB(`users/${chatId}/accounts/${phone}/status`, 'STOPPED');
+    }
+  }
+  await setDB(`users/${chatId}/fullBotActive`, false);
+  await setDB(`users/${chatId}/autoReplyEnabled`, false);
+}
+
+async function expireAndNotify(chatId, user) {
+  await stopAllAccountsForLicense(chatId, user);
+  if (global.expiredNotified[chatId]) return;
+  global.expiredNotified[chatId] = true;
+  const lang = user?.lang || 'az';
+  try {
+    await bot.sendMessage(chatId, t('lic_expired_msg', lang), {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: t('btn_renew_lic', lang), url: SUPPORT_URL }],
+          [{ text: t('btn_act_lic', lang), callback_data: 'enter_license' }]
+        ]
+      }
+    });
+  } catch (e) {}
+}
+
+async function sendSourceAsOriginal(client, sourceEntity, msg, target) {
+  try {
+    await client.forwardMessages(target, {
+      messages: msg.id,
+      fromPeer: sourceEntity,
+      dropAuthor: true
+    });
+    return;
+  } catch (e1) {}
+  const opts = {
+    message: msg.message || '',
+    formattingEntities: msg.entities || undefined
+  };
+  if (msg.media && msg.media.className !== 'MessageMediaEmpty') {
+    opts.file = msg.media;
+  }
+  await client.sendMessage(target, opts);
+}
+
 
 async function sendOrUpdate(chatId, text, options = {}) {
   try {
@@ -538,9 +751,15 @@ async function showMainMenu(chatId) {
 
   const keyboard = [];
   if (!licActive) {
+    const hadLicense = !!user?.activeLicense;
+    if (hadLicense) {
+      keyboard.push([
+        { text: t('btn_renew_lic', lang), url: SUPPORT_URL }
+      ]);
+    }
     keyboard.push([
       { text: t('btn_act_lic', lang), callback_data: 'enter_license' },
-      { text: t('btn_buy_lic', lang), url: 'https://t.me/ELITEBOTMEDYA' }
+      { text: t('btn_buy_lic', lang), url: SUPPORT_URL }
     ]);
     keyboard.push([
       { text: t('btn_price', lang), url: 'https://t.me/EliteBotMedia' },
@@ -550,7 +769,7 @@ async function showMainMenu(chatId) {
       { text: '💬 WhatsApp Dəstək', url: 'https://wa.me/19048477074' }
     ]);
     keyboard.push([
-      { text: '📩 Dəstək (Telegram)', url: 'https://t.me/EliteBotSupport' }
+      { text: '📩 Dəstək (Telegram)', url: SUPPORT_URL }
     ]);
   } else {
     keyboard.push([
@@ -562,7 +781,7 @@ async function showMainMenu(chatId) {
       { text: t('btn_price', lang), url: 'https://t.me/EliteBotMedia' }
     ]);
     keyboard.push([
-      { text: t('btn_buy_lic', lang), url: 'https://t.me/ELITEBOTMEDYA' },
+      { text: t('btn_buy_lic', lang), url: SUPPORT_URL },
       { text: t('btn_web', lang), url: 'https://EliteBot.com' }
     ]);
     keyboard.push([
@@ -572,16 +791,13 @@ async function showMainMenu(chatId) {
       { text: '💬 WhatsApp Dəstək', url: 'https://wa.me/19048477074' }
     ]);
     keyboard.push([
-      { text: '📩 Dəstək (Telegram)', url: 'https://t.me/EliteBotSupport' }
+      { text: '📩 Dəstək (Telegram)', url: SUPPORT_URL }
     ]);
   }
 
-  // AZƏRBAYCAN DİLİ ÜÇÜN BÜTÜN BOTLAR DÜYMƏSİ (Lisenziya olub-olmamasından asılı olmayaraq)
-  if (lang === 'az') {
-     keyboard.push([
-       { text: '🤖 Bütün Botlar', url: 'https://t.me/+v0grkns0s6o5Njky' }
-     ]);
-  }
+  keyboard.push([
+    { text: t('btn_all_bots', lang), url: ALL_BOTS_URL }
+  ]);
 
   const baseAboutText = t('about', lang);
   const finalAbout = licActive ? `✅ Lisenziya Aktivdir!${licExpText}\n\n${baseAboutText}` : baseAboutText;
@@ -639,6 +855,7 @@ bot.onText(/\/start/, async (msg) => {
   const chatId = msg.chat.id;
   mainMsgIds[chatId] = undefined;
   await setDB(`users/${chatId}/state`, 'START');
+  await saveUserProfile(chatId, msg.from);
 
   const keyboard = {
     inline_keyboard: [
@@ -656,6 +873,7 @@ bot.on('callback_query', async (query) => {
   const user = await getDB(`users/${chatId}`) || {};
   const lang = user.lang || 'az';
   await bot.answerCallbackQuery(query.id);
+  if (query.from) await saveUserProfile(chatId, query.from).catch(() => {});
 
   if (data.startsWith('lang_') || data === 'check_sub') {
     let newLang = lang;
@@ -833,13 +1051,23 @@ bot.on('callback_query', async (query) => {
     const isCurrentlyActive = userData.fullBotActive || false;
     const newState = !isCurrentlyActive;
 
+    if (!newState) {
+      requestAbortAll(chatId, userData.accounts);
+    }
+
     await setDB(`users/${chatId}/fullBotActive`, newState);
     await setDB(`users/${chatId}/autoReplyEnabled`, newState);
 
     if (userData.accounts) {
       for (const phone in userData.accounts) {
-        await setDB(`users/${chatId}/accounts/${phone}/status`, newState ? 'ACTIVE' : 'STOPPED');
-        if (newState) await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, 0);
+        if (newState) {
+          clearAbort(chatId, phone);
+          await setDB(`users/${chatId}/accounts/${phone}/status`, 'ACTIVE');
+          await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, 0);
+        } else {
+          requestAbort(chatId, phone);
+          await setDB(`users/${chatId}/accounts/${phone}/status`, 'STOPPED');
+        }
       }
     }
 
@@ -856,11 +1084,13 @@ bot.on('callback_query', async (query) => {
     const acc = await getDB(`users/${chatId}/accounts/${phone}`);
     if (acc) {
       const newStatus = acc.status === 'ACTIVE' ? 'STOPPED' : 'ACTIVE';
-      await setDB(`users/${chatId}/accounts/${phone}/status`, newStatus);
-      
-      // ƏGƏR BAŞLAT VURULDUYSA, ANINDA İLK MESAJI ATSIN:
-      if (newStatus === 'ACTIVE') {
-          await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, 0);
+      if (newStatus === 'STOPPED') {
+        requestAbort(chatId, phone);
+        await setDB(`users/${chatId}/accounts/${phone}/status`, 'STOPPED');
+      } else {
+        clearAbort(chatId, phone);
+        await setDB(`users/${chatId}/accounts/${phone}/status`, 'ACTIVE');
+        await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, 0);
       }
       
       const msg = newStatus === 'STOPPED' ? t('stop_single', lang, { phone }) : t('resume_single', lang, { phone });
@@ -1255,6 +1485,9 @@ bot.on('message', async (msg) => {
         await setDB(`licenses/${text}/expireTimestamp`, newExpireTimestamp);
       }
       await setDB(`users/${chatId}/activeLicense`, text);
+      await saveUserProfile(chatId, msg.from);
+      await syncLicenseUserInfo(chatId, text, msg.from);
+      delete global.expiredNotified[chatId];
       await setDB(`users/${chatId}/state`, 'IDLE');
       bot.sendMessage(chatId, t('success_lic', lang)).then(m => setTimeout(() => bot.deleteMessage(chatId, m.message_id).catch(() => {}), 3000));
       await showMainMenu(chatId);
@@ -1310,6 +1543,7 @@ bot.on('message', async (msg) => {
         const userData = await getDB(`users/${chatId}`);
         if (userData?.activeLicense) {
           await setDB(`licenses/${userData.activeLicense}/registeredPhones/${phoneKey}`, true);
+          await syncLicenseUserInfo(chatId, userData.activeLicense, msg.from);
         }
         await setDB(`users/${chatId}/state`, 'AWAITING_GROUP');
         await setDB(`users/${chatId}/currentPhoneSetup`, phoneKey);
@@ -1412,48 +1646,66 @@ bot.on('message', async (msg) => {
 
 
 // ============ PARALEL MESAJ GÖNDƏRMƏ VƏ AVTOCAVAB SİSTEMİ ============
-if (!global.runningAccounts) global.runningAccounts = new Set();
-
 setInterval(async () => {
   try {
     const users = await getDB('users');
     if (!users) return;
-    
-    const tasks = []; 
-    
+    const settings = await getDB('settings') || {};
+    const toursBeforePause = parseInt(settings.toursBeforePause) || DEFAULT_TOURS_BEFORE_PAUSE;
+    const pauseMinutes = parseInt(settings.pauseMinutes) || DEFAULT_PAUSE_MINUTES;
+
+    const tasks = [];
+
     for (const chatId in users) {
       const user = users[chatId];
       if (!user.accounts) continue;
-      
+
+      let lic = null;
+      if (user.activeLicense) {
+        lic = await getDB(`licenses/${user.activeLicense}`);
+      }
+      const licenseOk = isLicenseCurrentlyValid(lic);
+      if (user.activeLicense && !licenseOk) {
+        await expireAndNotify(chatId, user);
+        continue;
+      }
+
       for (const phone in user.accounts) {
         const acc = user.accounts[phone];
         if (!acc.telegramSession) continue;
 
-        // Bu hesab üçün əvvəlki tapşırıq hələ bitməyibsə, yenisini başlatma
-        // (bu, qruplar arası gözləmə vaxtının pozulub mesajların tez-tez getməsinin qarşısını alır)
-        const taskKey = `${chatId}_${phone}`;
+        const taskKey = accTaskKey(chatId, phone);
         if (global.runningAccounts.has(taskKey)) continue;
 
         const groups = acc.targetGroups || [];
-        const interval = (acc.intervalMinutes || 2) * 60 * 1000;
-        const timeToSendMessage = acc.status === 'ACTIVE' && (Date.now() - (acc.lastSentAt || 0) >= interval) && groups.length > 0;
-        const shouldAutoReply = user.autoReplyEnabled && user.autoReplyMessage;
+        const interval = Math.max(2, Math.min(5, acc.intervalMinutes || 2)) * 60 * 1000;
+        const paused = acc.pauseUntil && Date.now() < acc.pauseUntil;
+        if (paused && !(user.autoReplyEnabled && user.autoReplyMessage)) continue;
+
+        const timeToSendMessage =
+          licenseOk &&
+          acc.status === 'ACTIVE' &&
+          !paused &&
+          (Date.now() - (acc.lastSentAt || 0) >= interval) &&
+          groups.length > 0;
+        const shouldAutoReply = licenseOk && user.autoReplyEnabled && user.autoReplyMessage;
 
         if (timeToSendMessage || shouldAutoReply) {
           global.runningAccounts.add(taskKey);
-          // Qrup sayına görə kifayət qədər vaxt ver, amma heç vaxt əbədi asılı qalmasın
-          const taskTimeoutMs = Math.max(180000, groups.length * 40000 + 60000);
           tasks.push(
-            withTimeout(processAccountTask(chatId, phone, user, acc, timeToSendMessage, groups), taskTimeoutMs, `Hesab ${phone}`)
+            processAccountTask(chatId, phone, user, acc, timeToSendMessage, groups, {
+              toursBeforePause,
+              pauseMinutes
+            })
               .catch(e => console.error('Task xətası:', e.message))
               .finally(() => global.runningAccounts.delete(taskKey))
           );
         }
       }
     }
-    
+
     await Promise.allSettled(tasks);
-    
+
   } catch (e) {
     console.error('Interval xətası:', e);
   }
@@ -1467,102 +1719,198 @@ function withTimeout(promise, ms, label) {
   return Promise.race([Promise.resolve(promise), timeout]).finally(() => clearTimeout(timer));
 }
 
-async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, groups) {
+async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, groups, tourCfg = {}) {
   let client;
+  const lang = user?.lang || 'az';
+  const toursBeforePause = tourCfg.toursBeforePause || DEFAULT_TOURS_BEFORE_PAUSE;
+  const pauseMinutes = tourCfg.pauseMinutes || DEFAULT_PAUSE_MINUTES;
+
   try {
     client = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 1 });
     await client.connect();
-    // Entity cache-i isitmek ucun dialoglari yukleyirik - username olmayan (private) qruplarin
-    // ID-si ile duzgun teyin olunmasi ve hamisina mesaj getmesi ucun vacibdir
     await client.getDialogs({ limit: 200 }).catch(() => {});
-    
-    if (timeToSendMessage) {
+
+    if (timeToSendMessage && !isAborted(chatId, phone)) {
       const source = acc.messageSource || { type: 'saved' };
-      
+
       let sourceEntity = 'me';
       if (source.type === 'custom' && source.target) {
         const entityTarget = await resolveEntity(client, source.target);
         sourceEntity = await client.getEntity(entityTarget).catch(() => entityTarget);
       }
-      
-      for (const g of groups) {
-        try {
-          const msgs = await client.getMessages(sourceEntity, { limit: 1 });
-          if (msgs && msgs.length > 0) {
-            const msg = msgs[0];
+
+      let sourceMsg = null;
+      try {
+        const msgs = await client.getMessages(sourceEntity, { limit: 1 });
+        if (msgs && msgs.length > 0) sourceMsg = msgs[0];
+      } catch (e) {
+        console.log('Mənbə mesajı oxunmadı:', e.message);
+      }
+
+      let abortedMidRound = false;
+
+      if (sourceMsg && (sourceMsg.message || sourceMsg.media)) {
+        for (let i = 0; i < groups.length; i++) {
+          if (isAborted(chatId, phone)) {
+            abortedMidRound = true;
+            break;
+          }
+
+          if (i > 0) {
+            const delay = 12000 + Math.random() * 13000;
+            const continued = await interruptibleSleep(delay, () => isAborted(chatId, phone));
+            if (!continued) {
+              abortedMidRound = true;
+              break;
+            }
+          }
+
+          if (isAborted(chatId, phone)) {
+            abortedMidRound = true;
+            break;
+          }
+
+          const g = groups[i];
+          try {
             const targetStr = await resolveEntity(client, g);
             const peer = (typeof targetStr === 'string' && /^-?\d+$/.test(targetStr)) ? BigInt(targetStr) : targetStr;
             const target = await client.getEntity(peer).catch(() => peer);
-            
-            if (target) {
-              if (msg.message || msg.media) {
-                 await client.sendMessage(target, { message: msg.message || '', file: msg.media, formattingEntities: msg.entities || undefined });
-                 
-                 // Qrup adı ilə botda bildiriş (15 saniyə sonra silinir)
-                 const groupName = target.title || target.username || g;
-                 try {
-                     const notifMsg = await bot.sendMessage(chatId, `✅ Mesaj atıldı: ${groupName}`);
-                     setTimeout(() => {
-                         bot.deleteMessage(chatId, notifMsg.message_id).catch(() => {});
-                     }, 15000);
-                 } catch (err) {}
 
-                 // Qruplar arası random interval (Spam qorunması: 20-30 saniyə arası)
-                 await new Promise(r => setTimeout(r, 20000 + Math.random() * 10000));
+            if (!target) continue;
+
+            await sendSourceAsOriginal(client, sourceEntity, sourceMsg, target);
+
+            const groupName = target.title || target.username || g;
+            try {
+              const notifMsg = await bot.sendMessage(chatId, `✅ Mesaj atıldı: ${groupName}`);
+              setTimeout(() => {
+                bot.deleteMessage(chatId, notifMsg.message_id).catch(() => {});
+              }, 15000);
+            } catch (err) {}
+          } catch (e) {
+            const kind = classifySendError(e);
+            const detail = e.message || String(e);
+            console.log(`Qrupa göndərilərkən xəta:`, detail);
+
+            if (kind === 'logout') {
+              requestAbort(chatId, phone);
+              await setDB(`users/${chatId}/accounts/${phone}/status`, 'STOPPED');
+              if (shouldNotifyError(`logout_${chatId}_${phone}`, 30 * 60 * 1000)) {
+                await notifyUser(chatId, t('err_account_logout', lang, { phone, detail }));
               }
+              abortedMidRound = true;
+              break;
+            }
+
+            if (kind === 'flood') {
+              await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, Date.now() + 10 * 60 * 1000);
+              if (shouldNotifyError(`flood_${chatId}_${phone}`, 15 * 60 * 1000)) {
+                await notifyUser(chatId, t('err_account_flood', lang, { phone, detail }));
+              }
+              abortedMidRound = true;
+              break;
+            }
+
+            if (kind === 'restrict') {
+              const groupName = String(g);
+              if (shouldNotifyError(`restrict_${chatId}_${phone}_${groupName}`, 20 * 60 * 1000)) {
+                await notifyUser(chatId, t('err_group_restrict', lang, {
+                  kind: restrictKind(e),
+                  group: groupName,
+                  phone,
+                  detail
+                }));
+              }
+            } else if (shouldNotifyError(`other_${chatId}_${phone}`, 20 * 60 * 1000)) {
+              await notifyUser(chatId, t('err_account_other', lang, { phone, detail }));
             }
           }
-        } catch (e) {
-           console.log(`Qrupa göndərilərkən xəta:`, e.message);
         }
       }
-      
-      await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, Date.now());
+
+      if (!abortedMidRound && !isAborted(chatId, phone)) {
+        await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, Date.now());
+        const prevTours = parseInt(acc.toursCompleted) || 0;
+        const nextTours = prevTours + 1;
+        if (nextTours >= toursBeforePause) {
+          const pauseUntil = Date.now() + pauseMinutes * 60 * 1000;
+          await setDB(`users/${chatId}/accounts/${phone}/toursCompleted`, 0);
+          await setDB(`users/${chatId}/accounts/${phone}/pauseUntil`, pauseUntil);
+          const pKey = `${chatId}_${phone}_${pauseUntil}`;
+          if (!global.pauseNotified[pKey]) {
+            global.pauseNotified[pKey] = true;
+            await notifyUser(chatId, t('pause_started', lang, { tours: toursBeforePause, min: pauseMinutes }));
+          }
+        } else {
+          await setDB(`users/${chatId}/accounts/${phone}/toursCompleted`, nextTours);
+        }
+      }
     }
 
-    if (user.autoReplyEnabled && user.autoReplyMessage) {
-      if (!global.repliedMsgs) global.repliedMsgs = {}; 
-      if (!global.autoReplyCount) global.autoReplyCount = {};
-      
+    if (user.autoReplyEnabled && user.autoReplyMessage && !isAborted(chatId, phone)) {
+      if (!global.repliedMsgs) global.repliedMsgs = {};
+
+      const settings = await getDB('settings') || {};
+      const cooldownDays = parseInt(settings.autoReplyCooldownDays) || DEFAULT_AUTOREPLY_COOLDOWN_DAYS;
+      const cooldownMs = Math.max(1, cooldownDays) * 24 * 60 * 60 * 1000;
+      const cooldowns = user.autoReplyCooldowns || {};
+
       try {
         const pms = await client.getDialogs({ limit: 200 });
         for (const pm of pms) {
+          if (isAborted(chatId, phone)) break;
           if (pm.isUser && pm.entity && !pm.entity.bot && !pm.entity.isSelf && !pm.entity.self) {
-             const history = await client.getMessages(pm.entity, { limit: 1 });
-             if (history && history.length > 0 && !history[0].out) {
-                const lastMsgId = history[0].id;
-                const memKey = `${phone}_${pm.id}`;
-                
-                // Bir istifadəçiyə avtocavab MAKSIMUM 3 dəfə göndərilsin, 3-dən artıq göndərilməsin
-                const sentCount = global.autoReplyCount[memKey] || 0;
-                if (global.repliedMsgs[memKey] !== lastMsgId && sentCount < 3) {
-                   try {
-                     const inputPeer = await client.getInputEntity(pm.id);
-                     
-                     await client.invoke(new Api.messages.SetTyping({
-                         peer: inputPeer,
-                         action: new Api.SendMessageTypingAction()
-                     }));
-                     await new Promise(res => setTimeout(res, 2000 + Math.random() * 2000));
-                     
-                     await client.sendMessage(inputPeer, { message: user.autoReplyMessage });
-                     await client.invoke(new Api.messages.ReadHistory({
-                       peer: inputPeer,
-                       maxId: 0
-                     }));
-                     
-                     global.repliedMsgs[memKey] = lastMsgId;
-                     global.autoReplyCount[memKey] = sentCount + 1;
-                   } catch (err) {}
-                }
-             }
+            const history = await client.getMessages(pm.entity, { limit: 1 });
+            if (history && history.length > 0 && !history[0].out) {
+              const lastMsgId = history[0].id;
+              const memKey = `${phone}_${pm.id}`;
+              const lastAt = cooldowns[memKey] || 0;
+              const onCooldown = lastAt && (Date.now() - lastAt) < cooldownMs;
+
+              if (global.repliedMsgs[memKey] !== lastMsgId && !onCooldown) {
+                try {
+                  const inputPeer = await client.getInputEntity(pm.id);
+
+                  await client.invoke(new Api.messages.SetTyping({
+                    peer: inputPeer,
+                    action: new Api.SendMessageTypingAction()
+                  }));
+                  const typingOk = await interruptibleSleep(2000 + Math.random() * 2000, () => isAborted(chatId, phone));
+                  if (!typingOk) break;
+
+                  await client.sendMessage(inputPeer, { message: user.autoReplyMessage });
+                  await client.invoke(new Api.messages.ReadHistory({
+                    peer: inputPeer,
+                    maxId: 0
+                  }));
+
+                  global.repliedMsgs[memKey] = lastMsgId;
+                  const nowTs = Date.now();
+                  cooldowns[memKey] = nowTs;
+                  await setDB(`users/${chatId}/autoReplyCooldowns/${memKey}`, nowTs);
+                } catch (err) {}
+              }
+            }
           }
         }
       } catch (e) {}
     }
 
   } catch (e) {
-     console.error('Proses task xətası:', e.message);
+    const kind = classifySendError(e);
+    const detail = e.message || String(e);
+    console.error('Proses task xətası:', detail);
+    if (kind === 'logout') {
+      requestAbort(chatId, phone);
+      await setDB(`users/${chatId}/accounts/${phone}/status`, 'STOPPED');
+      if (shouldNotifyError(`logout_${chatId}_${phone}`, 30 * 60 * 1000)) {
+        await notifyUser(chatId, t('err_account_logout', lang, { phone, detail }));
+      }
+    } else if (kind === 'flood') {
+      if (shouldNotifyError(`flood_${chatId}_${phone}`, 15 * 60 * 1000)) {
+        await notifyUser(chatId, t('err_account_flood', lang, { phone, detail }));
+      }
+    }
   } finally {
     if (client) {
       try { await withTimeout(client.disconnect(), 10000, 'Disconnect'); } catch (e) {}
