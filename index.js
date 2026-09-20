@@ -708,11 +708,7 @@ async function sendSourceAsOriginal(client, sourceEntity, sourceMsgIds, target) 
     
     if (valid.length > 0) {
       if (valid.length === 1) {
-        await client.sendMessage(target, {
-          message: firstText,
-          formattingEntities: firstEntities,
-          file: valid[0].media
-        });
+        await client.sendMessage(target, { message: valid[0] });
       } else {
         // Album göndər
         await client.sendMessage(target, {
@@ -723,10 +719,7 @@ async function sendSourceAsOriginal(client, sourceEntity, sourceMsgIds, target) 
       }
       return true;
     } else if (firstText) {
-      await client.sendMessage(target, {
-        message: firstText,
-        formattingEntities: firstEntities
-      });
+      await client.sendMessage(target, { message: msgs[0] });
       return true;
     }
   } catch (e2) {
@@ -1917,7 +1910,10 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
     }
 
     // AVTOCAVAB BÖLMƏSİ - Cavab yerinə yazan kimi replyTo ilə qaytarır
-    if (user.autoReplyEnabled && user.autoReplyMessage && !isAborted(chatId, phone)) {
+    // DİQQƏT: bu, hesabın qrup-göndərmə "abort" bayrağından ASILI DEYİL — istifadəçi qrup
+    // göndərməni dayandırsa belə (və ya heç aktivləşdirməsə belə), avtocavab öz müstəqil
+    // autoReplyEnabled ayarına görə işləməlidir.
+    if (user.autoReplyEnabled && user.autoReplyMessage) {
       if (!global.repliedMsgs) global.repliedMsgs = {};
 
       const settings = await getDB('settings') || {};
@@ -1929,7 +1925,6 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
         // SÜRƏT ÜÇÜN: 300 -> 60 (yalnız son dialoqlar)
         const pms = await client.getDialogs({ limit: 60 });
         for (const pm of pms) {
-          if (isAborted(chatId, phone)) break;
           if (pm.isUser && pm.entity && !pm.entity.bot && !pm.entity.isSelf && !pm.entity.self) {
             const history = await client.getMessages(pm.entity, { limit: 1 });
             if (history && history.length > 0 && !history[0].out) {
@@ -1956,8 +1951,7 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
                     peer: inputPeer,
                     action: new Api.SendMessageTypingAction()
                   }));
-                  const typingOk = await interruptibleSleep(2000 + Math.random() * 2000, () => isAborted(chatId, phone));
-                  if (!typingOk) break;
+                  await new Promise(res => setTimeout(res, 2000 + Math.random() * 2000));
 
                   // ⬇️ ƏSAS DÜZƏLİŞ: replyTo əlavə edildi — cavab yerinə yazan kimi qaytarır
                   await client.sendMessage(inputPeer, { 
