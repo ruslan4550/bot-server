@@ -682,23 +682,87 @@ async function expireAndNotify(chatId, user) {
   } catch (e) {}
 }
 
-async function sendSourceAsOriginal(client, sourceEntity, msg, target) {
+// ============ MESAJI OLDUĞU KİMİ ÖTÜRƏN FUNKSİYA (PREMIUM DƏSTƏKLİ) ============
+// sourceMsgIds: tək ID və ya ID array (album üçün)
+async function sendSourceAsOriginal(client, sourceEntity, sourceMsgIds, target) {
+  const ids = Array.isArray(sourceMsgIds) ? sourceMsgIds : [sourceMsgIds];
+  
+  // 1. ƏSAS ÜSul: forwardMessages ilə olduğu kimi ötür (premium, media, album hamısı qorunur)
   try {
     await client.forwardMessages(target, {
-      messages: msg.id,
+      messages: ids.length === 1 ? ids[0] : ids,
       fromPeer: sourceEntity,
       dropAuthor: true
     });
-    return;
-  } catch (e1) {}
-  const opts = {
-    message: msg.message || '',
-    formattingEntities: msg.entities || undefined
-  };
-  if (msg.media && msg.media.className !== 'MessageMediaEmpty') {
-    opts.file = msg.media;
+    return true;
+  } catch (e1) {
+    console.log('Forward uğursuz, sendMessage ilə cəhd edilir:', e1.message);
   }
-  await client.sendMessage(target, opts);
+  
+  // 2. Ehtiyat üsul: getMessages ilə məlumatları götürüb sendMessage ilə göndər
+  try {
+    const msgs = await client.getMessages(sourceEntity, { ids });
+    const valid = (msgs || []).filter(m => m && m.media && m.media.className && m.media.className !== 'MessageMediaEmpty');
+    const firstText = msgs?.[0]?.message || '';
+    const firstEntities = msgs?.[0]?.entities || undefined;
+    
+    if (valid.length > 0) {
+      if (valid.length === 1) {
+        await client.sendMessage(target, {
+          message: firstText,
+          formattingEntities: firstEntities,
+          file: valid[0].media
+        });
+      } else {
+        // Album göndər
+        await client.sendMessage(target, {
+          message: firstText,
+          formattingEntities: firstEntities,
+          file: valid.map(m => m.media)
+        });
+      }
+      return true;
+    } else if (firstText) {
+      await client.sendMessage(target, {
+        message: firstText,
+        formattingEntities: firstEntities
+      });
+      return true;
+    }
+  } catch (e2) {
+    console.log('sendMessage fallback uğursuz:', e2.message);
+  }
+  
+  return false;
+}
+
+// Mənbədən mesajı (və albomu varsa hamısını) götürən funksiya
+async function fetchSourceMessages(client, sourceEntity) {
+  try {
+    const msgs = await client.getMessages(sourceEntity, { limit: 1 });
+    if (!msgs || msgs.length === 0) return [];
+    const first = msgs[0];
+    if (!first) return [];
+    
+    // Əgər albumdursa (groupedId varsa), bütün album mesajlarını götür
+    if (first.groupedId) {
+      try {
+        const groupedMsgs = await client.getMessages(sourceEntity, {
+          limit: 10,
+          maxId: first.id + 1
+        });
+        const gid = first.groupedId.toString();
+        const album = (groupedMsgs || [])
+          .filter(m => m && m.groupedId && m.groupedId.toString() === gid)
+          .map(m => m.id)
+          .sort((a, b) => a - b);
+        if (album.length > 0) return album;
+      } catch (e) {}
+    }
+    return [first.id];
+  } catch (e) {
+    return [];
+  }
 }
 
 
@@ -1251,7 +1315,6 @@ bot.on('callback_query', async (query) => {
     if (groups.length === 0) {
       msg += t('no_groups', lang);
     } else {
-      // LIMIT 30 -> 90 (Telegram inline button limiti ~100, təhlükəsiz 90)
       const displayGroups = groups.slice(0, 90);
       if (groups.length > 90) {
           msg += `⚠️ Çox sayda qrup var. Yalnız ilk 90 qrup göstərilir.\n\n`;
@@ -1399,7 +1462,6 @@ async function sendScanPage(chatId) {
   if (!session?.scanGroups) return;
   const user = await getDB(`users/${chatId}`) || {};
   const lang = user.lang || 'az';
-  // PER PAGE 5 -> 15 (100 qrupa qədər rahat seçim üçün)
   const perPage = 15;
   const total = Math.ceil(session.scanGroups.length / perPage);
   let page = session.scanPage;
@@ -1640,6 +1702,7 @@ bot.on('message', async (msg) => {
 
 
 // ============ PARALEL MESAJ GÖNDƏRMƏ VƏ AVTOCAVAB SİSTEMİ ============
+// SÜRƏT ÜÇÜN: 30s -> 10s (daha tez reaksiya)
 setInterval(async () => {
   try {
     const users = await getDB('users');
@@ -1711,7 +1774,7 @@ setInterval(async () => {
   } catch (e) {
     console.error('Interval xətası:', e);
   }
-}, 30000);
+}, 10000);
 
 function withTimeout(promise, ms, label) {
   let timer;
@@ -1730,7 +1793,8 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
   try {
     client = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 1 });
     await client.connect();
-    await client.getDialogs({ limit: 300 }).catch(() => {});
+    // SÜRƏT ÜÇÜN: 300 -> 100 (yalnız entity resolve üçün lazımdır)
+    await client.getDialogs({ limit: 100 }).catch(() => {});
 
     if (timeToSendMessage && !isAborted(chatId, phone)) {
       const source = acc.messageSource || { type: 'saved' };
@@ -1741,17 +1805,12 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
         sourceEntity = await client.getEntity(entityTarget).catch(() => entityTarget);
       }
 
-      let sourceMsg = null;
-      try {
-        const msgs = await client.getMessages(sourceEntity, { limit: 1 });
-        if (msgs && msgs.length > 0) sourceMsg = msgs[0];
-      } catch (e) {
-        console.log('Mənbə mesajı oxunmadı:', e.message);
-      }
+      // MƏNBƏDƏN MESAJI (VƏ ALBOMU VARSA HAMISINI) GÖTÜR
+      const sourceMsgIds = await fetchSourceMessages(client, sourceEntity);
 
       let abortedMidRound = false;
 
-      if (sourceMsg && (sourceMsg.message || sourceMsg.media)) {
+      if (sourceMsgIds && sourceMsgIds.length > 0) {
         // HƏMİŞƏ 1-Cİ QRUPdan BAŞLAYIR
         for (let i = 0; i < groups.length; i++) {
           if (isAborted(chatId, phone)) {
@@ -1782,18 +1841,20 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
 
             if (!target) continue;
 
-            // MESAJI OLDUĞU KİMİ ÖTÜRÜR (dəyişiklik yoxdur)
-            await sendSourceAsOriginal(client, sourceEntity, sourceMsg, target);
+            // MESAJI OLDUĞU KİMİ (PREMIUM DƏ DAXİL) ÖTÜRÜR
+            const ok = await sendSourceAsOriginal(client, sourceEntity, sourceMsgIds, target);
 
-            const groupName = target.title || target.username || g;
-            try {
-              const notifMsg = await bot.sendMessage(chatId, `✅ Mesaj atıldı: ${groupName}`);
-              // BİLDİRİŞ 10-12 SANİYƏ SONRA SİLİNİR
-              const delDelay = 10000 + Math.floor(Math.random() * 2001); // 10000-12000 ms
-              setTimeout(() => {
-                bot.deleteMessage(chatId, notifMsg.message_id).catch(() => {});
-              }, delDelay);
-            } catch (err) {}
+            if (ok) {
+              const groupName = target.title || target.username || g;
+              try {
+                const notifMsg = await bot.sendMessage(chatId, `✅ Mesaj atıldı: ${groupName}`);
+                // BİLDİRİŞ 10-12 SANİYƏ SONRA SİLİNİR
+                const delDelay = 10000 + Math.floor(Math.random() * 2001); // 10000-12000 ms
+                setTimeout(() => {
+                  bot.deleteMessage(chatId, notifMsg.message_id).catch(() => {});
+                }, delDelay);
+              } catch (err) {}
+            }
           } catch (e) {
             const kind = classifySendError(e);
             const detail = e.message || String(e);
@@ -1855,7 +1916,7 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
       }
     }
 
-    // AVTOCAVAB BÖLMƏSİ - Biz Telegram-da olmasaq belə avtomatik işləyir
+    // AVTOCAVAB BÖLMƏSİ - Cavab yerinə yazan kimi replyTo ilə qaytarır
     if (user.autoReplyEnabled && user.autoReplyMessage && !isAborted(chatId, phone)) {
       if (!global.repliedMsgs) global.repliedMsgs = {};
 
@@ -1865,7 +1926,8 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
       const cooldowns = user.autoReplyCooldowns || {};
 
       try {
-        const pms = await client.getDialogs({ limit: 300 });
+        // SÜRƏT ÜÇÜN: 300 -> 60 (yalnız son dialoqlar)
+        const pms = await client.getDialogs({ limit: 60 });
         for (const pm of pms) {
           if (isAborted(chatId, phone)) break;
           if (pm.isUser && pm.entity && !pm.entity.bot && !pm.entity.isSelf && !pm.entity.self) {
@@ -1878,7 +1940,6 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
 
               if (global.repliedMsgs[memKey] !== lastMsgId && !onCooldown) {
                 try {
-                  // ⬇️ ƏSAS DÜZƏLİŞ: pm.id yerinə pm.entity istifadə edirik (access_hash üçün)
                   let inputPeer;
                   try {
                     inputPeer = pm.inputEntity || await client.getInputEntity(pm.entity);
@@ -1898,7 +1959,12 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
                   const typingOk = await interruptibleSleep(2000 + Math.random() * 2000, () => isAborted(chatId, phone));
                   if (!typingOk) break;
 
-                  await client.sendMessage(inputPeer, { message: user.autoReplyMessage });
+                  // ⬇️ ƏSAS DÜZƏLİŞ: replyTo əlavə edildi — cavab yerinə yazan kimi qaytarır
+                  await client.sendMessage(inputPeer, { 
+                    message: user.autoReplyMessage,
+                    replyTo: lastMsgId
+                  });
+                  
                   await client.invoke(new Api.messages.ReadHistory({
                     peer: inputPeer,
                     maxId: 0
