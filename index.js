@@ -687,7 +687,7 @@ async function expireAndNotify(chatId, user) {
 async function sendSourceAsOriginal(client, sourceEntity, sourceMsgIds, target) {
   const ids = Array.isArray(sourceMsgIds) ? sourceMsgIds : [sourceMsgIds];
   
-  // 1. ƏSAS ÜSul: forwardMessages ilə olduğu kimi ötür (premium, media, album hamısı qorunur)
+  // 1. ƏSAS ÜSUL: "author gizli" forward ilə olduğu kimi ötür (premium, media, album, effekt hamısı qorunur)
   try {
     await client.forwardMessages(target, {
       messages: ids.length === 1 ? ids[0] : ids,
@@ -696,10 +696,24 @@ async function sendSourceAsOriginal(client, sourceEntity, sourceMsgIds, target) 
     });
     return true;
   } catch (e1) {
-    console.log('Forward uğursuz, sendMessage ilə cəhd edilir:', e1.message);
+    console.log('Author-gizli forward uğursuz, adi forward ilə cəhd edilir:', e1.message);
+  }
+
+  // 2. İKİNCİ ÜSUL: adi (mənbəni göstərən) birbaşa forward - "Forwarded from" yazısı görünsə də,
+  // mesaj TAM OLDUĞU KİMİ (premium animasiya, effekt, media daxil) ötürülür. Bu, mesajı əl ilə
+  // yenidən qurmaqdan (3-cü üsul) qat-qat daha etibarlı və itkisizdir.
+  try {
+    await client.forwardMessages(target, {
+      messages: ids.length === 1 ? ids[0] : ids,
+      fromPeer: sourceEntity
+    });
+    return true;
+  } catch (e2) {
+    console.log('Adi forward da uğursuz, sendMessage ilə cəhd edilir:', e2.message);
   }
   
-  // 2. Ehtiyat üsul: getMessages ilə məlumatları götürüb sendMessage ilə göndər
+  // 3. SON ÇARƏ: getMessages ilə məlumatları götürüb əl ilə sendMessage ilə göndər
+  // (premium animasiya/effekt kimi bəzi detallar bu üsulda qorunmaya bilər)
   try {
     const msgs = await client.getMessages(sourceEntity, { ids });
     const valid = (msgs || []).filter(m => m && m.media && m.media.className && m.media.className !== 'MessageMediaEmpty');
@@ -722,8 +736,8 @@ async function sendSourceAsOriginal(client, sourceEntity, sourceMsgIds, target) 
       await client.sendMessage(target, { message: msgs[0] });
       return true;
     }
-  } catch (e2) {
-    console.log('sendMessage fallback uğursuz:', e2.message);
+  } catch (e3) {
+    console.log('sendMessage fallback uğursuz:', e3.message);
   }
   
   return false;
