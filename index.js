@@ -116,8 +116,8 @@ const langData = {
     add_more: "➕ Başqa qrup əlavə et",
     finish_btn: "✅ Bitir və Davam Et",
     send_group: "Qrupun adını (@) və ya linkini göndərin:",
-    ask_interval: "✅ İntervalı daxil edin (2-5 dəqiqə):",
-    interval_err: "⚠️ 2 ilə 5 arası rəqəm daxil edin.",
+    ask_interval: "✅ İntervalı daxil edin (120-300 saniyə):",
+    interval_err: "⚠️ 120 ilə 300 arası rəqəm daxil edin.",
     ch1_btn: "📢 Məcburi Kanal 1",
     ch2_btn: "📢 Məcburi Kanal 2",
     stop_single: "⏹ +{phone} dayandırıldı.",
@@ -161,8 +161,8 @@ const langData = {
     scan_done: "✅ {count} qrup seçildi. İdarə panelindən 'Başlat' vuraraq işə sala bilərsiniz.",
     no_groups_found: "❌ Heç bir qrup tapılmadı.",
     scan_page: "Səhifə {page}/{total}",
-    new_interval_prompt: "⏱ Yeni interval (2-5):",
-    interval_updated: "✅ İnterval {min} dəqiqəyə dəyişdirildi.",
+    new_interval_prompt: "⏱ Yeni interval (120-300 saniyə):",
+    interval_updated: "✅ İnterval {sec} saniyəyə dəyişdirildi.",
     session_expired: "⚠️ Sessiya bitdi. Yenidən skan edin.",
     auto_reply_on: "🟢 Avtocavab aktiv",
     auto_reply_off: "🔴 Avtocavab dayandırılıb",
@@ -221,8 +221,8 @@ const langData = {
     add_more: "➕ Başka grup ekle",
     finish_btn: "✅ Bitir ve Devam Et",
     send_group: "Grubun adını (@) veya linkini gönderin:",
-    ask_interval: "✅ İntervalı girin (2-5 dakika):",
-    interval_err: "⚠️ 2 ile 5 arası sayı girin.",
+    ask_interval: "✅ İntervalı girin (120-300 saniye):",
+    interval_err: "⚠️ 120 ile 300 arası sayı girin.",
     ch1_btn: "📢 Zorunlu Kanal 1",
     ch2_btn: "📢 Zorunlu Kanal 2",
     stop_single: "⏹ +{phone} durduruldu.",
@@ -266,8 +266,8 @@ const langData = {
     scan_done: "✅ {count} grup eklendi. Kontrol panelinden başlatın.",
     no_groups_found: "❌ Hiç grup bulunamadı.",
     scan_page: "Sayfa {page}/{total}",
-    new_interval_prompt: "⏱ Yeni aralık (2-5):",
-    interval_updated: "✅ Aralık {min} dakikaya değiştirildi.",
+    new_interval_prompt: "⏱ Yeni aralık (120-300 saniye):",
+    interval_updated: "✅ Aralık {sec} saniyeye değiştirildi.",
     session_expired: "⚠️ Oturum süresi doldu. Yeniden tarayın.",
     auto_reply_on: "🟢 Otomatik yanıt aktif",
     auto_reply_off: "🔴 Otomatik yanıt durduruldu",
@@ -326,8 +326,8 @@ const langData = {
     add_more: "➕ Add another group",
     finish_btn: "✅ Finish and Continue",
     send_group: "Send group username (@) or link:",
-    ask_interval: "✅ Enter interval (2-5 minutes):",
-    interval_err: "⚠️ Enter number between 2 and 5.",
+    ask_interval: "✅ Enter interval (120-300 seconds):",
+    interval_err: "⚠️ Enter number between 120 and 300.",
     ch1_btn: "📢 Mandatory Channel 1",
     ch2_btn: "📢 Mandatory Channel 2",
     stop_single: "⏹ +{phone} stopped.",
@@ -371,8 +371,8 @@ const langData = {
     scan_done: "✅ {count} groups added. Start from panel.",
     no_groups_found: "❌ No groups found.",
     scan_page: "Page {page}/{total}",
-    new_interval_prompt: "⏱ New interval (2-5):",
-    interval_updated: "✅ Interval changed to {min} minutes.",
+    new_interval_prompt: "⏱ New interval (120-300 seconds):",
+    interval_updated: "✅ Interval changed to {sec} seconds.",
     session_expired: "⚠️ Session expired. Scan again.",
     auto_reply_on: "🟢 Auto-reply active",
     auto_reply_off: "🔴 Auto-reply stopped",
@@ -431,8 +431,8 @@ const langData = {
     add_more: "➕ Добавить другую группу",
     finish_btn: "✅ Завершить и продолжить",
     send_group: "Отправьте имя группы (@) или ссылку:",
-    ask_interval: "✅ Введите интервал (2-5 минут):",
-    interval_err: "⚠️ Введите число от 2 до 5.",
+    ask_interval: "✅ Введите интервал (120-300 секунд):",
+    interval_err: "⚠️ Введите число от 120 до 300.",
     ch1_btn: "📢 Обязательный канал 1",
     ch2_btn: "📢 Обязательный канал 2",
     stop_single: "⏹ +{phone} остановлен.",
@@ -476,8 +476,8 @@ const langData = {
     scan_done: "✅ {count} групп добавлено. Запустите из панели.",
     no_groups_found: "❌ Групп не найдено.",
     scan_page: "Страница {page}/{total}",
-    new_interval_prompt: "⏱ Новый интервал (2-5):",
-    interval_updated: "✅ Интервал изменен на {min} минут.",
+    new_interval_prompt: "⏱ Новый интервал (120-300 секунд):",
+    interval_updated: "✅ Интервал изменен на {sec} секунд.",
     session_expired: "⚠️ Сессия истекла. Отсканируйте заново.",
     auto_reply_on: "🟢 Автоответ активен",
     auto_reply_off: "🔴 Автоответ остановлен",
@@ -960,7 +960,9 @@ bot.on('callback_query', async (query) => {
       const acc = userData.accounts[phone];
       const status = acc.status === 'ACTIVE' ? t('active', lang) : t('stopped', lang);
       const src = acc.messageSource?.type === 'custom' ? `📌 ${acc.messageSource.target}` : '💾 Yadda saxlanmış';
-      msg += `📱 +${phone}\n⏳ İnterval: ${acc.intervalMinutes || 0} dəq\n📥 Mənbə: ${src}\n📊 ${status}\n\n`;
+      // İNTERVAL ARTıq SANİYƏ İLƏ GÖSTƏRİLİR
+      const intSec = acc.intervalSeconds || (acc.intervalMinutes ? acc.intervalMinutes * 60 : 120);
+      msg += `📱 +${phone}\n⏳ İnterval: ${intSec} saniyə\n📥 Mənbə: ${src}\n📊 ${status}\n\n`;
       kb.push([
         { text: t('groups_btn', lang), callback_data: `groups_${phone}` },
         { text: t('source_btn', lang), callback_data: `source_${phone}` }
@@ -1153,8 +1155,8 @@ bot.on('callback_query', async (query) => {
     await setDB(`users/${chatId}/accounts/${phone}/status`, 'STOPPED');
     
     const acc = await getDB(`users/${chatId}/accounts/${phone}`);
-    if (!acc.intervalMinutes) {
-      await setDB(`users/${chatId}/accounts/${phone}/intervalMinutes`, 2);
+    if (!acc.intervalSeconds && !acc.intervalMinutes) {
+      await setDB(`users/${chatId}/accounts/${phone}/intervalSeconds`, 120);
     }
 
     delete userSessions[chatId];
@@ -1528,7 +1530,8 @@ bot.on('message', async (msg) => {
         await setDB(`users/${chatId}/accounts/${phoneKey}/targetGroups`, []);
         
         await setDB(`users/${chatId}/accounts/${phoneKey}/status`, 'STOPPED');
-        await setDB(`users/${chatId}/accounts/${phoneKey}/intervalMinutes`, 2);
+        // İNTERVAL ARTıq SANİYƏ İLƏ (120 saniyə default)
+        await setDB(`users/${chatId}/accounts/${phoneKey}/intervalSeconds`, 120);
         await setDB(`users/${chatId}/accounts/${phoneKey}/messageSource`, { type: 'saved' });
         
         const userData = await getDB(`users/${chatId}`);
@@ -1593,30 +1596,31 @@ bot.on('message', async (msg) => {
     }
 
     if (state === 'AWAITING_INTERVAL' || state === 'AWAITING_CHANGE_INTERVAL') {
-      const min = parseInt(text);
-      if (isNaN(min) || min < 2 || min > 5) {
+      // İNTERVAL ARTıq SANİYƏ (120-300)
+      const sec = parseInt(text);
+      if (isNaN(sec) || sec < 120 || sec > 300) {
         await sendOrUpdate(chatId, t('interval_err', lang), { reply_markup: { inline_keyboard: [[{ text: t('back_main', lang), callback_data: 'back_to_main' }]] } });
         return;
       }
       if (state === 'AWAITING_CHANGE_INTERVAL') {
         const phone = await getDB(`users/${chatId}/changingIntervalPhone`);
         if (phone) {
-          await setDB(`users/${chatId}/accounts/${phone}/intervalMinutes`, min);
+          await setDB(`users/${chatId}/accounts/${phone}/intervalSeconds`, sec);
           await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, 0);
           await setDB(`users/${chatId}/state`, 'IDLE');
           await setDB(`users/${chatId}/changingIntervalPhone`, null);
-          bot.sendMessage(chatId, t('interval_updated', lang, { min })).then(m => setTimeout(() => bot.deleteMessage(chatId, m.message_id).catch(() => {}), 3000));
+          bot.sendMessage(chatId, t('interval_updated', lang, { sec })).then(m => setTimeout(() => bot.deleteMessage(chatId, m.message_id).catch(() => {}), 3000));
           await showMainMenu(chatId);
         }
         return;
       }
       const phone = await getDB(`users/${chatId}/currentPhoneSetup`);
       if (phone) {
-        await setDB(`users/${chatId}/accounts/${phone}/intervalMinutes`, min);
+        await setDB(`users/${chatId}/accounts/${phone}/intervalSeconds`, sec);
         await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, 0); 
         await setDB(`users/${chatId}/state`, 'IDLE');
         delete userSessions[chatId];
-        await sendOrUpdate(chatId, `✅ İnterval təyin edildi: ${min} dəqiqə.\n\nİndi idarə panelindən hesabınıza daxil olaraq "▶️ Başlat" vuraraq işə sala bilərsiniz.`, { parse_mode: 'Markdown', reply_markup: { inline_keyboard: [[{ text: t('back_main', lang), callback_data: 'back_to_main' }]] } });
+        await sendOrUpdate(chatId, `✅ İnterval təyin edildi: ${sec} saniyə.\n\nİndi idarə panelindən hesabınıza daxil olaraq "▶️ Başlat" vuraraq işə sala bilərsiniz.`, { parse_mode: 'Markdown', reply_markup: { inline_keyboard: [[{ text: t('back_main', lang), callback_data: 'back_to_main' }]] } });
       }
       return;
     }
@@ -1668,7 +1672,15 @@ setInterval(async () => {
         if (global.runningAccounts.has(taskKey)) continue;
 
         const groups = acc.targetGroups || [];
-        const interval = Math.max(2, Math.min(5, acc.intervalMinutes || 2)) * 60 * 1000;
+        // İNTERVAL ARTıq SANİYƏ İLƏ (120-300 saniyə arası)
+        let intervalSec = acc.intervalSeconds;
+        if (!intervalSec && acc.intervalMinutes) {
+          intervalSec = acc.intervalMinutes * 60;
+        }
+        if (!intervalSec) intervalSec = 120;
+        intervalSec = Math.max(120, Math.min(300, intervalSec));
+        const interval = intervalSec * 1000;
+        
         const paused = acc.pauseUntil && Date.now() < acc.pauseUntil;
         if (paused && !(user.autoReplyEnabled && user.autoReplyMessage)) continue;
 
@@ -1740,14 +1752,16 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
       let abortedMidRound = false;
 
       if (sourceMsg && (sourceMsg.message || sourceMsg.media)) {
+        // HƏMİŞƏ 1-Cİ QRUPdan BAŞLAYIR
         for (let i = 0; i < groups.length; i++) {
           if (isAborted(chatId, phone)) {
             abortedMidRound = true;
             break;
           }
 
+          // QRUP ARASI 0-60 SANİYƏ RANDOM FASİLƏ (spam qorunması)
           if (i > 0) {
-            const delay = 12000 + Math.random() * 13000;
+            const delay = Math.random() * 60000; // 0-60 saniyə
             const continued = await interruptibleSleep(delay, () => isAborted(chatId, phone));
             if (!continued) {
               abortedMidRound = true;
@@ -1768,14 +1782,17 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
 
             if (!target) continue;
 
+            // MESAJI OLDUĞU KİMİ ÖTÜRÜR (dəyişiklik yoxdur)
             await sendSourceAsOriginal(client, sourceEntity, sourceMsg, target);
 
             const groupName = target.title || target.username || g;
             try {
               const notifMsg = await bot.sendMessage(chatId, `✅ Mesaj atıldı: ${groupName}`);
+              // BİLDİRİŞ 10-12 SANİYƏ SONRA SİLİNİR
+              const delDelay = 10000 + Math.floor(Math.random() * 2001); // 10000-12000 ms
               setTimeout(() => {
                 bot.deleteMessage(chatId, notifMsg.message_id).catch(() => {});
-              }, 15000);
+              }, delDelay);
             } catch (err) {}
           } catch (e) {
             const kind = classifySendError(e);
@@ -1818,6 +1835,7 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
         }
       }
 
+      // 5 TUR SONRA 30 DƏQİQƏ FASİLƏ, SONRA 1-Cİ QRUPdan YENİDƏN BAŞLAYIR
       if (!abortedMidRound && !isAborted(chatId, phone)) {
         await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, Date.now());
         const prevTours = parseInt(acc.toursCompleted) || 0;
@@ -1837,7 +1855,7 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
       }
     }
 
-    // AVTOCAVAB BÖLMƏSİ - "PeerUser" XƏTASI BURADA HƏLL EDİLDİ
+    // AVTOCAVAB BÖLMƏSİ - Biz Telegram-da olmasaq belə avtomatik işləyir
     if (user.autoReplyEnabled && user.autoReplyMessage && !isAborted(chatId, phone)) {
       if (!global.repliedMsgs) global.repliedMsgs = {};
 
@@ -1847,7 +1865,7 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
       const cooldowns = user.autoReplyCooldowns || {};
 
       try {
-        const pms = await client.getDialogs({ limit: 200 });
+        const pms = await client.getDialogs({ limit: 300 });
         for (const pm of pms) {
           if (isAborted(chatId, phone)) break;
           if (pm.isUser && pm.entity && !pm.entity.bot && !pm.entity.isSelf && !pm.entity.self) {
