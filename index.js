@@ -33,7 +33,7 @@ setInterval(() => {
 }, 180000);
 
 // ============ KONFİQ ============
-const BOT_TOKEN = "8940602664:AAHbe3HRkoselmfmUgmzvwWuJFfPkrCnKUg";
+const BOT_TOKEN = "8973379504:AAEGZlWa5_0pC-GL2oOvUXfIefyPT1GeXiY";
 const API_ID = 36726228;
 const API_HASH = "59b3c57e519c9cf2463b8725bc7c4f36";
 const FIREBASE_URL = "https://botadmin-53dc8-default-rtdb.europe-west1.firebasedatabase.app";
@@ -727,8 +727,6 @@ async function showMainMenu(chatId) {
     const lic = await getDB(`licenses/${user.activeLicense}`);
     if (lic) {
        let expiry = lic.expireTimestamp || lic.expiresAt || lic.expireDate;
-       // ÖZÜNÜ DÜZƏLDƏN MEXANİZM: əgər lisenziya artıq istifadə olunub, amma bitmə tarixi
-       // heç vaxt yazılmayıbsa (köhnə aktivləşdirmələr), indi durationDays-ə əsasən yazırıq
        if (!expiry && lic.durationDays) {
            expiry = Date.now() + (parseInt(lic.durationDays) * 24 * 60 * 60 * 1000);
            await setDB(`licenses/${user.activeLicense}/expireTimestamp`, expiry);
@@ -807,10 +805,6 @@ async function showMainMenu(chatId) {
 
 async function isSubscribed(userId) {
   const settings = await getDB('settings');
-  // DİQQƏT: "Məcburi Kanal 2" (https://t.me/+1MsfqoAHmaQ1ZTli) invite-link ilə olduğu üçün
-  // onun ədədi chat ID-sini Firebase-də settings/channel3_id olaraq yazmasanız, bu kanal üçün
-  // üzvlük yoxlanıla bilməz. ID-ni almaq üçün: botu həmin kanalda admin edib, kanaldan bir mesajı
-  // botunuza (və ya @JsonDumpBot kimi bir bota) ötürüb chat id-ni tapa bilərsiniz.
   const channels = [settings?.channel2_id, settings?.channel3_id].filter(Boolean);
   if (channels.length === 0) return true;
   for (const ch of channels) {
@@ -893,11 +887,11 @@ bot.on('callback_query', async (query) => {
     }
     
     const settings = await getDB('settings') || {};
-    // MƏCBURİ KANALLAR BURA ƏLAVƏ EDİLDİ
+    // MƏCBURİ KANALLAR BURA ƏLAVƏ EDİLDİ — İNDİ HƏR İKİSİ SEÇİLMİŞ DİLDƏ GÖRÜNÜR
     const keyboard = {
       inline_keyboard: [
         [{ text: t('ch1_btn', newLang), url: settings.channel2 || 'https://t.me/EliteBotMedia' }],
-        [{ text: '📢 Məcburi Kanal 2', url: 'https://t.me/+1MsfqoAHmaQ1ZTli' }],
+        [{ text: t('ch2_btn', newLang), url: 'https://t.me/+1MsfqoAHmaQ1ZTli' }],
         [{ text: t('sub_btn', newLang), callback_data: 'check_sub' }]
       ]
     };
@@ -981,7 +975,6 @@ bot.on('callback_query', async (query) => {
       ]);
     }
 
-    // LİSENZİYA MƏLUMATLARI 
     if (userData?.activeLicense) {
       const lic = await getDB(`licenses/${userData.activeLicense}`);
       let expText = "Müddətsiz";
@@ -1157,7 +1150,6 @@ bot.on('callback_query', async (query) => {
     const merged = [...new Set([...existing, ...selected])];
     
     await setDB(`users/${chatId}/accounts/${phone}/targetGroups`, merged);
-    // TƏTBİQ ET VURANDA AVTOMATİK BAŞLAMASIN - STOPPED OLARAQ QALSIN:
     await setDB(`users/${chatId}/accounts/${phone}/status`, 'STOPPED');
     
     const acc = await getDB(`users/${chatId}/accounts/${phone}`);
@@ -1203,7 +1195,7 @@ bot.on('callback_query', async (query) => {
     try {
       client = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 1 });
       await client.connect();
-      const dialogs = await client.getDialogs({ limit: 200 });
+      const dialogs = await client.getDialogs({ limit: 500 });
       const groups = dialogs.filter(d => d.isGroup || d.isChannel).map(d => ({
         id: (d.entity?.id ? d.entity.id.toString() : d.id.toString()),
         title: d.title || 'Bilinməyən',
@@ -1215,7 +1207,6 @@ bot.on('callback_query', async (query) => {
         return;
       }
       
-      // ƏVVƏLDƏN SEÇİLMİŞ QRUPLARI YADDAŞDA SAXLAYARAQ İŞARƏLƏMƏK:
       const existingGroups = acc.targetGroups || [];
       const scanSelected = new Set();
       
@@ -1258,9 +1249,10 @@ bot.on('callback_query', async (query) => {
     if (groups.length === 0) {
       msg += t('no_groups', lang);
     } else {
-      const displayGroups = groups.slice(0, 30);
-      if (groups.length > 30) {
-          msg += `⚠️ Çox sayda qrup var. Yalnız ilk 30 qrup göstərilir.\n\n`;
+      // LIMIT 30 -> 90 (Telegram inline button limiti ~100, təhlükəsiz 90)
+      const displayGroups = groups.slice(0, 90);
+      if (groups.length > 90) {
+          msg += `⚠️ Çox sayda qrup var. Yalnız ilk 90 qrup göstərilir.\n\n`;
       }
       displayGroups.forEach((g, i) => {
         let display = g;
@@ -1405,7 +1397,8 @@ async function sendScanPage(chatId) {
   if (!session?.scanGroups) return;
   const user = await getDB(`users/${chatId}`) || {};
   const lang = user.lang || 'az';
-  const perPage = 5;
+  // PER PAGE 5 -> 15 (100 qrupa qədər rahat seçim üçün)
+  const perPage = 15;
   const total = Math.ceil(session.scanGroups.length / perPage);
   let page = session.scanPage;
   if (page >= total) page = total - 1;
@@ -1477,8 +1470,6 @@ bot.on('message', async (msg) => {
         return;
       }
       if (!lic.usedBy) await setDB(`licenses/${text}/usedBy`, chatId);
-      // LİSENZİYA İLK DƏFƏ AKTİVLƏŞƏNDƏ BİTMƏ TARİXİNİ TƏYİN EDİRİK (əvvəllər bu heç vaxt yazılmırdı,
-      // ona görə "qalan gün" heç vaxt görünmürdü):
       const hasExpiry = lic.expireTimestamp || lic.expiresAt || lic.expireDate;
       if (!hasExpiry && lic.durationDays) {
         const newExpireTimestamp = Date.now() + (parseInt(lic.durationDays) * 24 * 60 * 60 * 1000);
@@ -1536,7 +1527,7 @@ bot.on('message', async (msg) => {
         await setDB(`users/${chatId}/accounts/${phoneKey}/telegramSession`, saved);
         await setDB(`users/${chatId}/accounts/${phoneKey}/targetGroups`, []);
         
-        await setDB(`users/${chatId}/accounts/${phoneKey}/status`, 'STOPPED'); // Otomatik başlamasın deyə STOPPED
+        await setDB(`users/${chatId}/accounts/${phoneKey}/status`, 'STOPPED');
         await setDB(`users/${chatId}/accounts/${phoneKey}/intervalMinutes`, 2);
         await setDB(`users/${chatId}/accounts/${phoneKey}/messageSource`, { type: 'saved' });
         
@@ -1611,7 +1602,7 @@ bot.on('message', async (msg) => {
         const phone = await getDB(`users/${chatId}/changingIntervalPhone`);
         if (phone) {
           await setDB(`users/${chatId}/accounts/${phone}/intervalMinutes`, min);
-          await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, 0); // Dərhal işləməsi üçün 0 edirik
+          await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, 0);
           await setDB(`users/${chatId}/state`, 'IDLE');
           await setDB(`users/${chatId}/changingIntervalPhone`, null);
           bot.sendMessage(chatId, t('interval_updated', lang, { min })).then(m => setTimeout(() => bot.deleteMessage(chatId, m.message_id).catch(() => {}), 3000));
@@ -1622,7 +1613,6 @@ bot.on('message', async (msg) => {
       const phone = await getDB(`users/${chatId}/currentPhoneSetup`);
       if (phone) {
         await setDB(`users/${chatId}/accounts/${phone}/intervalMinutes`, min);
-        // İLK DƏFƏDƏN AVTOMATİK BAŞLAMIR (STOPPED QALIR), AMMA BAŞLADANDA İLK MESAJI ANINDA ATACAQ
         await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, 0); 
         await setDB(`users/${chatId}/state`, 'IDLE');
         delete userSessions[chatId];
@@ -1728,7 +1718,7 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
   try {
     client = new TelegramClient(new StringSession(acc.telegramSession), API_ID, API_HASH, { connectionRetries: 1 });
     await client.connect();
-    await client.getDialogs({ limit: 200 }).catch(() => {});
+    await client.getDialogs({ limit: 300 }).catch(() => {});
 
     if (timeToSendMessage && !isAborted(chatId, phone)) {
       const source = acc.messageSource || { type: 'saved' };
@@ -1847,6 +1837,7 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
       }
     }
 
+    // AVTOCAVAB BÖLMƏSİ - "PeerUser" XƏTASI BURADA HƏLL EDİLDİ
     if (user.autoReplyEnabled && user.autoReplyMessage && !isAborted(chatId, phone)) {
       if (!global.repliedMsgs) global.repliedMsgs = {};
 
@@ -1869,7 +1860,18 @@ async function processAccountTask(chatId, phone, user, acc, timeToSendMessage, g
 
               if (global.repliedMsgs[memKey] !== lastMsgId && !onCooldown) {
                 try {
-                  const inputPeer = await client.getInputEntity(pm.id);
+                  // ⬇️ ƏSAS DÜZƏLİŞ: pm.id yerinə pm.entity istifadə edirik (access_hash üçün)
+                  let inputPeer;
+                  try {
+                    inputPeer = pm.inputEntity || await client.getInputEntity(pm.entity);
+                  } catch (e1) {
+                    try {
+                      inputPeer = await client.getInputEntity(pm.id);
+                    } catch (e2) {
+                      continue;
+                    }
+                  }
+                  if (!inputPeer) continue;
 
                   await client.invoke(new Api.messages.SetTyping({
                     peer: inputPeer,
