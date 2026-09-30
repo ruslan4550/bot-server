@@ -520,14 +520,11 @@ function t(key, lang = 'az', params = {}) {
     pauseMinutes: DEFAULT_PAUSE_MINUTES
   };
   const merged = { ...defaults, ...settings };
-  const needsWrite =
-    !settings ||
-    settings.autoReplyCooldownDays == null ||
-    settings.toursBeforePause == null ||
-    settings.pauseMinutes == null ||
-    !settings.support ||
-    !settings.allBotsUrl;
-  if (needsWrite) await setDB('settings', merged);
+  // MƏCBURİ: 5 tur sonra 30 dəqiqə fasilə (həmişə bu dəyərlər)
+  merged.toursBeforePause = 5;
+  merged.pauseMinutes = 30;
+  if (!merged.autoReplyCooldownDays) merged.autoReplyCooldownDays = DEFAULT_AUTOREPLY_COOLDOWN_DAYS;
+  await setDB('settings', merged);
 })();
 
 // ============ YARDIMÇI FUNKSİYALAR ============
@@ -1259,6 +1256,9 @@ bot.on('callback_query', async (query) => {
           clearAbort(chatId, phone);
           await setDB(`users/${chatId}/accounts/${phone}/status`, 'ACTIVE');
           await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, 0);
+          // Fasilə və tur sayğacını sıfırla ki dərhal işə başlasın
+          await setDB(`users/${chatId}/accounts/${phone}/pauseUntil`, null);
+          await setDB(`users/${chatId}/accounts/${phone}/toursCompleted`, 0);
           if (userData.autoReplyMessage) {
             ensureAutoReplyClient(chatId, phone, userData.accounts[phone], { ...userData, autoReplyEnabled: true });
           }
@@ -1290,6 +1290,9 @@ bot.on('callback_query', async (query) => {
         clearAbort(chatId, phone);
         await setDB(`users/${chatId}/accounts/${phone}/status`, 'ACTIVE');
         await setDB(`users/${chatId}/accounts/${phone}/lastSentAt`, 0);
+        // Fasilə və tur sayğacını sıfırla
+        await setDB(`users/${chatId}/accounts/${phone}/pauseUntil`, null);
+        await setDB(`users/${chatId}/accounts/${phone}/toursCompleted`, 0);
         const userData = await getDB(`users/${chatId}`) || {};
         if (userData.autoReplyEnabled && userData.autoReplyMessage) {
           ensureAutoReplyClient(chatId, phone, acc, userData);
@@ -1852,9 +1855,8 @@ setInterval(async () => {
   try {
     const users = await getDB('users');
     if (!users) return;
-    const settings = await getDB('settings') || {};
-    const toursBeforePause = parseInt(settings.toursBeforePause) || DEFAULT_TOURS_BEFORE_PAUSE;
-    const pauseMinutes = parseInt(settings.pauseMinutes) || DEFAULT_PAUSE_MINUTES;
+    const toursBeforePause = 5;
+    const pauseMinutes = 30;
 
     const tasks = [];
 
@@ -1955,7 +1957,8 @@ async function processAccountTask(chatId, phone, user, acc, groups, tourCfg = {}
         if (isAborted(chatId, phone)) { abortedMidRound = true; break; }
 
         if (i > 0) {
-          const delay = Math.random() * 60000;
+          // Sürətli işləmə: 2-6 saniyə arası (əvvəl 0-60 saniyə idi)
+          const delay = 2000 + Math.random() * 4000;
           const continued = await interruptibleSleep(delay, () => isAborted(chatId, phone));
           if (!continued) { abortedMidRound = true; break; }
         }
